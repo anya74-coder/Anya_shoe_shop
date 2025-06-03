@@ -529,13 +529,13 @@ def product_create(request):
 def product_create_with_form(request):
     """Создание товара с использованием Django формы"""
     if request.method == 'POST':
-        form = ProductCreateForm(request.POST, request.FILES)
+        form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
             product = form.save()
             messages.success(request, f'Товар "{product.brand}" успешно создан!')
             return HttpResponseRedirect(reverse('product_detail', args=[product.sneakers_id]))
     else:
-        form = ProductCreateForm()
+        form = ProductForm()
     
     context = {
         'form': form,
@@ -1193,13 +1193,13 @@ def cache_stats(request):
 def product_create_django_form(request):
     """Создание товара с Django формами (демонстрация)"""
     if request.method == 'POST':
-        form = ProductCreateForm(request.POST, request.FILES)
+        form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
             product = form.save()
             messages.success(request, f'Товар "{product.brand}" создан через Django форму!')
             return HttpResponseRedirect(reverse('product_detail', args=[product.sneakers_id]))
     else:
-        form = ProductCreateForm()
+        form = ProductForm()
     
     return render(request, 'products/product_create_django_form.html', {
         'form': form,
@@ -1245,4 +1245,11 @@ def new_products(request):
     return render(request, 'products/product_list.html', {
         'products': products_page,
         'page_title': 'Новые поступления'
+    })
+
+def category_list(request):
+    """Список категорий"""
+    categories = Category.objects.all()
+    return render(request, 'sneaker_app/category_list.html', {
+        'categories': categories
     })

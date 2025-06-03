@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Категории" %} - Sneaker Shop{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-6 text-center mb-5">
+                <i class="fas fa-list me-2 text-primary"></i>
+                {% trans "Категории товаров" %}
+            </h1>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for category in categories %}
+            <div class="col-lg-4 col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            {% if category.name == 'men' %}
+                                <i class="fas fa-male fa-4x text-primary"></i>
+                            {% elif category.name == 'women' %}
+                                <i class="fas fa-female fa-4x text-danger"></i>
+                            {% elif category.name == 'kids' %}
+                                <i class="fas fa-child fa-4x text-warning"></i>
+                            {% else %}
+                                <i class="fas fa-tags fa-4x text-info"></i>
+                            {% endif %}
+                        </div>
+                        <h5 class="card-title">{{ category.get_name_display }}</h5>
+                        {% if category.description %}
+                            <p class="card-text text-muted">{{ category.description }}</p>
+                        {% endif %}
+                        <a href="{% url 'category_detail' category.pk %}" class="btn btn-gradient">
+                            <i class="fas fa-eye me-1"></i>{% trans "Смотреть товары" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-folder-open fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">{% trans "Категории не найдены" %}</h4>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

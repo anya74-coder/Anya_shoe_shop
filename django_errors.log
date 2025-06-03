@@ -3901,3 +3901,459 @@ Traceback (most recent call last):
     raise TemplateDoesNotExist(template_name, chain=chain)
 django.template.exceptions.TemplateDoesNotExist: categories/category_list.html
 "GET /categories/ HTTP/1.1" 500 76793
+Internal Server Error: /categories/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 1058, in category_list
+    return render(request, 'categories/category_list.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: categories/category_list.html
+"GET /categories/ HTTP/1.1" 500 76801
+Internal Server Error: /categories/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 1058, in category_list
+    return render(request, 'categories/category_list.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: categories/category_list.html
+"GET /categories/ HTTP/1.1" 500 77090
+Internal Server Error: /statistics/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 931, in statistics_view
+    return render(request, 'sneaker_app/statistics.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: sneaker_app/statistics.html
+"GET /statistics/ HTTP/1.1" 500 93971
+Internal Server Error: /categories/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 1058, in category_list
+    return render(request, 'categories/category_list.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: categories/category_list.html
+"GET /categories/ HTTP/1.1" 500 76795
+Internal Server Error: /search/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 440, in search_products
+    return render(request, 'search/search_results.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: search/search_results.html
+"GET /search/?query=adidas HTTP/1.1" 500 77734
+Internal Server Error: /categories/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 1058, in category_list
+    return render(request, 'categories/category_list.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: categories/category_list.html
+"GET /categories/ HTTP/1.1" 500 76804
+Internal Server Error: /statistics/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 931, in statistics_view
+    return render(request, 'sneaker_app/statistics.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: sneaker_app/statistics.html
+"GET /statistics/ HTTP/1.1" 500 93848
+Internal Server Error: /statistics/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 931, in statistics_view
+    return render(request, 'sneaker_app/statistics.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: sneaker_app/statistics.html
+"GET /statistics/ HTTP/1.1" 500 93848
+Internal Server Error: /categories/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 1058, in category_list
+    return render(request, 'categories/category_list.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: categories/category_list.html
+"GET /categories/ HTTP/1.1" 500 76967
+Internal Server Error: /categories/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 1058, in category_list
+    return render(request, 'categories/category_list.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: categories/category_list.html
+"GET /categories/ HTTP/1.1" 500 76661
+Internal Server Error: /categories/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 1058, in category_list
+    return render(request, 'categories/category_list.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: categories/category_list.html
+"GET /categories/ HTTP/1.1" 500 76653
+Internal Server Error: /categories/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 1058, in category_list
+    return render(request, 'categories/category_list.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: categories/category_list.html
+"GET /categories/ HTTP/1.1" 500 76653
+Internal Server Error: /categories/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 1058, in category_list
+    return render(request, 'categories/category_list.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: categories/category_list.html
+"GET /categories/ HTTP/1.1" 500 76662
+Internal Server Error: /statistics/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 931, in statistics_view
+    return render(request, 'sneaker_app/statistics.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: sneaker_app/statistics.html
+"GET /statistics/ HTTP/1.1" 500 93542
+Internal Server Error: /categories/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 1058, in category_list
+    return render(request, 'categories/category_list.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: categories/category_list.html
+"GET /categories/ HTTP/1.1" 500 76662
+Internal Server Error: /search/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 440, in search_products
+    return render(request, 'search/search_results.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: search/search_results.html
+"GET /search/?query= HTTP/1.1" 500 77546
+Internal Server Error: /categories/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 1058, in category_list
+    return render(request, 'categories/category_list.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: categories/category_list.html
+"GET /categories/ HTTP/1.1" 500 76662
+Internal Server Error: /statistics/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 931, in statistics_view
+    return render(request, 'sneaker_app/statistics.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: sneaker_app/statistics.html
+"GET /statistics/ HTTP/1.1" 500 93542
+Internal Server Error: /statistics/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 931, in statistics_view
+    return render(request, 'sneaker_app/statistics.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: sneaker_app/statistics.html
+"GET /statistics/ HTTP/1.1" 500 93542
+Internal Server Error: /categories/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 1058, in category_list
+    return render(request, 'categories/category_list.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: categories/category_list.html
+"GET /categories/ HTTP/1.1" 500 76661
+Internal Server Error: /category/1/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 369, in category_detail
+    return render(request, 'shop/category_detail.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: shop/category_detail.html
+"GET /category/1/ HTTP/1.1" 500 77575
+Internal Server Error: /search/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 440, in search_products
+    return render(request, 'search/search_results.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: search/search_results.html
+"GET /search/?query= HTTP/1.1" 500 77975
+Internal Server Error: /search/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 440, in search_products
+    return render(request, 'search/search_results.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: search/search_results.html
+"GET /search/?query=%D0%B0 HTTP/1.1" 500 77730
+Internal Server Error: /search/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 440, in search_products
+    return render(request, 'search/search_results.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: search/search_results.html
+"GET /search/?query=Puma HTTP/1.1" 500 77716
+Internal Server Error: /search/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 440, in search_products
+    return render(request, 'search/search_results.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: search/search_results.html
+"GET /search/?query=Puma HTTP/1.1" 500 77716
+Internal Server Error: /brand/Jordan Skydive 5/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 963, in brand_products
+    return render(request, 'products/brand_products.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: products/brand_products.html
+"GET /brand/Jordan%20Skydive%205/ HTTP/1.1" 500 77850
+Internal Server Error: /category/1/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 369, in category_detail
+    return render(request, 'shop/category_detail.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: shop/category_detail.html
+"GET /category/1/ HTTP/1.1" 500 77717

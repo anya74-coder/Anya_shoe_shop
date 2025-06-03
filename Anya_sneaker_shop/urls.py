@@ -116,6 +116,7 @@ urlpatterns = [
     # Лаба 4
     path('popular/', popular_products, name='popular_products'),
     path('new/', new_products, name='new_products'),
+
 ]
 
 # Добавляем обслуживание медиа файлов в режиме разработки

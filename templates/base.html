@@ -235,14 +235,16 @@
                             <i class="fas fa-fire"></i> {% trans "Популярное" %}
                         </a>
                     </li>
+                {% if user.is_staff %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'statistics' %}">
                             <i class="fas fa-chart-bar"></i> {% trans "Статистика" %}
                         </a>
                     </li>
+                {% endif %}
                 </ul>
                 
-                <!-- ✅ Search Form - обязательное требование -->
+                <!-- Поиск -->
                 <form class="d-flex me-3 search-container" method="get" action="{% url 'search_products' %}">
                     <div class="position-relative">
                         <i class="fas fa-search search-icon"></i>
@@ -255,7 +257,7 @@
                     </button>
                 </form>
                 
-                <!-- ✅ User Menu - обязательное требование авторизации -->
+                <!-- Меню пользователя -->
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
                         <li class="nav-item dropdown">
@@ -268,11 +270,8 @@
                                     <i class="fas fa-user"></i> {% trans "Профиль" %}
                                 </a></li>
                                 {% if user.is_staff %}
-                                    <li><a class="dropdown-item" href="{% url 'admin:index' %}">
+                                    <li><a class="dropdown-item" href="/admin/">
                                         <i class="fas fa-cog"></i> {% trans "Админ-панель" %}
-                                    </a></li>
-                                    <li><a class="dropdown-item" href="{% url 'cache_stats' %}">
-                                        <i class="fas fa-database"></i> {% trans "Кеш" %}
                                     </a></li>
                                 {% endif %}
                                 <li><hr class="dropdown-divider"></li>
@@ -344,7 +343,7 @@
                         <li><a href="{% url 'product_list' %}" class="text-light text-decoration-none">{% trans "Каталог" %}</a></li>
                         <li><a href="{% url 'popular_products' %}" class="text-light text-decoration-none">{% trans "Популярное" %}</a></li>
                         <li><a href="{% url 'new_products' %}" class="text-light text-decoration-none">{% trans "Новинки" %}</a></li>
-                        <li><a href="{% url 'statistics' %}" class="text-                        <li><a href="{% url 'statistics' %}" class="text-light text-decoration-none">{% trans "Статистика" %}</a></li>
+                        <li><a href="{% url 'statistics' %}" class="text-light text-decoration-none">{% trans "Статистика" %}</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4 mb-4">

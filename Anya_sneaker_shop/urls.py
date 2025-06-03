@@ -117,6 +117,13 @@ urlpatterns = [
     path('popular/', popular_products, name='popular_products'),
     path('new/', new_products, name='new_products'),
 
+    # Добавьте эти строки в urlpatterns:
+    path('products-alias/', product_list, name='products'),
+    path('categories-alias/', category_list, name='categories'),
+    path('popular-alias/', popular_products, name='popular'),
+    path('new-alias/', new_products, name='new'),
+
+
 ]
 
 # Добавляем обслуживание медиа файлов в режиме разработки
@@ -126,3 +133,6 @@ else:
     # ✅ Для продакшн режима
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+handler404 = 'sneaker_app.views.handler404'
+handler500 = 'sneaker_app.views.handler500'

@@ -15,6 +15,7 @@ from django.views.decorators.vary import vary_on_headers  # ✅ Для варь�
 from .forms import ProductForm, SearchForm
 from datetime import timedelta
 from django.utils import timezone
+from django.contrib.admin.views.decorators import staff_member_required
 from .models import (
     Category, Catalog, Clients, ProductCards, Address, Order,
     Purchase, Wishlist, Reviews, Positions, Support, Tag, ProductTag
@@ -110,6 +111,7 @@ def home(request):
         'stats': stats_data['stats'],
         'top_brands': stats_data['top_brands'],
         'search_form': search_form,
+        'user': request.user
     }
     
     return render(request, 'home.html', context)
@@ -885,7 +887,7 @@ def wishlist_view(request):
     
     return render(request, 'wishlist/wishlist.html', context)
 
-
+@staff_member_required
 @cache_page(60 * 60)  # ✅ Кешируем статистику на 1 час
 def statistics_view(request):
     """Полная статистика - переход из виджета"""

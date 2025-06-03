@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавить товар - Sneaker Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .form-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            margin-left: 1rem;
+        }
+
+        .messages {
+            margin-bottom: 1rem;
+        }
+
+        .alert {
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .required {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>➕ Добавить новый товар</h1>
+            <div class="nav-links">
+                <a href="{% url 'home' %}">🏠 Главная</a>
+                <a href="{% url 'product_list' %}">📦 Каталог</a>
+                <a href="{% url 'profile' %}">👤 Профиль</a>
+            </div>
+        </header>
+
+        <!--Переключение между шаблонами -->
+        <div style="background: #e7f3ff; border: 1px solid #b3d9ff; border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem;">
+            <h3 style="color: #0066cc; margin-bottom: 1rem;">🔄 Варианты форм создания товара</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;">
+                <div style="background: #28a745; color: white; padding: 0.5rem 1rem; border-radius: 5px; font-weight: bold;">
+                    📝 HTML Форма (текущая)
+                </div>
+                <span style="color: #666;">vs</span>
+                <a href="{% url 'product_create_django_form' %}" style="background: #667eea; color: white; padding: 0.5rem 1rem; border-radius: 5px; text-decoration: none; font-weight: bold;">
+                    🚀 Django Forms
+                </a>
+            </div>
+            <div style="margin-top: 1rem; color: #0066cc; font-size: 0.9rem;">
+                <strong>Текущая форма:</strong> Обычная HTML форма с ручной версткой и валидацией
+            </div>
+        </div>
+
+        <!-- Сообщения -->
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="form-container">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="brand">Бренд <span class="required">*</span></label>
+                    <input type="text" id="brand" name="brand" required 
+                           placeholder="Например: Nike, Adidas, Puma...">
+                </div>
+
+                <div class="form-group">
+                    <label for="price">Цена (₽) <span class="required">*</span></label>
+                    <input type="number" id="price" name="price" required 
+                           min="0" step="0.01" placeholder="0.00">
+                </div>
+
+                <div class="form-group">
+                    <label for="image">Изображение товара</label>
+                    <input type="file" id="image" name="image" accept="image/*">
+                    <small style="color: #666; font-size: 0.9rem;">
+                        Поддерживаемые форматы: JPG, PNG, GIF. Максимальный размер: 5MB
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="is_active" name="is_active" checked>
+                        <label for="is_active">Товар активен (доступен для заказа)</label>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <button type="submit" class="btn">
+                        ✅ Создать товар
+                    </button>
+                    <a href="{% url 'product_list' %}" class="btn btn-secondary">
+                        ❌ Отмена
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <div style="background: white; padding: 1.5rem; border-radius: 10px; margin-top: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h3>💡 Подсказки:</h3>
+            <ul style="margin-left: 1.5rem; color: #666;">
+                <li>После создания товара вы сможете добавить подробную информацию в карточке товара</li>
+                <li>Рекомендуется загружать качественные изображения товаров</li>
+                <li>Цена указывается в российских рублях</li>
+                <li>Неактивные товары не отображаются в каталоге для покупателей</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

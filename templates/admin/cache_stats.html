@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статистика кеша - Sneaker Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .cache-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .cache-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cache-item:last-child {
+            border-bottom: none;
+        }
+
+        .cache-key {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .cache-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .cached {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .not-cached {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .actions {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 0 1rem;
+            transition: background 0.3s;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: #5a6fd8;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Статистика кеша</h1>
+            <p>Мониторинг состояния кеширования</p>
+        </div>
+
+        <div class="info-box">
+            <h3>ℹ️ Информация о кеше</h3>
+            <p>Здесь отображается статус основных кешированных данных в системе.</p>
+            <p><strong>Зеленый</strong> - данные закешированы, <strong>красный</strong> - данные не в кеше.</p>
+        </div>
+
+        <div class="cache-section">
+            <h2>🗂️ Состояние кеша</h2>
+            
+            <div class="cache-item">
+                <span class="cache-key">Статистика главной страницы</span>
+                <span class="cache-status {% if cache_info.home_stats %}cached{% else %}not-cached{% endif %}">
+                    {% if cache_info.home_stats %}✅ Закешировано{% else %}❌ Не в кеше{% endif %}
+                </span>
+            </div>
+
+            <div class="cache-item">
+                <span class="cache-key">Популярные товары</span>
+                <span class="cache-status {% if cache_info.popular_products %}cached{% else %}not-cached{% endif %}">
+                    {% if cache_info.popular_products %}✅ Закешировано{% else %}❌ Не в кеше{% endif %}
+                </span>
+            </div>
+
+            <div class="cache-item">
+                <span class="cache-key">Новые товары</span>
+                <span class="cache-status {% if cache_info.new_products %}cached{% else %}not-cached{% endif %}">
+                    {% if cache_info.new_products %}✅ Закешировано{% else %}❌ Не в кеше{% endif %}
+                </span>
+            </div>
+
+            <div class="cache-item">
+                <span class="cache-key">Детальная статистика</span>
+                <span class="cache-status {% if cache_info.detailed_statistics %}cached{% else %}not-cached{% endif %}">
+                    {% if cache_info.detailed_statistics %}✅ Закешировано{% else %}❌ Не в кеше{% endif %}
+                </span>
+            </div>
+        </div>
+
+        <div class="cache-section">
+            <h2>🔧 Управление кешем</h2>
+            <p>Используйте эти инструменты для управления кешем системы:</p>
+            
+            <div class="actions">
+                <a href="{% url 'home' %}" class="btn">🏠 На главную</a>
+                <a href="{% url 'clear_cache' %}" class="btn btn-danger" onclick="return confirm('Вы уверены, что хотите очистить весь кеш?')">
+                    🗑️ Очистить кеш
+                </a>
+            </div>
+        </div>
+
+        <div class="cache-section">
+            <h2>📈 Рекомендации</h2>
+            <ul style="padding-left: 2rem;">
+                <li>Главная страница кешируется на 15 минут</li>
+                <li>Каталог товаров кешируется на 10 минут</li>
+                <li>Детали товара кешируются на 30 минут</li>
+                <li>Статистика кешируется на 1 час</li>
+                <li>Результаты поиска кешируются на 10 минут</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<div class="top-brands">
+    <h3>🏆 Топ брендов</h3>
+    {% if top_brands %}
+        <ul style="list-style: none; padding: 0;">
+            {% for brand in top_brands %}
+                <li style="margin-bottom: 0.5rem; padding: 0.5rem; background: #f8f9fa; border-radius: 5px;">
+                    <strong style="color: #667eea;">{{ brand.brand }}</strong> 
+                    <span style="color: #666;">({{ brand.count }} товаров)</span>
+                    {% if brand.avg_rating %}
+                        <span style="color: #ffc107;">
+                            - ⭐ {{ brand.avg_rating|floatformat:1 }}
+                        </span>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p style="color: #666; font-style: italic;">Нет данных о брендах</p>
+    {% endif %}
+</div>

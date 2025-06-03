@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Удалить отзыв - Sneaker Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .warning-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 5px solid #dc3545;
+        }
+
+        .warning-icon {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .review-preview {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1.5rem 0;
+            border-left: 3px solid #667eea;
+        }
+
+        .review-rating {
+            margin-bottom: 0.5rem;
+        }
+
+        .review-comment {
+            color: #666;
+            font-style: italic;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            margin-right: 1rem;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .warning-text {
+            color: #dc3545;
+            font-weight: bold;
+            text-align: center;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🗑️ Удаление отзыва</h1>
+            <div class="nav-links">
+                <a href="{% url 'home' %}">🏠 Главная</a>
+                <a href="{% url 'product_detail' review.sneakers.sneakers_id %}">👁️ К товару</a>
+                <a href="{% url 'profile' %}">👤 Профиль</a>
+            </div>
+        </header>
+
+        <div class="warning-container">
+            <div class="warning-icon">⚠️</div>
+            
+            <h2 style="text-align: center; margin-bottom: 1rem; color: #dc3545;">
+                Подтверждение удаления
+            </h2>
+
+            <p style="text-align: center; margin-bottom: 1.5rem;">
+                Вы действительно хотите удалить этот отзыв?
+            </p>
+
+            <div class="review-preview">
+                <div class="review-rating">
+                    <strong>Оценка:</strong>
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= review.rating %}⭐{% else %}☆{% endif %}
+                    {% endfor %}
+                    ({{ review.rating }} из 5)
+                </div>
+                <div><strong>Товар:</strong> {{ review.sneakers.brand }}</div>
+                <div><strong>Дата:</strong> {{ review.created_date|date:"d.m.Y H:i" }}</div>
+                <div class="review-comment">
+                    <strong>Комментарий:</strong><br>
+                    "{{ review.comment }}"
+                </div>
+            </div>
+
+            <div class="warning-text">
+                ⚠️ Это действие нельзя отменить!
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <form method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        🗑️ Да, удалить отзыв
+                    </button>
+                </form>
+                <a href="{% url 'product_detail' review.sneakers.sneakers_id %}" class="btn btn-secondary">
+                    ❌ Отмена
+                </a>
+            </div>
+        </div>
+
+        <div style="background: white; padding: 1.5rem; border-radius: 10px; margin-top: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h3>ℹ️ Информация:</h3>
+            <ul style="margin-left: 1.5rem; color: #666;">
+                <li>После удаления отзыв исчезнет из карточки товара</li>
+                <li>Восстановить удаленный отзыв будет невозможно</li>
+                <li>Вы сможете написать новый отзыв для этого товара</li>
+                <li>Удаление отзыва не влияет на ваши покупки</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

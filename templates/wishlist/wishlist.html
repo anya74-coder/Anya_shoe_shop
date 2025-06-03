@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Избранное - Sneaker Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #e91e63 0%, #ad1457 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-links {
+            margin-top: 1rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .wishlist-stats {
+            background: white;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .wishlist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .wishlist-item {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .wishlist-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .item-image {
+            height: 200px;
+            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #999;
+        }
+
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-info {
+            padding: 1.5rem;
+        }
+
+        .item-brand {
+            font-weight: bold;
+            color: #e91e63;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-price {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-details {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: transform 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .empty-wishlist {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .empty-wishlist h3 {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .empty-wishlist p {
+            color: #999;
+            margin-bottom: 2rem;
+        }
+
+        .btn-large {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+        }
+
+        .messages {
+            margin-bottom: 1rem;
+        }
+
+        .alert {
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* ✅ Стили для формы удаления */
+        .remove-form {
+            display: inline;
+        }
+
+        .remove-form button {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+            width: 100%;
+        }
+
+        .remove-form button:hover {
+            background: #c82333;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .wishlist-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .item-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1>❤️ Избранное</h1>
+            <p>Ваши любимые товары</p>
+            <div class="nav-links">
+                <a href="{% url 'home' %}">🏠 Главная</a>
+                <a href="{% url 'product_list' %}">📦 Каталог</a>
+                <a href="{% url 'profile' %}">👤 Профиль</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Сообщения -->
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Статистика избранного -->
+        <div class="wishlist-stats">
+            <h2>📊 Статистика избранного</h2>
+            <p><strong>Товаров в избранном:</strong> {{ wishlist_items|length }}</p>
+            {% if wishlist_items %}
+                {% load sneaker_tags %}
+                <p><strong>Общая стоимость:</strong> 
+                    {% for item in wishlist_items %}
+                        {{ item.sneakers.price|multiply:item.quantity }}
+                        {% if not forloop.last %} + {% endif %}
+                    {% endfor %} ₽
+                </p>
+            {% endif %}
+        </div>
+
+        {% if wishlist_items %}
+            <div class="wishlist-grid">
+                {% for item in wishlist_items %}
+                    <div class="wishlist-item">
+                        <div class="item-image">
+                            {% if item.sneakers.image %}
+                                <img src="{{ item.sneakers.image.url }}" alt="{{ item.sneakers.brand }}">
+                            {% else %}
+                                👟
+                            {% endif %}
+                        </div>
+                        <div class="item-info">
+                            <div class="item-brand">{{ item.sneakers.brand }}</div>
+                            <div class="item-price">{{ item.sneakers.price|floatformat:0 }} ₽</div>
+                            <div class="item-details">
+                                <div><strong>Размер:</strong> {{ item.size }}</div>
+                                <div><strong>Количество:</strong> {{ item.quantity }}</div>
+                                <div><strong>Добавлено:</strong> {{ item.added_date|date:"d.m.Y" }}</div>
+                                {% if item.sneakers.product_card %}
+                                    <div><strong>Цвет:</strong> {{ item.sneakers.product_card.color }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="item-actions">
+                                <a href="{% url 'product_detail' item.sneakers.sneakers_id %}" class="btn btn-primary">
+                                    👁️ Просмотр
+                                </a>
+                                
+                                <!-- ✅ Исправленная форма для удаления -->
+                                <form method="post" action="{% url 'remove_from_wishlist' item.wishlist_id %}" class="remove-form">
+                                    {% csrf_token %}
+                                    <button type="submit" onclick="return confirm('Удалить товар из избранного?')">
+                                        🗑️ Удалить
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-wishlist">
+                <h3>💔 Ваш список избранного пуст</h3>
+                <p>Добавьте товары в избранное, чтобы не потерять их из виду!</p>
+                <a href="{% url 'product_list' %}" class="btn btn-primary btn-large">
+                    🛍️ Перейти к покупкам
+                </a>
+            </div>
+        {% endif %}
+
+        <!-- Подсказки -->
+        <div style="background: white; padding: 1.5rem; border-radius: 10px; margin-top: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h3>💡 Полезные советы:</h3>
+            <ul style="margin-left: 1.5rem; color: #666;">
+                <li>Добавляйте товары в избранное, чтобы следить за изменением цен</li>
+                <li>Используйте избранное для сравнения похожих товаров</li>
+                <li>Товары остаются в избранном даже после выхода из аккаунта</li>
+                <li>Вы можете добавить один товар несколько раз с разными размерами</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

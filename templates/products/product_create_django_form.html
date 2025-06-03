@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - Sneaker Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 2rem;
+        }
+
+        .form-title {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-check-input {
+            width: auto;
+            margin-right: 0.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .form-help {
+            font-size: 0.875rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+
+        .form-errors {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin-top: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .form-errors ul {
+            margin: 0;
+            padding-left: 1rem;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            margin-left: 1rem;
+        }
+
+        .messages {
+            margin-bottom: 1rem;
+        }
+
+        .alert {
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+
+        .required {
+            color: #dc3545;
+        }
+
+        .demo-info {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .demo-info h3 {
+            color: #0066cc;
+            margin-bottom: 0.5rem;
+        }
+
+        .demo-info ul {
+            margin-left: 1.5rem;
+            color: #0066cc;
+        }
+
+        .template-switcher {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .template-switcher h3 {
+            color: #0066cc;
+            margin-bottom: 1rem;
+        }
+
+        .switcher-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .current-template {
+            background: #28a745;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .switch-link {
+            background: #667eea;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .switch-link:hover {
+            background: #5a6fd8;
+        }
+
+        .template-description {
+            margin-top: 1rem;
+            color: #0066cc;
+            font-size: 0.9rem;
+        }
+    </style>
+    
+    {{ form.media }}
+</head>
+<body>
+    <div class="container">
+        <!-- Информация о демонстрации -->
+        <div class="demo-info">
+            <h3>🎯 Демонстрация Django Forms</h3>
+            <p>Эта форма демонстрирует:</p>
+            <ul>
+                <li><code>field.label_tag</code> - автоматические метки полей</li>
+                <li><code>field</code> - поля формы с виджетами</li>
+                <li><code>field.errors</code> - ошибки валидации</li>
+                <li><code>form.media</code> - подключение CSS/JS</li>
+                <li><code>error_messages</code>, <code>widgets</code>, <code>labels</code>, <code>help_texts</code> в Meta</li>
+            </ul>
+        </div>
+
+        <!-- Переключение между шаблонами -->
+        <div class="template-switcher">
+            <h3>🔄 Варианты форм создания товара</h3>
+            <div class="switcher-buttons">
+                <a href="{% url 'product_create' %}" class="switch-link">
+                    📝 HTML Форма
+                </a>
+                <span style="color: #666;">vs</span>
+                <div class="current-template">
+                    🚀 Django Forms (текущая)
+                </div>
+            </div>
+            <div class="template-description">
+                <strong>Текущая форма:</strong> Django Forms с автоматической генерацией полей, валидацией и ошибками
+            </div>
+            <div class="template-description">
+                <strong>Особенности:</strong> 
+                field.label_tag, field, field.errors, widgets, error_messages
+            </div>
+        </div>
+
+        <!-- Сообщения -->
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="form-container">
+            <h1 class="form-title">{{ title }}</h1>
+            
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Поле: Бренд -->
+                <div class="form-group">
+                    {{ form.brand.label_tag }}
+                    {{ form.brand }}
+                    {% if form.brand.help_text %}
+                        <div class="form-help">{{ form.brand.help_text }}</div>
+                    {% endif %}
+                    {% if form.brand.errors %}
+                        <div class="form-errors">{{ form.brand.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Поле: Цена -->
+                <div class="form-group">
+                    {{ form.price.label_tag }}
+                    {{ form.price }}
+                    {% if form.price.help_text %}
+                        <div class="form-help">{{ form.price.help_text }}</div>
+                    {% endif %}
+                    {% if form.price.errors %}
+                        <div class="form-errors">{{ form.price.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Поле: Изображение -->
+                <div class="form-group">
+                    {{ form.image.label_tag }}
+                    {{ form.image }}
+                    {% if form.image.help_text %}
+                        <div class="form-help">{{ form.image.help_text }}</div>
+                    {% endif %}
+                    {% if form.image.errors %}
+                        <div class="form-errors">{{ form.image.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Поле: Активность -->
+                <div class="form-group">
+                    <div class="checkbox-wrapper">
+                        {{ form.is_active }}
+                        {{ form.is_active.label_tag }}
+                    </div>
+                    {% if form.is_active.help_text %}
+                        <div class="form-help">{{ form.is_active.help_text }}</div>
+                    {% endif %}
+                    {% if form.is_active.errors %}
+                        <div class="form-errors">{{ form.is_active.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Общие ошибки формы -->
+                {% if form.non_field_errors %}
+                    <div class="form-errors">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <!-- Кнопки -->
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button type="submit" class="btn">
+                        💾 Создать товар
+                    </button>
+                    <a href="{% url 'product_list' %}" class="btn btn-secondary">
+                        ❌ Отмена
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

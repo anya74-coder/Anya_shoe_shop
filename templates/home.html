@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+{% load i18n %}
+{% load sneaker_tags %}
+<html lang="{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% trans "Sneaker Shop - Главная" %}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .btn {
+            background: white;
+            color: #667eea;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: transform 0.3s;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .demo-section {
+            background: white;
+            padding: 2rem;
+            margin: 2rem 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .demo-section h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .demo-section p {
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .stats {
+            background: white;
+            padding: 2rem 0;
+            margin: 2rem 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .products-section {
+            margin: 3rem 0;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-image {
+            height: 200px;
+            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #999;
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-brand {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .nav-links {
+            margin-top: 1rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .top-brands {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        .brand-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .brand-item {
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* ✅ Стили для переключателя языков */
+        .language-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .language-switcher select {
+            border: 1px solid #ddd;
+            padding: 5px 10px;
+            border-radius: 4px;
+            background: white;
+        }
+        
+        .language-switcher label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- ✅ Переключатель языков -->
+    <div class="language-switcher">
+        <form action="{% url 'set_language' %}" method="post">
+            {% csrf_token %}
+            <label for="language">🌐 {% trans "Язык" %}:</label>
+            <select name="language" id="language" onchange="this.form.submit()">
+                {% get_current_language as LANGUAGE_CODE %}
+                {% get_available_languages as LANGUAGES %}
+                {% for lang_code, lang_name in LANGUAGES %}
+                    <option value="{{ lang_code }}" {% if lang_code == LANGUAGE_CODE %}selected{% endif %}>
+                        {{ lang_name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+
+    <section class="hero">
+        <div class="container">
+            <h1>👟 {% trans "Sneaker Shop" %}</h1>
+            <p>{% trans "Лучшие кроссовки для активной жизни" %}</p>
+            <div class="nav-links">
+                <a href="{% url 'product_list' %}">📦 {% trans "Каталог" %}</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'profile' %}">👤 {% trans "Профиль" %}</a>
+                    <a href="{% url 'wishlist' %}">❤️ {% trans "Избранное" %}</a>
+                    {% if user.is_superuser %}
+                        <a href="{% url 'cache_stats' %}" style="background: #dc3545;">🗂️ {% trans "Кеш" %}</a>
+                    {% endif %}
+                    <a href="{% url 'logout' %}">🚪 {% trans "Выйти" %}</a>
+                {% else %}
+                    <a href="{% url 'login' %}">🔑 {% trans "Войти" %}</a>
+                    <a href="{% url 'register' %}">📝 {% trans "Регистрация" %}</a>
+                {% endif %}
+            </div>
+            <div style="margin-top: 2rem;">
+                <a href="{% url 'product_list' %}" class="btn">🛍️ {% trans "Начать покупки" %}</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <!-- Демонстрация шаблонных тегов -->
+        <section class="demo-section">
+            <h2>🏷️ {% trans "Демонстрация шаблонных тегов" %}</h2>
+            <p><strong>{% trans "Простой тег" %}:</strong> {% trans "Всего товаров в каталоге" %}: {% total_products %}</p>
+            <p><strong>{% trans "Тег с параметрами" %}:</strong> {% trans "Товаров до 50000 руб" %}: {% price_range 0 50000 %}</p>
+            
+            <!-- Inclusion tag -->
+            {% show_top_brands 3 %}
+        </section>
+
+        {% if stats %}
+        <section class="stats">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number">{{ stats.total_products }}</span>
+                    <div class="stat-label">{% trans "Товаров в каталоге" %}</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">{{ stats.total_brands }}</span>
+                    <div class="stat-label">{% trans "Брендов" %}</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">{{ stats.total_reviews }}</span>
+                    <div class="stat-label">{% trans "Отзывов" %}</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">{{ stats.avg_rating|floatformat:1 }}</span>
+                    <div class="stat-label">{% trans "Средний рейтинг" %}</div>
+                </div>
+            </div>
+        </section>
+        {% endif %}
+
+        {% if popular_products %}
+        <section class="products-section">
+            <h2>🔥 {% trans "Популярные товары" %}</h2>
+            <div class="products-grid">
+                {% for product in popular_products %}
+                <div class="product-card">
+                    <div class="product-image">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.brand }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                            👟
+                        {% endif %}
+                    </div>
+                    <div class="product-info">
+                        <div class="product-brand">{{ product.brand }}</div>
+                        <div class="product-price">{{ product.price|floatformat:0 }} ₽</div>
+                        {% if product.avg_rating %}
+                            <div class="product-rating">
+                                <span class="stars">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= product.avg_rating %}⭐{% else %}☆{% endif %}
+                                    {% endfor %}
+                                </span>
+                                <span class="rating-text">
+                                    {{ product.avg_rating|floatformat:1 }} ({{ product.review_count }} {% trans "отзывов" %})
+                                </span>
+                            </div>
+                        {% endif %}
+                        <div style="margin-top: 1rem; color: #666; font-size: 0.9rem;">
+                            {% trans "Добавлен" %}: {{ product.created_at|date:"d.m.Y" }}
+                        </div>
+                        <a href="{% url 'product_detail' product.sneakers_id %}" class="btn" style="color: white; background: #667eea; margin-top: 1rem;">{% trans "Подробнее" %}</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        {% if new_products %}
+        <section class="products-section">
+            <h2>🆕 {% trans "Новые поступления" %}</h2>
+            <div class="products-grid">
+                {% for product in new_products %}
+                <div class="product-card">
+                    <div class="product-image">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.brand }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                            👟
+                        {% endif %}
+                    </div>
+                    <div class="product-info">
+                        <div class="product-brand">{{ product.brand }}</div>
+                        <div class="product-price">{{ product.price|floatformat:0 }} ₽</div>
+                        <div style="margin-top: 1rem; color: #666; font-size: 0.9rem;">
+                            {% trans "Добавлен" %}: {{ product.created_at|date:"d.m.Y" }}
+                        </div>
+                        {% if product.is_active %}
+                            <div style="margin-top: 0.5rem; color: #28a745; font-size: 0.9rem;">
+                                ✅ {% trans "В наличии" %}
+                            </div>
+                        {% else %}
+                            <div style="margin-top: 0.5rem; color: #dc3545; font-size: 0.9rem;">
+                                ❌ {% trans "Нет в наличии" %}
+                            </div>
+                        {% endif %}
+                        <a href="{% url 'product_detail' product.sneakers_id %}" class="btn" style="color: white; background: #667eea; margin-top: 1rem;">{% trans "Подробнее" %}</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+    </div>
+
+    <footer style="background: #333; color: white; text-align: center; padding: 2rem 0; margin-top: 3rem;">
+        <div class="container">
+            <p>&copy; 2024 Sneaker Shop. {% trans "Все права защищены" %}.</p>
+            <p>{% trans "Лучшие кроссовки для вашего стиля жизни" %}</p>
+        </div>
+    </footer>
+</body>
+</html>

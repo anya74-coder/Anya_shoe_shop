@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактировать отзыв - Sneaker Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .form-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .review-info {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+        }
+
+        .rating-input {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            gap: 0.25rem;
+        }
+
+        .rating-input input[type="radio"] {
+            display: none;
+        }
+
+        .rating-input label {
+            font-size: 2rem;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .rating-input label:hover,
+        .rating-input label:hover ~ label,
+        .rating-input input[type="radio"]:checked ~ label {
+            color: #ffc107;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            margin-left: 1rem;
+        }
+
+        .messages {
+            margin-bottom: 1rem;
+        }
+
+        .alert {
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .required {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>✏️ Редактировать отзыв</h1>
+            <div class="nav-links">
+                <a href="{% url 'home' %}">🏠 Главная</a>
+                <a href="{% url 'product_detail' review.sneakers.sneakers_id %}">👁️ К товару</a>
+                <a href="{% url 'profile' %}">👤 Профиль</a>
+            </div>
+        </header>
+
+        <!-- Сообщения -->
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Информация об отзыве -->
+        <div class="review-info">
+            <h3>📋 Информация об отзыве</h3>
+            <p><strong>Товар:</strong> {{ review.sneakers.brand }}</p>
+            <p><strong>Дата создания:</strong> {{ review.created_date|date:"d.m.Y H:i" }}</p>
+            <p><strong>Текущая оценка:</strong> 
+                {% for i in "12345" %}
+                    {% if forloop.counter <= review.rating %}⭐{% else %}☆{% endif %}
+                {% endfor %}
+                ({{ review.rating }} из 5)
+            </p>
+        </div>
+
+        <div class="form-container">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label>Оценка <span class="required">*</span></label>
+                    <div class="rating-input">
+                        <input type="radio" name="rating" value="5" id="star5" 
+                               {% if review.rating == 5 %}checked{% endif %}>
+                        <label for="star5">⭐</label>
+                        <input type="radio" name="rating" value="4" id="star4" 
+                               {% if review.rating == 4 %}checked{% endif %}>
+                        <label for="star4">⭐</label>
+                        <input type="radio" name="rating" value="3" id="star3" 
+                               {% if review.rating == 3 %}checked{% endif %}>
+                        <label for="star3">⭐</label>
+                        <input type="radio" name="rating" value="2" id="star2" 
+                               {% if review.rating == 2 %}checked{% endif %}>
+                        <label for="star2">⭐</label>
+                        <input type="radio" name="rating" value="1" id="star1" 
+                               {% if review.rating == 1 %}checked{% endif %}>
+                        <label for="star1">⭐</label>
+                    </div>
+                    <small style="color: #666; font-size: 0.9rem;">
+                        Нажмите на звезды, чтобы поставить оценку
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="comment">Комментарий <span class="required">*</span></label>
+                    <textarea id="comment" name="comment" required 
+                              placeholder="Поделитесь своим мнением о товаре...">{{ review.comment }}</textarea>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <button type="submit" class="btn">
+                        ✅ Сохранить изменения
+                    </button>
+                    <a href="{% url 'product_detail' review.sneakers.sneakers_id %}" class="btn btn-secondary">
+                        ❌ Отмена
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <div style="background: white; padding: 1.5rem; border-radius: 10px; margin-top: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h3>💡 Правила написания отзывов:</h3>
+            <ul style="margin-left: 1.5rem; color: #666;">
+                <li>Будьте честны и объективны в своей оценке</li>
+                <li>Опишите конкретные достоинства и недостатки товара</li>
+                <li>Избегайте нецензурной лексики и оскорблений</li>
+                <li>Ваш отзыв поможет другим покупателям сделать правильный выбор</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

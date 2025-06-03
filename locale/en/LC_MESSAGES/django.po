@@ -1,0 +1,71 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-01 12:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Sneaker Shop - Главная"
+msgstr "Sneaker Shop - Home"
+
+msgid "Язык"
+msgstr "Language"
+
+msgid "Sneaker Shop"
+msgstr "Sneaker Shop"
+
+msgid "Лучшие кроссовки для активной жизни"
+msgstr "Best sneakers for active life"
+
+msgid "Товаров в каталоге"
+msgstr "Products in catalog"
+
+msgid "Брендов"
+msgstr "Brands"
+
+msgid "Отзывов"
+msgstr "Reviews"
+
+msgid "Средний рейтинг"
+msgstr "Average rating"
+
+msgid "Популярные товары"
+msgstr "Popular products"
+
+msgid "отзывов"
+msgstr "reviews"
+
+msgid "Добавлен"
+msgstr "Added"
+
+msgid "Популярные товары не найдены"
+msgstr "Popular products not found"
+
+msgid "Новые поступления"
+msgstr "New arrivals"
+
+msgid "В наличии"
+msgstr "In stock"
+
+msgid "Нет в наличии"
+msgstr "Out of stock"
+
+msgid "Новые товары не найдены"
+msgstr "New products not found"
+
+msgid "Все права защищены"
+msgstr "All rights reserved"
+
+msgid "Лучшие кроссовки для вашего стиля жизни"
+msgstr "Best sneakers for your lifestyle"

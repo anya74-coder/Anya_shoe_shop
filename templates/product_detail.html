@@ -1,511 +1,367 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ product.brand }} - Sneaker Shop</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+{% load sneaker_tags %}
 
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f8f9fa;
-            line-height: 1.6;
-        }
+{% block title %}{{ product.brand }} - Sneaker Shop{% endblock %}
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 20px;
-        }
+{% block extra_css %}
+<style>
+    .product-image-container {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        height: 500px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .product-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .product-price {
+        font-size: 2.5rem;
+        font-weight: bold;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .product-tag {
+        display: inline-block;
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        color: white;
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin: 0.2rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    
+    .rating-stars {
+        color: #ffc107;
+        font-size: 1.2rem;
+    }
+    
+    .review-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        margin-bottom: 1rem;
+        transition: transform 0.2s;
+    }
+    
+    .review-card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .review-form {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .star-rating {
+        display: flex;
+        gap: 0.2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .star-rating input[type="radio"] {
+        display: none;
+    }
+    
+    .star-rating label {
+        font-size: 1.5rem;
+        color: #ddd;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+    
+    .star-rating label:hover,
+    .star-rating input[type="radio"]:checked ~ label {
+        color: #ffc107;
+    }
+    
+    .action-buttons .btn {
+        margin: 0.25rem;
+        border-radius: 25px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+    
+    .btn-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+    }
+    
+    .btn-gradient:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+    
+    .product-meta {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        margin-bottom: 1.5rem;
+    }
+    
+    .meta-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f1f3f4;
+    }
+    
+    .meta-item:last-child {
+        border-bottom: none;
+    }
+    
+    .order-form {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-top: 1.5rem;
+    }
+</style>
+{% endblock %}
 
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1rem 0;
-            margin-bottom: 2rem;
-            border-radius: 10px;
-        }
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans "Главная" %}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'products' %}">{% trans "Товары" %}</a></li>
+            <li class="breadcrumb-item active">{{ product.brand }}</li>
+        </ol>
+    </nav>
 
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header h1 {
-            font-size: 1.5rem;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            margin: 0 1rem;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-
-        .nav-links a:hover {
-            background: rgba(255,255,255,0.2);
-        }
-
-        .product-container {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            overflow: hidden;
-            margin-bottom: 2rem;
-        }
-
-        .product-main {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            padding: 2rem;
-        }
-
-        .product-image {
-            height: 400px;
-            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 8rem;
-            color: #999;
-        }
-
-        .product-info h1 {
-            font-size: 2.5rem;
-            color: #333;
-            margin-bottom: 1rem;
-        }
-
-        .product-price {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 1rem;
-        }
-
-        .product-status {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-weight: bold;
-            margin-bottom: 1rem;
-            display: inline-block;
-        }
-
-        .status-active {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-inactive {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .product-meta {
-            background: #f8f9fa;
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-        }
-
-        .meta-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #dee2e6;
-        }
-
-        .meta-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-        }
-
-        .meta-label {
-            font-weight: bold;
-            color: #495057;
-        }
-
-        .meta-value {
-            color: #6c757d;
-        }
-
-        .product-tag {
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 15px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        .product-tag small {
-            opacity: 0.8;
-        }
-
-        .order-form {
-            background: #f8f9fa;
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-        }
-
-        .order-form h3 {
-            color: #333;
-            margin-bottom: 1rem;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: transform 0.2s;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn-danger {
-            background: #dc3545;
-        }
-
-        .btn-danger:hover {
-            background: #c82333;
-        }
-
-        .btn-success {
-            background: #28a745;
-        }
-
-        .btn-success:hover {
-            background: #218838;
-        }
-
-        .reviews-section {
-            background: white;
-            border-radius: 10px;
-            padding: 2rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-        }
-
-        .review-form {
-            background: #f8f9fa;
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-        }
-
-        .rating-input {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .rating-input input[type="radio"] {
-            display: none;
-        }
-
-        .rating-input label {
-            font-size: 1.5rem;
-            color: #ddd;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-
-        .rating-input input[type="radio"]:checked ~ label,
-        .rating-input label:hover {
-            color: #ffc107;
-        }
-
-        .review-item {
-            border-bottom: 1px solid #dee2e6;
-            padding: 1rem 0;
-            position: relative;
-        }
-
-        .review-item:last-child {
-            border-bottom: none;
-        }
-
-        .review-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .review-author {
-            font-weight: bold;
-            color: #333;
-        }
-
-        .review-rating {
-            color: #ffc107;
-            font-size: 1.2rem;
-        }
-
-        .review-date {
-            color: #6c757d;
-            font-size: 0.9rem;
-        }
-
-        .review-comment {
-            color: #495057;
-            line-height: 1.6;
-            margin-bottom: 0.5rem;
-        }
-
-        .review-actions {
-            text-align: right;
-        }
-
-        .messages {
-            margin-bottom: 1rem;
-        }
-
-        .alert {
-            padding: 0.75rem;
-            border-radius: 5px;
-            margin-bottom: 0.5rem;
-        }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .no-data {
-            text-align: center;
-            color: #6c757d;
-            font-style: italic;
-            padding: 2rem;
-        }
-
-        @media (max-width: 768px) {
-            .product-main {
-                grid-template-columns: 1fr;
-            }
-            
-            .header-content {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .nav-links {
-                margin-top: 1rem;
-            }
-            
-            .product-info h1 {
-                font-size: 2rem;
-            }
-            
-            .product-image {
-                height: 250px;
-                font-size: 4rem;
-            }
-        }
-    </style>
-</head>
-<body>
-    <header class="header">
-        <div class="header-content">
-            <h1>👟 Sneaker Shop</h1>
-            <div class="nav-links">
-                <a href="{% url 'home' %}">🏠 Главная</a>
-                {% if user.is_authenticated %}
-                    <a href="{% url 'profile' %}">👤 Профиль</a>
-                    <a href="{% url 'logout' %}">🚪 Выйти</a>
+    <div class="row">
+        <!-- Изображение товара -->
+        <div class="col-lg-6 mb-4">
+            <div class="product-image-container">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.brand }}" class="product-image">
                 {% else %}
-                    <a href="{% url 'login' %}">🔑 Войти</a>
-                    <a href="{% url 'register' %}">📝 Регистрация</a>
+                    <i class="fas fa-running fa-5x text-muted"></i>
                 {% endif %}
             </div>
         </div>
-    </header>
 
-    <div class="container">
-        <!-- Сообщения -->
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-
-        <div class="product-container">
-            <div class="product-main">
-                <div class="product-image">
-                    {% if product.image %}
-                        <img src="{{ product.image.url }}" alt="{{ product.brand }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+        <!-- Информация о товаре -->
+        <div class="col-lg-6">
+            <div class="product-info">
+                <h1 class="display-5 fw-bold mb-3">{{ product.brand }}</h1>
+                
+                <!-- Цена -->
+                <div class="product-price mb-3">{{ product.price|floatformat:0 }} ₽</div>
+                
+                <!-- Статус -->
+                <div class="mb-3">
+                    {% if product.is_active %}
+                        <span class="badge bg-success fs-6">
+                            <i class="fas fa-check me-1"></i>{% trans "В наличии" %}
+                        </span>
                     {% else %}
-                        👟
+                        <span class="badge bg-danger fs-6">
+                            <i class="fas fa-times me-1"></i>{% trans "Нет в наличии" %}
+                        </span>
                     {% endif %}
                 </div>
-                
-                <div class="product-info">
-                    <h1>{{ product.brand }}</h1>
-                    <div class="product-price">{{ product.price|floatformat:0 }} ₽</div>
-                    
-                    <div class="product-status {% if product.is_active %}status-active{% else %}status-inactive{% endif %}">
-                        {% if product.is_active %}
-                            ✅ В наличии
-                        {% else %}
-                            ❌ Нет в наличии
-                        {% endif %}
-                    </div>
 
-                    <div class="product-meta">
-                        <div class="meta-item">
-                            <span class="meta-label">Дата добавления:</span>
-                            <span class="meta-value">{{ product.created_at|date:"d.m.Y H:i" }}</span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">ID товара:</span>
-                            <span class="meta-value">#{{ product.sneakers_id }}</span>
-                        </div>
-                        {% if review_stats.avg_rating %}
-                        <div class="meta-item">
-                            <span class="meta-label">Рейтинг:</span>
-                            <span class="meta-value">
-                                {{ review_stats.avg_rating|floatformat:1 }}/5 
-                                ({{ review_stats.total_reviews }} отзывов)
-                            </span>
-                        </div>
-                        {% endif %}
+                <!-- Рейтинг -->
+                {% if review_stats.avg_rating %}
+                <div class="mb-3">
+                    <div class="rating-stars">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= review_stats.avg_rating %}
+                                <i class="fas fa-star"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                        <span class="ms-2 text-muted">
+                            {{ review_stats.avg_rating|floatformat:1 }}/5 
+                            ({{ review_stats.total_reviews }} {% trans "отзывов" %})
+                        </span>
                     </div>
+                </div>
+                {% endif %}
 
-                    <!-- ✅ ИСПРАВЛЕННЫЙ БЛОК: Теги товара -->
-                    {% if product.tags.exists %}
-                    <div class="product-meta" style="margin-top: 1rem;">
-                        <h3 style="margin-bottom: 1rem; color: #333;">🏷️ Теги товара</h3>
-                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                            {% for product_tag in product.producttag_set.all %}
-                                <span class="product-tag" data-color="{{ product_tag.tag.color }}">
+                <!-- Теги товара -->
+                {% if product.tags.exists %}
+                <div class="mb-4">
+                    <h6 class="fw-bold mb-2">
+                        <i class="fas fa-tags me-1"></i>{% trans "Теги" %}:
+                    </h6>
+                    <div>
+                        {% for product_tag in product.producttag_set.all %}
+                            {% if product_tag.tag %}
+                                <span class="product-tag" data-color="{{ product_tag.tag.color|default:'#007bff' }}">
                                     {{ product_tag.tag.name }}
                                     {% if product_tag.priority > 0 %}
-                                        <small>({{ product_tag.priority }})</small>
+                                        <small class="opacity-75">({{ product_tag.priority }})</small>
                                     {% endif %}
                                 </span>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    <!-- Кнопки действий -->
-                    <div style="margin-top: 1rem;">
-                        {% if user.is_authenticated %}
-                            <form method="post" action="{% url 'toggle_wishlist' product.sneakers_id %}" style="display: inline;">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-success">
-                                    ❤️ В избранное
-                                </button>
-                            </form>
-                            
-                            {% if user.is_staff %}
-                                <a href="{% url 'product_edit' product.sneakers_id %}" class="btn" style="margin-left: 0.5rem;">
-                                    ✏️ Редактировать
-                                </a>
                             {% endif %}
-                        {% endif %}
+                        {% endfor %}
                     </div>
-
-                    <!-- Форма заказа -->
-                    {% if user.is_authenticated and product.is_active %}
-                    <div class="order-form">
-                        <h3>🛒 Заказать товар</h3>
-                        <form method="post" action="{% url 'create_order' product.sneakers_id %}">
+                </div>
+                {% endif %}
+                <!-- Кнопки действий -->
+                <div class="action-buttons mb-4">
+                    {% if user.is_authenticated %}
+                        <!-- Добавить в избранное -->
+                        <form method="post" action="{% url 'toggle_wishlist' product.sneakers_id %}" class="d-inline">
                             {% csrf_token %}
-                            <div class="form-group">
-                                <label for="quantity">Количество:</label>
-                                <select name="quantity" id="quantity">
-                                    <option value="1">1 пара</option>
-                                    <option value="2">2 пары</option>
-                                    <option value="3">3 пары</option>
-                                    <option value="4">4 пары</option>
-                                    <option value="5">5 пар</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn">
-                                🛒 Добавить в заказ
+                            <input type="hidden" name="size" value="Универсальный">
+                            <button type="submit" class="btn btn-outline-danger">
+                                <i class="fas fa-heart me-1"></i>{% trans "В избранное" %}
                             </button>
                         </form>
-                    </div>
-                    {% elif not user.is_authenticated %}
-                    <div class="order-form">
-                        <h3>🔑 Для заказа необходимо войти в систему</h3>
-                        <a href="{% url 'login' %}" class="btn">Войти</a>
-                        <a href="{% url 'register' %}" class="btn" style="margin-left: 1rem;">Регистрация</a>
-                    </div>
+                        
+                        <!-- Админ кнопки -->
+                        {% if user.is_staff %}
+                            <a href="{% url 'product_edit' product.sneakers_id %}" class="btn btn-outline-warning">
+                                <i class="fas fa-edit me-1"></i>{% trans "Редактировать" %}
+                            </a>
+                            <a href="{% url 'product_delete' product.sneakers_id %}" class="btn btn-outline-danger">
+                                <i class="fas fa-trash me-1"></i>{% trans "Удалить" %}
+                            </a>
+                        {% endif %}
                     {% endif %}
                 </div>
+
+                <!-- Форма заказа -->
+                {% if user.is_authenticated and product.is_active %}
+                <div class="order-form">
+                    <h5 class="mb-3">
+                        <i class="fas fa-shopping-cart me-2"></i>{% trans "Заказать товар" %}
+                    </h5>
+                    <form method="post" action="{% url 'create_order' product.sneakers_id %}">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">{% trans "Количество" %}:</label>
+                                <select name="quantity" class="form-select">
+                                    {% for i in "12345" %}
+                                        <option value="{{ forloop.counter }}">{{ forloop.counter }} {% trans "пар" %}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-end">
+                                <button type="submit" class="btn btn-light w-100">
+                                    <i class="fas fa-shopping-cart me-1"></i>{% trans "Добавить в заказ" %}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                {% elif not user.is_authenticated %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    {% trans "Для заказа необходимо" %} 
+                    <a href="{% url 'login' %}" class="alert-link">{% trans "войти в систему" %}</a>
+                </div>
+                {% endif %}
             </div>
         </div>
+    </div>
 
-        <!-- Секция отзывов -->
-        <div class="reviews-section">
-            <h2>📝 Отзывы о товаре</h2>
-            
+    <!-- Дополнительная информация -->
+    {% if product_card %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="product-meta">
+                <h4 class="mb-3">
+                    <i class="fas fa-info-circle me-2 text-primary"></i>{% trans "Подробная информация" %}
+                </h4>
+                <div class="meta-item">
+                    <strong>{% trans "Название" %}:</strong>
+                    <span>{{ product_card.name }}</span>
+                </div>
+                <div class="meta-item">
+                    <strong>{% trans "Категория" %}:</strong>
+                    <span>{{ product_card.category.get_name_display }}</span>
+                </div>
+                <div class="meta-item">
+                    <strong>{% trans "Размеры" %}:</strong>
+                    <span>{{ product_card.size }}</span>
+                </div>
+                <div class="meta-item">
+                    <strong>{% trans "Цвет" %}:</strong>
+                    <span>{{ product_card.color }}</span>
+                </div>
+                <div class="meta-item">
+                    <strong>{% trans "Материал" %}:</strong>
+                    <span>{{ product_card.material }}</span>
+                </div>
+                {% if product_card.description %}
+                <div class="meta-item">
+                    <strong>{% trans "Описание" %}:</strong>
+                    <span>{{ product_card.description }}</span>
+                </div>
+                {% endif %}
+                <div class="meta-item">
+                    <strong>{% trans "Дата добавления" %}:</strong>
+                    <span>{{ product.created_at|date:"d.m.Y H:i" }}</span>
+                </div>
+            </div>
+
+            <!-- Ссылки на магазины -->
+            {% if product_card.has_store_links %}
+            <div class="product-meta mt-3">
+                <h5 class="mb-3">
+                    <i class="fas fa-external-link-alt me-2 text-primary"></i>{% trans "Купить в интернет-магазинах" %}
+                </h5>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for link_name, link_url in product_card.get_store_links %}
+                        <a href="{{ link_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary">
+                            <i class="fas fa-external-link-alt me-1"></i>{{ link_name }}
+                        </a>
+                    {% endfor %}
+                </div>
+                <small class="text-muted mt-2 d-block">
+                    <i class="fas fa-exclamation-triangle me-1"></i>
+                    {% trans "Ссылки ведут на внешние сайты. Мы не несем ответственности за содержимое внешних ресурсов." %}
+                </small>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Секция отзывов -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3 class="mb-4">
+                <i class="fas fa-comments me-2 text-primary"></i>{% trans "Отзывы о товаре" %}
+            </h3>
+
             <!-- Форма добавления отзыва -->
             {% if user.is_authenticated %}
             <div class="review-form">
-                <h3>Оставить отзыв</h3>
+                <h5 class="mb-3">{% trans "Оставить отзыв" %}</h5>
                 <form method="post" action="{% url 'review_create' product.sneakers_id %}">
                     {% csrf_token %}
-                    <div class="form-group">
-                        <label>Оценка:</label>
-                        <div class="rating-input">
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "Оценка" %}:</label>
+                        <div class="star-rating">
                             <input type="radio" name="rating" value="5" id="star5">
                             <label for="star5">⭐</label>
                             <input type="radio" name="rating" value="4" id="star4">
@@ -518,168 +374,102 @@
                             <label for="star1">⭐</label>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="comment">Комментарий:</label>
-                        <textarea name="comment" id="comment" rows="4" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;" required></textarea>
+                    <div class="mb-3">
+                        <label for="comment" class="form-label">{% trans "Комментарий" %}:</label>
+                        <textarea name="comment" id="comment" class="form-control" rows="4" 
+                                  placeholder="{% trans 'Поделитесь своим мнением о товаре...' %}" required></textarea>
                     </div>
-                    <button type="submit" class="btn">
-                        📝 Отправить отзыв
+                    <button type="submit" class="btn btn-gradient">
+                        <i class="fas fa-paper-plane me-1"></i>{% trans "Отправить отзыв" %}
                     </button>
                 </form>
             </div>
             {% else %}
-            <div class="review-form">
-                <p>Для добавления отзыва необходимо <a href="{% url 'login' %}">войти в систему</a></p>
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                {% trans "Для добавления отзыва необходимо" %} 
+                <a href="{% url 'login' %}" class="alert-link">{% trans "войти в систему" %}</a>
             </div>
             {% endif %}
 
             <!-- Список отзывов -->
             {% if reviews %}
+            <div class="reviews-list mt-4">
                 {% for review in reviews %}
-                <div class="review-item">
-                    <div class="review-header">
-                        <div>
-                            <span class="review-author">{{ review.client.full_name }}</span>
-                            <span class="review-rating">
-                                {% for i in "12345" %}
-                                    {% if forloop.counter <= review.rating %}⭐{% else %}☆{% endif %}
-                                {% endfor %}
-                            </span>
-                        </div>
-                        <span class="review-date">{{ review.created_date|date:"d.m.Y H:i" }}</span>
-                    </div>
-                    <div class="review-comment">{{ review.comment }}</div>
-                    
-                    <!-- Действия с отзывом для автора -->
-                    {% if user.is_authenticated %}
-                        {% with client_email=user.email %}
-                            {% if review.client.email == client_email %}
-                            <div class="review-actions">
-                                <a href="{% url 'review_edit' review.review_id %}" class="btn" style="font-size: 0.8rem; padding: 0.25rem 0.5rem;">
-                                    ✏️ Редактировать
-                                </a>
-                                <a href="{% url 'review_delete' review.review_id %}" class="btn btn-danger" style="font-size: 0.8rem; padding: 0.25rem 0.5rem; margin-left: 0.5rem;">
-                                    🗑️ Удалить
-                                </a>
+                <div class="review-card card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h6 class="card-title mb-1">
+                                    <i class="fas fa-user-circle me-1 text-primary"></i>
+                                    {{ review.client.full_name }}
+                                </h6>
+                                <div class="rating-stars">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= review.rating %}
+                                            <i class="fas fa-star"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
                             </div>
-                            {% endif %}
-                        {% endwith %}
-                    {% endif %}
+                            <small class="text-muted">{{ review.created_date|date:"d.m.Y H:i" }}</small>
+                        </div>
+                        <p class="card-text">{{ review.comment }}</p>
+                        
+                        <!-- Кнопки редактирования для автора отзыва или админа -->
+                        {% if user.is_authenticated and user.is_staff or review.client.email == user.email %}
+                        <div class="mt-2">
+                            <a href="{% url 'review_edit' review.review_id %}" class="btn btn-sm btn-outline-warning">
+                                <i class="fas fa-edit me-1"></i>{% trans "Редактировать" %}
+                            </a>
+                            <a href="{% url 'review_delete' review.review_id %}" class="btn btn-sm btn-outline-danger">
+                                <i class="fas fa-trash me-1"></i>{% trans "Удалить" %}
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
                 {% endfor %}
+            </div>
             {% else %}
-                <div class="no-data">
-                    Пока нет отзывов для этого товара. Будьте первым!
-                </div>
+            <div class="text-center py-5">
+                <i class="fas fa-comment-slash fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">{% trans "Пока нет отзывов" %}</h5>
+                <p class="text-muted">{% trans "Будьте первым, кто оставит отзыв о этом товаре!" %}</p>
+            </div>
             {% endif %}
         </div>
-
-        <!-- Дополнительная информация о товаре -->
-        {% if product_card %}
-        <div class="product-container">
-            <div style="padding: 2rem;">
-                <h2>📋 Подробная информация</h2>
-                <div class="product-meta">
-                    <div class="meta-item">
-                        <span class="meta-label">Название:</span>
-                        <span class="meta-value">{{ product_card.name }}</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Категория:</span>
-                        <span class="meta-value">{{ product_card.category.get_name_display }}</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Размеры:</span>
-                        <span class="meta-value">{{ product_card.size }}</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Цвет:</span>
-                        <span class="meta-value">{{ product_card.color }}</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Материал:</span>
-                        <span class="meta-value">{{ product_card.material }}</span>
-                    </div>
-                    {% if product_card.description %}
-                    <div class="meta-item">
-                        <span class="meta-label">Описание:</span>
-                        <span class="meta-value">{{ product_card.description }}</span>
-                    </div>
-                    {% endif %}
-                </div>
-                
-                
-                <!-- ✅ НОВЫЙ БЛОК: Ссылки на магазины -->
-                {% if product_card.has_store_links %}
-                <div style="margin-top: 2rem;">
-                    <h3>🛒 Купить в интернет-магазинах</h3>
-                    <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; margin-top: 1rem;">
-                        {% for link_name, link_url in product_card.get_store_links %}
-                            <a href="{{ link_url }}" 
-                               target="_blank" 
-                               rel="noopener noreferrer" 
-                               class="btn"
-                               style="margin-right: 1rem; margin-bottom: 0.5rem; display: inline-block;">
-                                🛒 {{ link_name }}
-                            </a>
-                        {% endfor %}
-                        <div style="margin-top: 1rem; color: #666; font-size: 0.9rem;">
-                            <small>⚠️ Ссылки ведут на внешние сайты. Мы не несем ответственности за содержимое внешних ресурсов.</small>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-                
-            </div>
-        </div>
-        {% endif %}
     </div>
+</div>
 
-    <script>
-        // Установка цветов тегов
-        document.addEventListener('DOMContentLoaded', function() {
-            const tags = document.querySelectorAll('.product-tag[data-color]');
-            tags.forEach(tag => {
-                tag.style.backgroundColor = tag.getAttribute('data-color');
-            });
-            
-            // Интерактивная оценка звездочками
-            const ratingInputs = document.querySelectorAll('.rating-input input[type="radio"]');
-            const ratingLabels = document.querySelectorAll('.rating-input label');
-            
-            ratingLabels.forEach((label, index) => {
-                label.addEventListener('mouseover', function() {
-                    ratingLabels.forEach((l, i) => {
-                        if (i >= index) {
-                            l.style.color = '#ffc107';
-                        } else {
-                            l.style.color = '#ddd';
-                        }
-                    });
-                });
-                
-                label.addEventListener('click', function() {
-                    const input = document.getElementById(label.getAttribute('for'));
-                    input.checked = true;
-                });
-            });
-            
-            document.querySelector('.rating-input').addEventListener('mouseleave', function() {
-                const checkedInput = document.querySelector('.rating-input input[type="radio"]:checked');
-                if (checkedInput) {
-                    const checkedIndex = Array.from(ratingInputs).indexOf(checkedInput);
-                    ratingLabels.forEach((l, i) => {
-                        if (i >= checkedIndex) {
-                            l.style.color = '#ffc107';
-                        } else {
-                            l.style.color = '#ddd';
-                        }
-                    });
-                } else {
-                    ratingLabels.forEach(l => l.style.color = '#ddd');
-                }
-            });
+<script>
+// Интерактивные звездочки для рейтинга
+document.addEventListener('DOMContentLoaded', function() {
+    const stars = document.querySelectorAll('.star-rating label');
+    const inputs = document.querySelectorAll('.star-rating input');
+    
+    stars.forEach((star, index) => {
+        star.addEventListener('mouseover', function() {
+            highlightStars(index);
         });
-    </script>
-</body>
-</html>
+        
+        star.addEventListener('click', function() {
+            inputs[index].checked = true;
+        });
+    });
+    
+    function highlightStars(index) {
+        stars.forEach((star, i) => {
+            if (i >= index) {
+                star.style.color = '#ffc107';
+            } else {
+                star.style.color = '#ddd';
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
+

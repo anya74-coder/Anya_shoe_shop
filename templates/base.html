@@ -273,6 +273,9 @@
                                     <li><a class="dropdown-item" href="/admin/">
                                         <i class="fas fa-cog"></i> {% trans "Админ-панель" %}
                                     </a></li>
+                                    <li><a class="dropdown-item" href="{% url 'cache_stats' %}">
+                                        <i class="fas fa-database"></i> {% trans "Кеш" %}
+                                    </a></li>
                                 {% endif %}
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{% url 'logout' %}">
@@ -343,7 +346,7 @@
                         <li><a href="{% url 'product_list' %}" class="text-light text-decoration-none">{% trans "Каталог" %}</a></li>
                         <li><a href="{% url 'popular_products' %}" class="text-light text-decoration-none">{% trans "Популярное" %}</a></li>
                         <li><a href="{% url 'new_products' %}" class="text-light text-decoration-none">{% trans "Новинки" %}</a></li>
-                        <li><a href="{% url 'statistics' %}" class="text-light text-decoration-none">{% trans "Статистика" %}</a></li>
+                        <li><a href="{% url 'cache_stats' %}" class="text-light text-decoration-none">{% trans "Кеш" %}</a></li>
                     </ul>
                 </div>
                 <div class="col-md-4 mb-4">

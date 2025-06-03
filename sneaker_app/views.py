@@ -27,8 +27,8 @@ def redirect_to_home(request):
     home_url = reverse('home')
     return HttpResponseRedirect(home_url)
 
-@cache_page(60 * 15)  # ✅ Кешируем главную страницу на 15 минут
-@vary_on_headers('Accept-Language')  # ✅ Варьируем кеш по языку
+#@cache_page(60 * 15)  # ✅ Кешируем главную страницу на 15 минут
+#@vary_on_headers('Accept-Language')  # ✅ Варьируем кеш по языку
 
 def home(request):
     """
@@ -121,72 +121,83 @@ def product_list(request):
     """
     Список товаров с фильтрацией, поиском и пагинацией
     """
-    # Получаем все активные товары
-    products = Catalog.objects.filter(is_active=True).annotate(
-        avg_rating=Avg('reviews__rating'),
-        review_count=Count('reviews')
-    )
+    # Кешируем только данные товаров, а не всю страницу
+    cache_key = f'products_list_{request.GET.urlencode()}'
+    products_data = cache.get(cache_key)
     
-    # Получаем список всех брендов для фильтра
-    brands = Catalog.objects.values_list('brand', flat=True).distinct().order_by('brand')
-    
-    # Фильтрация по поиску
-    search_query = request.GET.get('search')
-    if search_query:
-        products = products.filter(
-            Q(brand__icontains=search_query) |
-            Q(product_card__name__icontains=search_query) |
-            Q(product_card__description__icontains=search_query)
+    if products_data is None:
+        # Получаем все активные товары
+        products = Catalog.objects.filter(is_active=True).annotate(
+            avg_rating=Avg('reviews__rating'),
+            review_count=Count('reviews')
         )
-    
-    # Фильтрация по бренду
-    brand_filter = request.GET.get('brand')
-    if brand_filter:
-        products = products.filter(brand=brand_filter)
-    
-    # Фильтрация по цене
-    price_min = request.GET.get('price_min')
-    if price_min:
+        
+        # Получаем список всех брендов для фильтра
+        brands = Catalog.objects.values_list('brand', flat=True).distinct().order_by('brand')
+        
+        # Фильтрация по поиску
+        search_query = request.GET.get('search')
+        if search_query:
+            products = products.filter(
+                Q(brand__icontains=search_query) |
+                Q(product_card__name__icontains=search_query) |
+                Q(product_card__description__icontains=search_query)
+            )
+        
+        # Фильтрация по бренду
+        brand_filter = request.GET.get('brand')
+        if brand_filter:
+            products = products.filter(brand=brand_filter)
+        
+        # Фильтрация по цене
+        price_min = request.GET.get('price_min')
+        if price_min:
+            try:
+                products = products.filter(price__gte=float(price_min))
+            except ValueError:
+                pass
+        
+        price_max = request.GET.get('price_max')
+        if price_max:
+            try:
+                products = products.filter(price__lte=float(price_max))
+            except ValueError:
+                pass
+        
+        # Сортировка
+        sort_by = request.GET.get('sort', '-created_at')
+        if sort_by in ['-created_at', 'created_at', 'price', '-price', 'brand']:
+            products = products.order_by(sort_by)
+        
+        # Статистика
+        stats = products.aggregate(
+            total_products=Count('sneakers_id'),
+            avg_price=Avg('price'),
+            min_price=Min('price'),
+            max_price=Max('price')
+        )
+        
+        # Пагинация
+        paginator = Paginator(products, 12)
+        page = request.GET.get('page')
+        
         try:
-            products = products.filter(price__gte=float(price_min))
-        except ValueError:
-            pass
-    
-    price_max = request.GET.get('price_max')
-    if price_max:
-        try:
-            products = products.filter(price__lte=float(price_max))
-        except ValueError:
-            pass
-    
-    # Сортировка
-    sort_by = request.GET.get('sort', '-created_at')
-    if sort_by in ['-created_at', 'created_at', 'price', '-price', 'brand']:
-        products = products.order_by(sort_by)
-    
-    # Статистика
-    stats = products.aggregate(
-        total_products=Count('sneakers_id'),
-        avg_price=Avg('price'),
-        min_price=Min('price'),
-        max_price=Max('price')
-    )
-    
-    # Пагинация
-    paginator = Paginator(products, 12)
-    page = request.GET.get('page')
-    
-    try:
-        products = paginator.page(page)
-    except PageNotAnInteger:
-        products = paginator.page(1)
-    except EmptyPage:
-        products = paginator.page(paginator.num_pages)
+            products = paginator.page(page)
+        except PageNotAnInteger:
+            products = paginator.page(1)
+        except EmptyPage:
+            products = paginator.page(paginator.num_pages)
+        
+        # Кешируем только данные товаров на 10 минут
+        cache.set(cache_key, products, 60 * 10)
+    else:
+        products = products_data
     
     context = {
         'products': products,
         'brands': brands,
         'stats': stats,
+        'user': request.user,  # ✅ Пользователь всегда актуальный
     }
     
     return render(request, 'products/product_list.html', context)
@@ -838,9 +849,11 @@ def user_logout(request):
     """
     Выход пользователя
     """
+    username = request.user.username if request.user.is_authenticated else "Пользователь"
     logout(request)
-    messages.info(request, 'Вы успешно вышли из системы.')
-    return HttpResponseRedirect(reverse('home'))
+    messages.success(request, f'До свидания, {username}! Вы успешно вышли из системы.')
+    return redirect('home')
+
 
 
 @login_required

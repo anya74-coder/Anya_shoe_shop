@@ -6,26 +6,103 @@ from .models import (
     Order, Address, Tag, ProductTag
 )
 
+class SearchForm(forms.Form):
+    """Форма поиска товаров - обязательное требование"""
+    query = forms.CharField(
+        max_length=100,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control form-control-lg',
+            'placeholder': 'Поиск кроссовок по бренду, названию, цвету...',
+            'id': 'search-input'
+        }),
+        label='',
+        help_text='Введите название бренда, модели или характеристики'
+    )
+    
+    def clean_query(self):
+        query = self.cleaned_data['query']
+        if len(query) < 2:
+            raise ValidationError('Поисковый запрос должен содержать минимум 2 символа')
+        return query
 
-class ProductCreateForm(forms.ModelForm):
-    """Форма создания товара с демонстрацией всех возможностей Django форм"""
+class ProductFilterForm(forms.Form):
+    """Форма фильтрации товаров"""
+    brand = forms.CharField(
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Бренд'
+        })
+    )
+    
+    price_min = forms.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        required=False,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Цена от'
+        })
+    )
+    
+    price_max = forms.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        required=False,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Цена до'
+        })
+    )
+    
+    category = forms.ModelChoiceField(
+        queryset=Category.objects.all(),
+        required=False,
+        empty_label="Все категории",
+        widget=forms.Select(attrs={
+            'class': 'form-select'
+        })
+    )
+
+class ReviewForm(forms.ModelForm):
+    """Форма для отзывов"""
+    class Meta:
+        model = Reviews
+        fields = ['rating', 'comment']
+        widgets = {
+            'rating': forms.Select(attrs={
+                'class': 'form-select'
+            }),
+            'comment': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': 'Поделитесь своим мнением о товаре...'
+            })
+        }
+        labels = {
+            'rating': 'Оценка',
+            'comment': 'Комментарий'
+        }
+
+# Остальные формы остаются без изменений...
+class ProductForm(forms.ModelForm):
+    """Форма создания/редактирования товара"""
     
     class Meta:
         model = Catalog
         fields = ['brand', 'price', 'image', 'is_active']
         
-        # ✅ ДЕМОНСТРАЦИЯ exclude - исключаем поля из формы
-        exclude = ['created_at', 'tags']  # Исключаем дату создания и теги
-        
         widgets = {
             'brand': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Введите бренд кроссовок'
+                'class': 'form-control form-control-lg',
+                'placeholder': 'Введите название бренда'
             }),
             'price': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'min': '0',
-                'step': '0.01'
+                'class': 'form-control form-control-lg',
+                'step': '0.01',
+                'min': '0'
             }),
             'image': forms.FileInput(attrs={
                 'class': 'form-control',
@@ -44,82 +121,55 @@ class ProductCreateForm(forms.ModelForm):
         }
         
         help_texts = {
-            'brand': 'Укажите название бренда (например: Nike, Adidas)',
+            'brand': 'Укажите официальное название бренда',
             'price': 'Цена должна быть больше 0',
-            'image': 'Загрузите изображение в формате JPG, PNG или GIF',
-            'is_active': 'Отметьте, если товар доступен для продажи'
+            'image': 'Загрузите качественное изображение товара',
+            'is_active': 'Неактивные товары не отображаются в каталоге'
         }
         
-        # ✅ ДЕМОНСТРАЦИЯ error_messages - кастомные сообщения об ошибках
         error_messages = {
             'brand': {
-                'required': 'Поле "Бренд" обязательно для заполнения',
-                'max_length': 'Название бренда не должно превышать 100 символов',
-                'invalid': 'Введите корректное название бренда'
+                'required': 'Название бренда обязательно для заполнения',
+                'max_length': 'Название бренда не может превышать 100 символов'
             },
             'price': {
-                'required': 'Укажите цену товара',
-                'invalid': 'Введите корректную цену в числовом формате',
-                'min_value': 'Цена не может быть отрицательной',
-                'max_value': 'Цена слишком высокая'
-            },
-            'image': {
-                'invalid': 'Загрузите корректное изображение',
-                'invalid_image': 'Файл не является изображением'
-            },
-            'is_active': {
-                'invalid': 'Выберите корректное значение для активности товара'
+                'required': 'Цена товара обязательна для заполнения',
+                'invalid': 'Введите корректную цену'
             }
         }
     
-    # ✅ ДЕМОНСТРАЦИЯ class Media - подключение CSS/JS
     class Media:
         css = {
-            'all': ('css/forms.css', 'css/product-form.css'),
-            'screen': ('css/screen-forms.css',)
+            'all': ('css/forms.css',)
         }
-        js = (
-            'js/forms.js',
-            'js/product-validation.js',
-            'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js'
-        )
+        js = ('js/forms.js',)
     
-    # Дополнительная валидация
     def clean_price(self):
-        price = self.cleaned_data.get('price')
-        if price and price <= 0:
-            raise forms.ValidationError('Цена должна быть больше нуля')
-        if price and price > 1000000:
-            raise forms.ValidationError('Цена не может превышать 1,000,000 рублей')
+        price = self.cleaned_data['price']
+        if price <= 0:
+            raise ValidationError('Цена должна быть больше нуля')
+        if price > 1000000:
+            raise ValidationError('Цена не может превышать 1,000,000 рублей')
         return price
     
     def clean_brand(self):
-        brand = self.cleaned_data.get('brand')
-        if brand and len(brand.strip()) < 2:
-            raise forms.ValidationError('Название бренда должно содержать минимум 2 символа')
-        
-        # Проверка на запрещенные слова
-        forbidden_words = ['test', 'тест', 'fake', 'подделка']
-        if brand and any(word.lower() in brand.lower() for word in forbidden_words):
-            raise forms.ValidationError('Название бренда содержит недопустимые слова')
-        
-        return brand.strip() if brand else brand
+        brand = self.cleaned_data['brand']
+        if len(brand) < 2:
+            raise ValidationError('Название бренда должно содержать минимум 2 символа')
+        return brand.title()
     
     def clean(self):
-        """Общая валидация формы"""
         cleaned_data = super().clean()
         brand = cleaned_data.get('brand')
         price = cleaned_data.get('price')
         
-        # Проверяем комбинацию полей
+        # Проверка премиум брендов
+        premium_brands = ['Nike', 'Adidas', 'Jordan']
         if brand and price:
-            # Для премиум брендов минимальная цена выше
-            premium_brands = ['Nike', 'Adidas', 'Jordan', 'Balenciaga', 'Gucci']
-            if any(pb.lower() in brand.lower() for pb in premium_brands):
-                if price < 5000:
-                    raise forms.ValidationError(
-                        f"Для премиум бренда {brand} минимальная цена должна быть 5000 рублей"
-                    )
+            if brand in premium_brands and price < 5000:
+                raise ValidationError(
+                    f"Для премиум бренда {brand} минимальная цена должна быть 5000 рублей"
+                )
         
         return cleaned_data
 

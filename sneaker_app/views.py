@@ -12,11 +12,14 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.cache import cache_page  # ✅ Добавляем для кеширования
 from django.core.cache import cache  # ✅ Добавляем для работы с кешем
 from django.views.decorators.vary import vary_on_headers  # ✅ Для варьирования кеша
-from .forms import ProductCreateForm
+from .forms import ProductForm, SearchForm
+from datetime import timedelta
+from django.utils import timezone
 from .models import (
     Category, Catalog, Clients, ProductCards, Address, Order,
     Purchase, Wishlist, Reviews, Positions, Support, Tag, ProductTag
 )
+from .forms import SearchForm
 
 def redirect_to_home(request):
     """Демонстрация использования reverse"""
@@ -25,61 +28,88 @@ def redirect_to_home(request):
 
 @cache_page(60 * 15)  # ✅ Кешируем главную страницу на 15 минут
 @vary_on_headers('Accept-Language')  # ✅ Варьируем кеш по языку
+
 def home(request):
-    # Популярные товары (с высоким рейтингом)
-    popular_products = Catalog.objects.filter(
-        is_active=True
-    ).annotate(
-        avg_rating=Avg('reviews__rating'),
-        review_count=Count('reviews')
-    ).filter(
-        review_count__gte=1
-    ).order_by('-avg_rating', '-review_count')[:6]
-# Проверяем кеш для статистики
-    stats = cache.get('home_stats')
-    if stats is None:
-        # Если в кеше нет, вычисляем и сохраняем
-        stats = {
-            'total_products': Catalog.objects.filter(is_active=True).count(),
-            'total_brands': Catalog.objects.values('brand').distinct().count(),
-            'total_reviews': Reviews.objects.filter(is_approved=True).count(),
-            'avg_rating': Reviews.objects.filter(is_approved=True).aggregate(
-                avg=Avg('rating')
-            )['avg'] or 0,
-        }
-        cache.set('home_stats', stats, 60 * 30)  # Кешируем на 30 минут    
-    # Новые товары
-    new_products = Catalog.objects.filter(is_active=True).order_by('-created_at')[:6]
- # Проверяем кеш для популярных товаров
-    popular_products = cache.get('popular_products')
+    """
+    Главная страница с 3 виджетами:
+    1. Популярные кроссовки (по рейтингу и отзывам)
+    2. Новые поступления (последние 30 дней)
+    3. Статистика и топ-бренды
+    """
+    
+    # ✅ ВИДЖЕТ 1: Популярные кроссовки (с агрегацией)
+    cache_key_popular = 'popular_products_widget'
+    popular_products = cache.get(cache_key_popular)
+    
     if popular_products is None:
         popular_products = Catalog.objects.filter(
             is_active=True
         ).annotate(
             avg_rating=Avg('reviews__rating'),
-            review_count=Count('reviews')
+            review_count=Count('reviews', distinct=True)
         ).filter(
-            review_count__gte=1
-        ).order_by('-avg_rating', '-review_count')[:6]
-        cache.set('popular_products', popular_products, 60 * 20)  # Кешируем на 20 минут    
-    # Статистика для главной страницы
-    stats = {
-        'total_products': Catalog.objects.filter(is_active=True).count(),
-        'total_brands': Catalog.objects.values('brand').distinct().count(),
-        'total_reviews': Reviews.objects.filter(is_approved=True).count(),
-        'avg_rating': Reviews.objects.filter(is_approved=True).aggregate(
-            avg=Avg('rating')
-        )['avg'] or 0,
-    }
-# Проверяем кеш для новых товаров
-    new_products = cache.get('new_products')
+            review_count__gte=1  # Только товары с отзывами
+        ).order_by('-avg_rating', '-review_count')[:5]  # Топ-5
+        
+        cache.set(cache_key_popular, popular_products, 60 * 15)  # 15 минут
+    
+    # ✅ ВИДЖЕТ 2: Новые поступления (последние 30 дней)
+    cache_key_new = 'new_products_widget'
+    new_products = cache.get(cache_key_new)
+    
     if new_products is None:
-        new_products = Catalog.objects.filter(is_active=True).order_by('-created_at')[:6]
-        cache.set('new_products', new_products, 60 * 10)  # Кешируем на 10 минут    
+        thirty_days_ago = timezone.now() - timedelta(days=30)
+        new_products = Catalog.objects.filter(
+            is_active=True,
+            created_at__gte=thirty_days_ago
+        ).order_by('-created_at')[:6]  # Последние 6
+        
+        cache.set(cache_key_new, new_products, 60 * 10)  # 10 минут
+    
+    # ✅ ВИДЖЕТ 3: Статистика с агрегацией и топ-бренды
+    cache_key_stats = 'home_stats_widget'
+    stats_data = cache.get(cache_key_stats)
+    
+    if stats_data is None:
+        # Общая статистика с агрегацией
+        stats = {
+            'total_products': Catalog.objects.filter(is_active=True).count(),
+            'total_brands': Catalog.objects.filter(is_active=True).values('brand').distinct().count(),
+            'total_reviews': Reviews.objects.filter(is_approved=True).count(),
+            'avg_rating': Reviews.objects.filter(is_approved=True).aggregate(
+                avg=Avg('rating')
+            )['avg'] or 0,
+            'avg_price': Catalog.objects.filter(is_active=True).aggregate(
+                avg=Avg('price')
+            )['avg'] or 0,
+            'max_price': Catalog.objects.filter(is_active=True).aggregate(
+                max=Max('price')
+            )['max'] or 0,
+        }
+        
+        # Топ-3 бренда по количеству товаров
+        top_brands = Catalog.objects.filter(is_active=True).values('brand').annotate(
+            product_count=Count('sneakers_id'),
+            avg_price=Avg('price'),
+            avg_rating=Avg('reviews__rating')
+        ).order_by('-product_count')[:3]
+        
+        stats_data = {
+            'stats': stats,
+            'top_brands': top_brands
+        }
+        
+        cache.set(cache_key_stats, stats_data, 60 * 20)  # 20 минут
+    
+    # Форма поиска
+    search_form = SearchForm()
+    
     context = {
         'popular_products': popular_products,
         'new_products': new_products,
-        'stats': stats,
+        'stats': stats_data['stats'],
+        'top_brands': stats_data['top_brands'],
+        'search_form': search_form,
     }
     
     return render(request, 'home.html', context)
@@ -829,7 +859,6 @@ def user_profile(request):
     except Clients.DoesNotExist:
         user_wishlist = []
         user_reviews = []
-    
     context = {
         'user_orders': user_orders[:10],  # Последние 10 заказов
         'user_wishlist': user_wishlist,
@@ -859,12 +888,11 @@ def wishlist_view(request):
 
 @cache_page(60 * 60)  # ✅ Кешируем статистику на 1 час
 def statistics_view(request):
-    """
-    Страница со статистикой - демонстрация агрегации
-    """
-    # ✅ Различные функции агрегирования
+    """Полная статистика - переход из виджета"""
+    # Общая статистика
     catalog_stats = Catalog.objects.aggregate(
         total_products=Count('sneakers_id'),
+        active_products=Count('sneakers_id', filter=Q(is_active=True)),
         avg_price=Avg('price'),
         max_price=Max('price'),
         min_price=Min('price'),
@@ -872,10 +900,11 @@ def statistics_view(request):
     )
     
     # Статистика по брендам
-    brand_stats = Catalog.objects.values('brand').annotate(
+    brand_stats = Catalog.objects.filter(is_active=True).values('brand').annotate(
         count=Count('sneakers_id'),
-        avg_price=Avg('price')
-    ).order_by('-count')
+        avg_price=Avg('price'),
+        avg_rating=Avg('reviews__rating')
+    ).order_by('-count')[:10]
     
     # Статистика по категориям
     category_stats = Category.objects.annotate(
@@ -886,32 +915,20 @@ def statistics_view(request):
     # Статистика отзывов
     review_stats = Reviews.objects.aggregate(
         total_reviews=Count('review_id'),
+        approved_reviews=Count('review_id', filter=Q(is_approved=True)),
         avg_rating=Avg('rating'),
-        approved_reviews=Count('review_id', filter=Q(is_approved=True))
+        five_star_count=Count('review_id', filter=Q(rating=5)),
+        one_star_count=Count('review_id', filter=Q(rating=1))
     )
-    
-    # Статистика клиентов
-    client_stats = Clients.objects.aggregate(
-        total_clients=Count('client_id'),
-        active_clients=Count('client_id', filter=Q(is_active=True))
-    )
-    
-    # Топ товары по отзывам
-    top_products = Catalog.objects.filter(is_active=True).annotate(
-        avg_rating=Avg('reviews__rating'),
-        review_count=Count('reviews')
-    ).filter(review_count__gte=1).order_by('-avg_rating', '-review_count')[:5]
     
     context = {
         'catalog_stats': catalog_stats,
-        'brand_stats': brand_stats[:10],  # Топ 10 брендов
+        'brand_stats': brand_stats,
         'category_stats': category_stats,
         'review_stats': review_stats,
-        'client_stats': client_stats,
-        'top_products': top_products,
     }
     
-    return render(request, 'statistics/statistics.html', context)
+    return render(request, 'sneaker_app/statistics.html', context)
 
 
 def brand_products(request, brand_name):
@@ -1187,4 +1204,45 @@ def product_create_django_form(request):
     return render(request, 'products/product_create_django_form.html', {
         'form': form,
         'title': 'Создание товара (Django Forms)'
+    })
+
+def popular_products(request):
+    """Популярные товары - для навигации из base.html"""
+    products = Catalog.objects.filter(is_active=True).annotate(
+        avg_rating=Avg('reviews__rating'),
+        review_count=Count('reviews')
+    ).filter(review_count__gte=1).order_by('-avg_rating', '-review_count')
+    
+    paginator = Paginator(products, 12)
+    page = request.GET.get('page')
+    
+    try:
+        products_page = paginator.page(page)
+    except PageNotAnInteger:
+        products_page = paginator.page(1)
+    except EmptyPage:
+        products_page = paginator.page(paginator.num_pages)
+    
+    return render(request, 'products/product_list.html', {
+        'products': products_page,
+        'page_title': 'Популярные товары'
+    })
+
+def new_products(request):
+    """Новые товары - для навигации из base.html"""
+    products = Catalog.objects.filter(is_active=True).order_by('-created_at')
+    
+    paginator = Paginator(products, 12)
+    page = request.GET.get('page')
+    
+    try:
+        products_page = paginator.page(page)
+    except PageNotAnInteger:
+        products_page = paginator.page(1)
+    except EmptyPage:
+        products_page = paginator.page(paginator.num_pages)
+    
+    return render(request, 'products/product_list.html', {
+        'products': products_page,
+        'page_title': 'Новые поступления'
     })

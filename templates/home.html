@@ -1,381 +1,518 @@
-<!DOCTYPE html>
+{% extends 'base.html' %}
 {% load i18n %}
-{% load sneaker_tags %}
-<html lang="{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE }}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% trans "Sneaker Shop - Главная" %}</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+{% load static %}
 
-        body {
-            font-family: 'Arial', sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f8f9fa;
-        }
+{% block title %}{% trans "Sneaker Shop - Главная" %}{% endblock %}
 
-        .hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 4rem 0;
-            text-align: center;
-        }
+{% block content %}
+<div class="container-fluid">
+    <!-- ✅ Hero Section -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="hero-section gradient-bg text-white text-center py-5 rounded-4">
+                <div class="container">
+                    <h1 class="display-4 fw-bold mb-3">
+                        <i class="fas fa-running me-3"></i>
+                        {% trans "Sneaker Shop" %}
+                    </h1>
+                    <p class="lead mb-4">{% trans "Лучшие кроссовки для активной жизни" %}</p>
+                    
+                    <!-- ✅ Поисковая форма на главной -->
+                    <div class="row justify-content-center">
+                        <div class="col-md-6">
+                            <form method="get" action="{% url 'search_products' %}" class="search-container">
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text bg-white border-0">
+                                        <i class="fas fa-search text-muted"></i>
+                                    </span>
+                                    <input type="text" name="query" class="form-control border-0" 
+                                           placeholder="{% trans 'Найти кроссовки мечты...' %}"
+                                           value="{{ request.GET.query }}">
+                                    <button class="btn btn-light" type="submit">
+                                        <i class="fas fa-search me-2"></i>{% trans "Найти" %}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        .hero h1 {
-            font-size: 3rem;
+    <!-- ✅ ВИДЖЕТ 1: Популярные товары -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="widget-card">
+                <div class="widget-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0">
+                            <i class="fas fa-fire me-2"></i>
+                            {% trans "Популярные товары" %}
+                        </h3>
+                        <a href="{% url 'popular_products' %}" class="btn btn-light btn-sm">
+                            {% trans "Смотреть все" %} <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                    <p class="mb-0 mt-2 opacity-75">{% trans "Товары с лучшими отзывами покупателей" %}</p>
+                </div>
+                
+                <div class="card-body p-4">
+                    {% if popular_products %}
+                        <div class="row g-4">
+                            {% for product in popular_products %}
+                                <div class="col-lg-2 col-md-4 col-sm-6">
+                                    <div class="card product-card h-100">
+                                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                                             style="height: 200px;">
+                                            {% if product.image %}
+                                                <img src="{{ product.image.url }}" alt="{{ product.brand }}" 
+                                                     class="img-fluid" style="max-height: 180px;">
+                                            {% else %}
+                                                <i class="fas fa-running fa-4x text-muted"></i>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="card-body d-flex flex-column">
+                                            <h6 class="card-title text-primary fw-bold">{{ product.brand }}</h6>
+                                            <p class="card-text text-success fw-bold fs-5">
+                                                {{ product.price|floatformat:0 }} ₽
+                                            </p>
+                                            
+                                            {% if product.avg_rating %}
+                                                <div class="rating-stars mb-2">
+                                                    {% for i in "12345" %}
+                                                        {% if forloop.counter <= product.avg_rating %}
+                                                            <i class="fas fa-star"></i>
+                                                        {% else %}
+                                                            <i class="far fa-star"></i>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    <small class="text-muted ms-1">
+                                                        {{ product.avg_rating|floatformat:1 }} 
+                                                        ({{ product.review_count }} {% trans "отзывов" %})
+                                                    </small>
+                                                </div>
+                                            {% endif %}
+                                            
+                                            <div class="mt-auto">
+                                                <a href="{% url 'product_detail' product.pk %}" 
+                                                   class="btn btn-gradient btn-sm w-100">
+                                                    <i class="fas fa-eye me-1"></i>{% trans "Подробнее" %}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">{% trans "Популярные товары не найдены" %}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ ВИДЖЕТ 2: Новые поступления -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="widget-card">
+                <div class="widget-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0">
+                            <i class="fas fa-sparkles me-2"></i>
+                            {% trans "Новые поступления" %}
+                        </h3>
+                        <a href="{% url 'new_products' %}" class="btn btn-light btn-sm">
+                            {% trans "Смотреть все" %} <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                    <p class="mb-0 mt-2 opacity-75">{% trans "Последние новинки за 30 дней" %}</p>
+                </div>
+                
+                <div class="card-body p-4">
+                    {% if new_products %}
+                        <div class="row g-4">
+                            {% for product in new_products %}
+                                <div class="col-lg-2 col-md-4 col-sm-6">
+                                    <div class="card product-card h-100 position-relative">
+                                        <!-- Бейдж "Новинка" -->
+                                        <div class="position-absolute top-0 start-0 m-2">
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-star me-1"></i>{% trans "Новинка" %}
+                                            </span>
+                                        </div>
+                                        
+                                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                                             style="height: 200px;">
+                                            {% if product.image %}
+                                                <img src="{{ product.image.url }}" alt="{{ product.brand }}" 
+                                                     class="img-fluid" style="max-height: 180px;">
+                                            {% else %}
+                                                <i class="fas fa-running fa-4x text-muted"></i>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="card-body d-flex flex-column">
+                                            <h6 class="card-title text-primary fw-bold">{{ product.brand }}</h6>
+                                            <p class="card-text text-success fw-bold fs-5">
+                                                {{ product.price|floatformat:0 }} ₽
+                                            </p>
+                                            
+                                            <small class="text-muted mb-2">
+                                                <i class="fas fa-calendar-alt me-1"></i>
+                                                {% trans "Добавлен" %}: {{ product.created_at|date:"d.m.Y" }}
+                                            </small>
+                                            
+                                            <div class="mt-auto">
+                                                {% if product.is_active %}
+                                                    <span class="badge bg-success mb-2">
+                                                        <i class="fas fa-check me-1"></i>{% trans "В наличии" %}
+                                                    </span>
+                                                {% else %}
+                                                    <span class="badge bg-danger mb-2">
+                                                        <i class="fas fa-times me-1"></i>{% trans "Нет в наличии" %}
+                                                    </span>
+                                                {% endif %}
+                                                
+                                                <a href="{% url 'product_detail' product.pk %}" 
+                                                   class="btn btn-gradient btn-sm w-100">
+                                                    <i class="fas fa-eye me-1"></i>{% trans "Подробнее" %}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">{% trans "Новые товары не найдены" %}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ ВИДЖЕТ 3: Статистика и топ-бренды -->
+    <div class="row mb-5">
+        <div class="col-lg-8 mb-4">
+            <div class="widget-card h-100">
+                <div class="widget-header">
+                    <h3 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>
+                        {% trans "Статистика магазина" %}
+                    </h3>
+                    <p class="mb-0 mt-2 opacity-75">{% trans "Актуальные данные о товарах и продажах" %}</p>
+                </div>
+                
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-3 col-sm-6">
+                            <div class="stats-card text-center">
+                                <i class="fas fa-shopping-bag fa-2x mb-2"></i>
+                                <h4 class="fw-bold">{{ stats.total_products }}</h4>
+                                <small>{% trans "Товаров в каталоге" %}</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="stats-card text-center">
+                                <i class="fas fa-tags fa-2x mb-2"></i>
+                                <h4 class="fw-bold">{{ stats.total_brands }}</h4>
+                                <small>{% trans "Брендов" %}</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="stats-card text-center">
+                                <i class="fas fa-comments fa-2x mb-2"></i>
+                                <h4 class="fw-bold">{{ stats.total_reviews }}</h4>
+                                <small>{% trans "Отзыв" %}</small>                                
+                                <small>{% trans "Отзывов" %}</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <div class="stats-card text-center">
+                                <i class="fas fa-star fa-2x mb-2"></i>
+                                <h4 class="fw-bold">{{ stats.avg_rating|floatformat:1 }}</h4>
+                                <small>{% trans "Средний рейтинг" %}</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Дополнительная статистика -->
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="bg-light rounded p-3">
+                                <h6 class="text-primary">
+                                    <i class="fas fa-ruble-sign me-1"></i>{% trans "Ценовая статистика" %}
+                                </h6>
+                                <p class="mb-1">
+                                    <strong>{% trans "Средняя цена" %}:</strong> 
+                                    {{ stats.avg_price|floatformat:0 }} ₽
+                                </p>
+                                <p class="mb-0">
+                                    <strong>{% trans "Максимальная цена" %}:</strong> 
+                                    {{ stats.max_price|floatformat:0 }} ₽
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="text-center">
+                                <a href="{% url 'statistics' %}" class="btn btn-gradient btn-lg">
+                                    <i class="fas fa-chart-line me-2"></i>
+                                    {% trans "Подробная статистика" %}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="widget-card h-100">
+                <div class="widget-header">
+                    <h3 class="mb-0">
+                        <i class="fas fa-crown me-2"></i>
+                        {% trans "Топ-бренды" %}
+                    </h3>
+                    <p class="mb-0 mt-2 opacity-75">{% trans "Самые популярные бренды" %}</p>
+                </div>
+                
+                <div class="card-body p-4">
+                    {% if top_brands %}
+                        <div class="d-flex flex-column gap-3">
+                            {% for brand in top_brands %}
+                                <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded">
+                                    <div>
+                                        <a href="{% url 'brand_products' brand.brand %}" 
+                                           class="brand-badge text-decoration-none">
+                                            <i class="fas fa-tag me-1"></i>{{ brand.brand }}
+                                        </a>
+                                        <div class="mt-1">
+                                            <small class="text-muted">
+                                                <i class="fas fa-box me-1"></i>
+                                                {{ brand.product_count }} {% trans "товаров" %}
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="fw-bold text-success">
+                                            {{ brand.avg_price|floatformat:0 }} ₽
+                                        </div>
+                                        {% if brand.avg_rating %}
+                                            <div class="rating-stars">
+                                                {% for i in "12345" %}
+                                                    {% if forloop.counter <= brand.avg_rating %}
+                                                        <i class="fas fa-star"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                <small class="text-muted ms-1">
+                                                    {{ brand.avg_rating|floatformat:1 }}
+                                                </small>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="text-center mt-3">
+                            <a href="{% url 'product_list' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-eye me-1"></i>{% trans "Все бренды" %}
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-tags fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">{% trans "Бренды не найдены" %}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ Дополнительная секция с быстрыми ссылками -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card border-0 bg-light">
+                <div class="card-body text-center py-5">
+                    <h4 class="mb-4">{% trans "Быстрый доступ" %}</h4>
+                    <div class="row g-3">
+                        <div class="col-md-3 col-sm-6">
+                            <a href="{% url 'category_list' %}" class="btn btn-outline-primary btn-lg w-100">
+                                <i class="fas fa-list fa-2x d-block mb-2"></i>
+                                {% trans "Категории" %}
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="{% url 'product_list' %}" class="btn btn-outline-success btn-lg w-100">
+                                <i class="fas fa-shopping-bag fa-2x d-block mb-2"></i>
+                                {% trans "Весь каталог" %}
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="{% url 'popular_products' %}" class="btn btn-outline-warning btn-lg w-100">
+                                <i class="fas fa-fire fa-2x d-block mb-2"></i>
+                                {% trans "Хиты продаж" %}
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6">
+                            <a href="{% url 'new_products' %}" class="btn btn-outline-info btn-lg w-100">
+                                <i class="fas fa-sparkles fa-2x d-block mb-2"></i>
+                                {% trans "Новинки" %}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ Дополнительные скрипты для главной страницы -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Анимация счетчиков статистики
+    const counters = document.querySelectorAll('.stats-card h4');
+    counters.forEach(counter => {
+        const target = parseInt(counter.textContent);
+        let current = 0;
+        const increment = target / 50;
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                counter.textContent = target;
+                clearInterval(timer);
+            } else {
+                counter.textContent = Math.floor(current);
+            }
+        }, 30);
+    });
+
+    // Плавная прокрутка к виджетам
+    const quickLinks = document.querySelectorAll('a[href^="#"]');
+    quickLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // Подсветка активных элементов при скролле
+    window.addEventListener('scroll', function() {
+        const widgets = document.querySelectorAll('.widget-card');
+        widgets.forEach(widget => {
+            const rect = widget.getBoundingClientRect();
+            if (rect.top < window.innerHeight && rect.bottom > 0) {
+                widget.style.transform = 'translateY(0)';
+                widget.style.opacity = '1';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 50%, var(--accent-color) 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+        opacity: 0.3;
+    }
+    
+    .hero-section > * {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .widget-card {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s ease;
+    }
+    
+    .widget-card.fade-in-up {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .stats-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        transition: all 0.3s ease;
+    }
+    
+    .stats-card:hover {
+        transform: scale(1.05) rotate(1deg);
+        box-shadow: 0 15px 30px rgba(102, 126, 234, 0.3);
+    }
+    
+    .brand-badge {
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .brand-badge::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+    }
+    
+    .brand-badge:hover::before {
+        left: 100%;
+    }
+    
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 2rem 0 !important;
+        }
+        
+        .stats-card {
+            padding: 1rem;
             margin-bottom: 1rem;
         }
-
-        .hero p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .btn {
-            background: white;
-            color: #667eea;
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: transform 0.3s;
-            display: inline-block;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .demo-section {
-            background: white;
-            padding: 2rem;
-            margin: 2rem 0;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .demo-section h2 {
-            color: #667eea;
-            margin-bottom: 1rem;
-        }
-
-        .demo-section p {
-            margin-bottom: 0.5rem;
-            padding: 0.5rem;
-            background: #f8f9fa;
-            border-radius: 5px;
-        }
-
-        .stats {
-            background: white;
-            padding: 2rem 0;
-            margin: 2rem 0;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            text-align: center;
-        }
-
-        .stat-item {
+        
+        .widget-header {
             padding: 1rem;
         }
-
-        .stat-number {
+        
+        .display-4 {
             font-size: 2rem;
-            font-weight: bold;
-            color: #667eea;
         }
+    }
+</style>
+{% endblock %}
 
-        .products-section {
-            margin: 3rem 0;
-        }
-
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .product-card {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-
-        .product-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .product-image {
-            height: 200px;
-            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            color: #999;
-        }
-
-        .product-info {
-            padding: 1.5rem;
-        }
-
-        .product-brand {
-            font-weight: bold;
-            color: #667eea;
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .product-price {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-        }
-
-        .nav-links {
-            margin-top: 1rem;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            margin: 0 1rem;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-
-        .nav-links a:hover {
-            background: rgba(255,255,255,0.2);
-        }
-
-        .top-brands {
-            background: #f8f9fa;
-            padding: 1.5rem;
-            border-radius: 10px;
-            margin: 1rem 0;
-        }
-
-        .brand-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .brand-item {
-            background: white;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        /* ✅ Стили для переключателя языков */
-        .language-switcher {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: white;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            z-index: 1000;
-        }
-        
-        .language-switcher select {
-            border: 1px solid #ddd;
-            padding: 5px 10px;
-            border-radius: 4px;
-            background: white;
-        }
-        
-        .language-switcher label {
-            font-size: 0.9rem;
-            color: #666;
-            margin-right: 10px;
-        }
-    </style>
-</head>
-<body>
-    
-    <!-- ✅ Переключатель языков -->
-    <div class="language-switcher">
-        <form action="{% url 'set_language' %}" method="post">
-            {% csrf_token %}
-            <label for="language">🌐 {% trans "Язык" %}:</label>
-            <select name="language" id="language" onchange="this.form.submit()">
-                {% get_current_language as LANGUAGE_CODE %}
-                {% get_available_languages as LANGUAGES %}
-                {% for lang_code, lang_name in LANGUAGES %}
-                    <option value="{{ lang_code }}" {% if lang_code == LANGUAGE_CODE %}selected{% endif %}>
-                        {{ lang_name }}
-                    </option>
-                {% endfor %}
-            </select>
-        </form>
-    </div>
-
-    <section class="hero">
-        <div class="container">
-            <h1>👟 {% trans "Sneaker Shop" %}</h1>
-            <p>{% trans "Лучшие кроссовки для активной жизни" %}</p>
-            <div class="nav-links">
-                <a href="{% url 'product_list' %}">📦 {% trans "Каталог" %}</a>
-                {% if user.is_authenticated %}
-                    <a href="{% url 'profile' %}">👤 {% trans "Профиль" %}</a>
-                    <a href="{% url 'wishlist' %}">❤️ {% trans "Избранное" %}</a>
-                    {% if user.is_superuser %}
-                        <a href="{% url 'cache_stats' %}" style="background: #dc3545;">🗂️ {% trans "Кеш" %}</a>
-                    {% endif %}
-                    <a href="{% url 'logout' %}">🚪 {% trans "Выйти" %}</a>
-                {% else %}
-                    <a href="{% url 'login' %}">🔑 {% trans "Войти" %}</a>
-                    <a href="{% url 'register' %}">📝 {% trans "Регистрация" %}</a>
-                {% endif %}
-            </div>
-            <div style="margin-top: 2rem;">
-                <a href="{% url 'product_list' %}" class="btn">🛍️ {% trans "Начать покупки" %}</a>
-            </div>
-        </div>
-    </section>
-
-    <div class="container">
-        <!-- Демонстрация шаблонных тегов -->
-        <section class="demo-section">
-            <h2>🏷️ {% trans "Демонстрация шаблонных тегов" %}</h2>
-            <p><strong>{% trans "Простой тег" %}:</strong> {% trans "Всего товаров в каталоге" %}: {% total_products %}</p>
-            <p><strong>{% trans "Тег с параметрами" %}:</strong> {% trans "Товаров до 50000 руб" %}: {% price_range 0 50000 %}</p>
-            
-            <!-- Inclusion tag -->
-            {% show_top_brands 3 %}
-        </section>
-
-        {% if stats %}
-        <section class="stats">
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <span class="stat-number">{{ stats.total_products }}</span>
-                    <div class="stat-label">{% trans "Товаров в каталоге" %}</div>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number">{{ stats.total_brands }}</span>
-                    <div class="stat-label">{% trans "Брендов" %}</div>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number">{{ stats.total_reviews }}</span>
-                    <div class="stat-label">{% trans "Отзывов" %}</div>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number">{{ stats.avg_rating|floatformat:1 }}</span>
-                    <div class="stat-label">{% trans "Средний рейтинг" %}</div>
-                </div>
-            </div>
-        </section>
-        {% endif %}
-
-        {% if popular_products %}
-        <section class="products-section">
-            <h2>🔥 {% trans "Популярные товары" %}</h2>
-            <div class="products-grid">
-                {% for product in popular_products %}
-                <div class="product-card">
-                    <div class="product-image">
-                        {% if product.image %}
-                            <img src="{{ product.image.url }}" alt="{{ product.brand }}" style="width: 100%; height: 100%; object-fit: cover;">
-                        {% else %}
-                            👟
-                        {% endif %}
-                    </div>
-                    <div class="product-info">
-                        <div class="product-brand">{{ product.brand }}</div>
-                        <div class="product-price">{{ product.price|floatformat:0 }} ₽</div>
-                        {% if product.avg_rating %}
-                            <div class="product-rating">
-                                <span class="stars">
-                                    {% for i in "12345" %}
-                                        {% if forloop.counter <= product.avg_rating %}⭐{% else %}☆{% endif %}
-                                    {% endfor %}
-                                </span>
-                                <span class="rating-text">
-                                    {{ product.avg_rating|floatformat:1 }} ({{ product.review_count }} {% trans "отзывов" %})
-                                </span>
-                            </div>
-                        {% endif %}
-                        <div style="margin-top: 1rem; color: #666; font-size: 0.9rem;">
-                            {% trans "Добавлен" %}: {{ product.created_at|date:"d.m.Y" }}
-                        </div>
-                        <a href="{% url 'product_detail' product.sneakers_id %}" class="btn" style="color: white; background: #667eea; margin-top: 1rem;">{% trans "Подробнее" %}</a>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </section>
-        {% endif %}
-
-        {% if new_products %}
-        <section class="products-section">
-            <h2>🆕 {% trans "Новые поступления" %}</h2>
-            <div class="products-grid">
-                {% for product in new_products %}
-                <div class="product-card">
-                    <div class="product-image">
-                        {% if product.image %}
-                            <img src="{{ product.image.url }}" alt="{{ product.brand }}" style="width: 100%; height: 100%; object-fit: cover;">
-                        {% else %}
-                            👟
-                        {% endif %}
-                    </div>
-                    <div class="product-info">
-                        <div class="product-brand">{{ product.brand }}</div>
-                        <div class="product-price">{{ product.price|floatformat:0 }} ₽</div>
-                        <div style="margin-top: 1rem; color: #666; font-size: 0.9rem;">
-                            {% trans "Добавлен" %}: {{ product.created_at|date:"d.m.Y" }}
-                        </div>
-                        {% if product.is_active %}
-                            <div style="margin-top: 0.5rem; color: #28a745; font-size: 0.9rem;">
-                                ✅ {% trans "В наличии" %}
-                            </div>
-                        {% else %}
-                            <div style="margin-top: 0.5rem; color: #dc3545; font-size: 0.9rem;">
-                                ❌ {% trans "Нет в наличии" %}
-                            </div>
-                        {% endif %}
-                        <a href="{% url 'product_detail' product.sneakers_id %}" class="btn" style="color: white; background: #667eea; margin-top: 1rem;">{% trans "Подробнее" %}</a>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </section>
-        {% endif %}
-    </div>
-
-    <footer style="background: #333; color: white; text-align: center; padding: 2rem 0; margin-top: 3rem;">
-        <div class="container">
-            <p>&copy; 2024 Sneaker Shop. {% trans "Все права защищены" %}.</p>
-            <p>{% trans "Лучшие кроссовки для вашего стиля жизни" %}</p>
-        </div>
-    </footer>
-</body>
-</html>

@@ -1,0 +1,9 @@
+/* Специфичные стили для формы товара */
+.product-form .form-group {
+    position: relative;
+}
+
+.product-form .form-control:focus {
+    transform: scale(1.02);
+    transition: transform 0.2s ease;
+}

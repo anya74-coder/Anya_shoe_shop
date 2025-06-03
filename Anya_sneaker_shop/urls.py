@@ -110,10 +110,18 @@ urlpatterns = [
     path('admin-tools/cache-stats/', cache_stats, name='cache_stats'),
     path('admin-tools/clear-cache/', clear_cache, name='clear_cache'),  
 
+    # Джанго-форма создания кроссовок
     path('product/create-django-form/', product_create_django_form, name='product_create_django_form'),
 
+    # Лаба 4
+    path('popular/', popular_products, name='popular_products'),
+    path('new/', new_products, name='new_products'),
 ]
 
 # Добавляем обслуживание медиа файлов в режиме разработки
 if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+else:
+    # ✅ Для продакшн режима
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

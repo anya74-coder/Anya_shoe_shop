@@ -507,7 +507,12 @@ def reviews_list(request):
 
 # ==================== CRUD операции ====================
 
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
+
 @login_required
+@require_http_methods(["GET", "POST"])
 def product_create(request):
     """
     Создание нового товара (только для персонала)
@@ -517,27 +522,62 @@ def product_create(request):
         return HttpResponseRedirect(reverse('product_list'))
     
     if request.method == 'POST':
-        brand = request.POST.get('brand')
-        price = request.POST.get('price')
-        image = request.FILES.get('image')
-        is_active = request.POST.get('is_active') == 'on'
-        
-        if brand and price:
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
             try:
-                product = Catalog.objects.create(
-                    brand=brand,
-                    price=float(price),
-                    image=image,
-                    is_active=is_active
-                )
-                messages.success(request, f'Товар "{brand}" успешно создан!')
+                product = form.save()
+                messages.success(request, f'Товар "{product.brand}" успешно создан!')
                 return HttpResponseRedirect(reverse('product_detail', args=[product.sneakers_id]))
-            except ValueError:
-                messages.error(request, 'Неверный формат цены.')
+            except Exception as e:
+                messages.error(request, f'Ошибка при создании товара: {str(e)}')
         else:
-            messages.error(request, 'Заполните все обязательные поля.')
+            messages.error(request, 'Пожалуйста, исправьте ошибки в форме.')
+    else:
+        form = ProductForm()
     
-    return render(request, 'products/product_create.html')
+    context = {
+        'form': form,
+        'title': 'Создание нового товара'
+    }
+    return render(request, 'products/product_create.html', context)
+
+@login_required
+@require_http_methods(["POST"])
+def product_quick_create(request):
+    """
+    Быстрое создание товара с минимальными данными
+    """
+    if not request.user.is_staff:
+        messages.error(request, 'У вас нет прав для создания товаров.')
+        return HttpResponseRedirect(reverse('product_list'))
+    
+    brand = request.POST.get('brand', '').strip()
+    price = request.POST.get('price', '').strip()
+    
+    if not brand or not price:
+        messages.error(request, 'Заполните все обязательные поля (бренд и цена).')
+        return HttpResponseRedirect(reverse('product_list'))
+    
+    try:
+        price_float = float(price)
+        if price_float <= 0:
+            raise ValueError("Цена должна быть больше нуля")
+            
+        product = Catalog.objects.create(
+            brand=brand,
+            price=price_float,
+            is_active=True
+        )
+        
+        messages.success(request, f'Товар "{brand}" быстро создан! Вы можете отредактировать его детали.')
+        return HttpResponseRedirect(reverse('product_detail', args=[product.sneakers_id]))
+        
+    except ValueError as e:
+        messages.error(request, f'Ошибка в данных: {str(e)}')
+    except Exception as e:
+        messages.error(request, f'Ошибка при создании товара: {str(e)}')
+    
+    return HttpResponseRedirect(reverse('product_list'))
 
 def product_create_with_form(request):
     """Создание товара с использованием Django формы"""
@@ -723,7 +763,6 @@ def review_delete(request, pk):
 
 
 @login_required
-@require_POST
 def toggle_wishlist(request, product_pk):
     """
     Добавление/удаление товара из избранного
@@ -743,9 +782,13 @@ def toggle_wishlist(request, product_pk):
                 phone_number='',  # Можно будет заполнить позже
             )
         
-        # Получаем размер и количество из POST-данных
-        size = request.POST.get('size', 'Универсальный')
-        quantity = int(request.POST.get('quantity', 1))
+        # Получаем размер и количество (для GET-запросов используем значения по умолчанию)
+        if request.method == 'POST':
+            size = request.POST.get('size', 'Универсальный')
+            quantity = int(request.POST.get('quantity', 1))
+        else:
+            size = 'Универсальный'
+            quantity = 1
         
         # Проверяем, есть ли товар в избранном
         wishlist_item, created = Wishlist.objects.get_or_create(
@@ -764,7 +807,8 @@ def toggle_wishlist(request, product_pk):
     except Exception as e:
         messages.error(request, f'Произошла ошибка: {str(e)}')
     
-    return HttpResponseRedirect(reverse('wishlist'))
+    # Возвращаемся на предыдущую страницу
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', reverse('product_list')))
 
 # ✅ Добавляем альтернативную функцию для GET-запросов
 @login_required
@@ -886,19 +930,45 @@ def user_profile(request):
 @login_required
 def wishlist_view(request):
     """
-    Просмотр списка желаний пользователя
+    Просмотр списка избранного
     """
     try:
+        # Получаем клиента
         client = Clients.objects.get(email=request.user.email)
-        wishlist_items = client.client_wishlist.select_related('sneakers').all()
+        
+        # Получаем товары из избранного
+        wishlist_items = Wishlist.objects.filter(client=client).select_related('sneakers')
+        
+        # Вычисляем общую стоимость
+        total_value = sum(item.sneakers.price * item.quantity for item in wishlist_items)
+        
+        # Получаем уникальные категории товаров в избранном
+        categories = set()
+        for item in wishlist_items:
+            try:
+                # Получаем категорию через product_card
+                if hasattr(item.sneakers, 'product_card') and item.sneakers.product_card:
+                    categories.add(item.sneakers.product_card.category.get_name_display())
+            except:
+                pass
+        
+        context = {
+            'wishlist_items': wishlist_items,
+            'total_value': total_value,
+            'categories': list(categories),
+            'categories_count': len(categories),
+        }
+        
     except Clients.DoesNotExist:
-        wishlist_items = []
-    
-    context = {
-        'wishlist_items': wishlist_items,
-    }
+        context = {
+            'wishlist_items': [],
+            'total_value': 0,
+            'categories': [],
+            'categories_count': 0,
+        }
     
     return render(request, 'wishlist/wishlist.html', context)
+
 
 @staff_member_required
 @cache_page(60 * 60)  # ✅ Кешируем статистику на 1 час
@@ -1061,18 +1131,6 @@ def api_product_detail_json(request, pk):
 
 # ==================== Дополнительные представления ====================
 
-def category_list(request):
-    """
-    Список категорий
-    """
-    categories = Category.objects.annotate(
-        product_count=Count('product_cards__sneakers', filter=Q(product_cards__sneakers__is_active=True))
-    ).order_by('name')
-    
-    context = {'categories': categories}
-    return render(request, 'categories/category_list.html', context)
-
-
 def about_view(request):
     """
     Страница "О нас"
@@ -1160,66 +1218,117 @@ def demo_orm_queries(request):
 
 # ✅ Добавляем в конец файла новые функции для управления кешем
 
-@login_required
-def clear_cache(request):
-    """
-    Очистка всего кеша (только для суперпользователей)
-    """
-    if request.user.is_superuser:
-        cache.clear()
-        messages.success(request, 'Кеш успешно очищен! Все данные удалены из кеша.')
-        # ✅ Добавляем параметр, чтобы показать, что кеш был очищен
-        return HttpResponseRedirect(reverse('cache_stats') + '?cleared=1')
-    else:
-        messages.error(request, 'У вас нет прав для очистки кеша.')
-    
-    return HttpResponseRedirect(reverse('home'))
-
-@login_required
+@staff_member_required
 def cache_stats(request):
     """
-    Просмотр статистики кеша (только для суперпользователей)
+    Страница статистики кэша для администраторов
     """
-    if not request.user.is_superuser:
-        messages.error(request, 'У вас нет прав для просмотра статистики кеша.')
-        return HttpResponseRedirect(reverse('home'))
+    # Список ключей кэша, которые мы отслеживаем
+    cache_keys = [
+        'total_products_count',
+        'price_range_0_50000',
+        'price_range_1000_5000',
+        'top_brands_5',
+        'top_brands_3',
+        'avg_product_rating',
+    ]
     
-    # ✅ Проверяем, был ли кеш только что очищен
-    was_cleared = request.GET.get('cleared') == '1'
+    # Проверяем статус каждого ключа
+    cache_info = {}
+    for key in cache_keys:
+        cache_info[key] = cache.get(key) is not None
     
-    # Проверяем какие ключи есть в кеше
-    cache_info = {
-        'home_stats': cache.get('home_stats') is not None,
-        'popular_products': cache.get('popular_products') is not None,
-        'new_products': cache.get('new_products') is not None,
-        'detailed_statistics': cache.get('detailed_statistics') is not None,
-        'total_products_count': cache.get('total_products_count') is not None,
-        'top_brands_5': cache.get('top_brands_5') is not None,
-    }
-    
-    # ✅ Добавляем информацию о времени последней очистки
+    # Дополнительная информация
     context = {
         'cache_info': cache_info,
-        'was_cleared': was_cleared,
+        'was_cleared': request.GET.get('cleared') == 'true',
     }
     
     return render(request, 'admin/cache_stats.html', context)
 
+
+@staff_member_required
+@require_http_methods(["POST", "GET"])
+def clear_cache(request):
+    """
+    Очистка всего кэша
+    """
+    try:
+        cache.clear()
+        messages.success(request, '✅ Кэш успешно очищен!')
+    except Exception as e:
+        messages.error(request, f'❌ Ошибка при очистке кэша: {str(e)}')
+    
+    return HttpResponseRedirect(reverse('cache_stats') + '?cleared=true')
+
+
+@staff_member_required
+def cache_test(request):
+    """
+    Тестовая страница для проверки кэша
+    """
+    import time
+    
+    # Тестируем скорость загрузки с кэшем и без
+    start_time = time.time()
+    
+    # Данные, которые кэшируются
+    total_products = Catalog.objects.filter(is_active=True).count()
+    avg_rating = Reviews.objects.filter(is_approved=True).aggregate(
+        avg=Avg('rating')
+    )['avg'] or 0
+    
+    end_time = time.time()
+    load_time = round((end_time - start_time) * 1000, 2)  # в миллисекундах
+    
+    # Проверяем статус кэша
+    cache_status = {
+        'total_products_cached': cache.get('total_products_count') is not None,
+        'avg_rating_cached': cache.get('avg_product_rating') is not None,
+    }
+    
+    context = {
+        'total_products': total_products,
+        'avg_rating': round(avg_rating, 1),
+        'load_time': load_time,
+        'cache_status': cache_status,
+    }
+    
+    return render(request, 'admin/cache_test.html', context)
+
+# Добавляем эту функцию в views.py
+
+@login_required
+@require_http_methods(["GET", "POST"])
 def product_create_django_form(request):
-    """Создание товара с Django формами (демонстрация)"""
+    """
+    Создание товара с использованием Django формы
+    """
+    if not request.user.is_staff:
+        messages.error(request, 'У вас нет прав для создания товаров.')
+        return HttpResponseRedirect(reverse('product_list'))
+    
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
-            product = form.save()
-            messages.success(request, f'Товар "{product.brand}" создан через Django форму!')
-            return HttpResponseRedirect(reverse('product_detail', args=[product.sneakers_id]))
+            try:
+                product = form.save()
+                messages.success(request, f'Товар "{product.brand}" успешно создан через Django форму!')
+                return HttpResponseRedirect(reverse('product_detail', args=[product.sneakers_id]))
+            except Exception as e:
+                messages.error(request, f'Ошибка при создании товара: {str(e)}')
+        else:
+            messages.error(request, 'Пожалуйста, исправьте ошибки в форме.')
     else:
         form = ProductForm()
     
-    return render(request, 'products/product_create_django_form.html', {
+    context = {
         'form': form,
-        'title': 'Создание товара (Django Forms)'
-    })
+        'title': 'Создание товара (Django форма)',
+        'form_type': 'django'
+    }
+    return render(request, 'products/product_create_django_form.html', context)
+
 
 def popular_products(request):
     """Популярные товары - для навигации из base.html"""
@@ -1264,7 +1373,11 @@ def new_products(request):
 
 def category_list(request):
     """Список категорий"""
-    categories = Category.objects.all()
+    categories = Category.objects.annotate(
+        product_count=Count('product_cards__sneakers', filter=Q(product_cards__sneakers__is_active=True)),
+        avg_price=Avg('product_cards__sneakers__price', filter=Q(product_cards__sneakers__is_active=True))
+    ).order_by('name')
+    
     return render(request, 'sneaker_app/category_list.html', {
         'categories': categories
     })

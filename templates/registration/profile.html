@@ -1,304 +1,563 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Профиль - Sneaker Shop</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+{% load sneaker_tags %}
 
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f8f9fa;
-            line-height: 1.6;
-        }
+{% block title %}{% trans "Профиль - Sneaker Shop" %}{% endblock %}
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 20px;
-        }
+{% block extra_css %}
+<style>
+    /* === МИНИМАЛИСТИЧНЫЙ ДИЗАЙН === */
+    :root {
+        --primary-color: #000000;
+        --secondary-color: #666666;
+        --accent-color: #f5f5f5;
+        --border-color: #e0e0e0;
+        --text-primary: #000000;
+        --text-secondary: #666666;
+        --bg-white: #ffffff;
+        --bg-light: #fafafa;
+        --success-color: #28a745;
+        --warning-color: #ffc107;
+        --info-color: #17a2b8;
+    }
 
-        .profile-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: var(--text-primary);
+        background-color: var(--bg-white);
+        line-height: 1.6;
+    }
 
-        .profile-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-        }
+    /* === ЗАГОЛОВКИ === */
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 1rem 0;
+        letter-spacing: -0.02em;
+    }
 
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin: 0 0 1.5rem 0;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    /* === КОНТЕЙНЕРЫ === */
+    .main-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .section-container {
+        background: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    /* === НАВИГАЦИЯ === */
+    .top-nav {
+        background: var(--text-primary);
+        border: 1px solid var(--text-primary);
+        border-radius: 4px;
+        padding: 1rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .nav-links {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0;
+    }
+
+    .nav-link {
+        color: var(--bg-white);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px 4px 0 0;
+        transition: all 0.2s ease;
+        flex: 1;
+        text-align: center;
+        border-right: 1px solid rgba(255,255,255,0.2);
+        border-bottom: 3px solid transparent;
+    }
+
+    .nav-link:last-child {
+        border-right: none;
+    }
+
+    .nav-link:hover {
+        color: var(--bg-white);
+        background-color: rgba(255,255,255,0.1);
+        transform: translateY(-1px);
+    }
+
+    .nav-link.active {
+        color: var(--bg-white);
+        background-color: transparent;
+        font-weight: 600;
+        border-bottom: 3px solid var(--bg-white);
+    }
+
+    /* === ПРОФИЛЬ === */
+    .profile-header {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+        background: var(--accent-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: var(--text-secondary);
+        border: 2px solid var(--border-color);
+    }
+
+    .profile-info h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--text-primary);
+    }
+
+    .profile-info p {
+        color: var(--text-secondary);
+        margin-bottom: 0.25rem;
+    }
+
+    /* === СТАТИСТИКА === */
+    .profile-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 1.5rem;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        background: var(--bg-light);
+        transition: all 0.2s ease;
+    }
+
+    .stat-item:hover {
+        border-color: var(--text-primary);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    /* === ЗАКАЗЫ === */
+    .orders-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .order-item {
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 1.5rem;
+        background: var(--bg-white);
+        transition: all 0.2s ease;
+    }
+
+    .order-item:hover {
+        border-color: var(--text-primary);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .order-number {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .order-status {
+        padding: 0.25rem 0.75rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+    }
+
+    .status-processing {
+        background: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+    }
+
+    .status-shipped {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .status-delivered {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .status-cancelled {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .order-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+
+    .order-detail-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .order-detail-label {
+        font-weight: 500;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+    }
+
+    /* === КНОПКИ === */
+    .btn {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-decoration: none;
+        text-align: center;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+
+    .btn-primary {
+        background: var(--text-primary);
+        color: var(--bg-white);
+        border-color: var(--text-primary);
+    }
+
+    .btn-primary:hover {
+        background: var(--secondary-color);
+        border-color: var(--secondary-color);
+        color: var(--bg-white);
+    }
+
+    .btn-outline {
+        background: transparent;
+        color: var(--text-primary);
+        border-color: var(--border-color);
+    }
+
+    .btn-outline:hover {
+        background: var(--text-primary);
+        color: var(--bg-white);
+        border-color: var(--text-primary);
+    }
+
+    /* === ПУСТОЕ СОСТОЯНИЕ === */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--text-secondary);
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        display: block;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .empty-title {
+        font-size: 1.5rem;
+        font-weight: 500;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+    }
+
+    .empty-description {
+        margin-bottom: 2rem;
+    }
+
+    /* === АДАПТИВНОСТЬ === */
+    @media (max-width: 768px) {
+        .main-container {
+            padding: 1rem;
+        }
+        
+        .section-container {
+            padding: 1.5rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
         .nav-links {
-            margin-bottom: 2rem;
+            flex-direction: column;
+            gap: 0;
+        }
+        
+        .nav-link {
+            border-right: none;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            flex: none;
+            width: 100%;
+            border-radius: 4px;
+        }
+        
+        .nav-link.active {
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            border-left: 3px solid var(--bg-white);
+            background-color: rgba(255,255,255,0.1);
+        }
+        
+        .nav-link:last-child {
+            border-bottom: none;
+        }
+        
+        .profile-header {
+            flex-direction: column;
             text-align: center;
         }
-
-        .nav-links a {
-            display: inline-block;
-            margin: 0 1rem;
-            padding: 0.5rem 1rem;
-            background: #667eea;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background 0.3s;
+        
+        .order-header {
+            flex-direction: column;
+            align-items: flex-start;
         }
+    }
+</style>
+{% endblock %}
 
-        .nav-links a:hover {
-            background: #5a6fd8;
-        }
+{% block content %}
+<div class="main-container">
+    <!-- === ЗАГОЛОВОК === -->
+    <header class="text-center">
+        <h1 class="page-title">{% trans "Профиль пользователя" %}</h1>
+        <p class="text-secondary">{% trans "Управление аккаунтом и заказами" %}</p>
+    </header>
 
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
+    <!-- === НАВИГАЦИЯ === -->
+    <nav class="top-nav">
+        <div class="nav-links">
+            <a href="{% url 'home' %}" class="nav-link">{% trans "Главная" %}</a>
+            <a href="{% url 'product_list' %}" class="nav-link">{% trans "Каталог" %}</a>
+            <a href="{% url 'category_list' %}" class="nav-link">{% trans "Категории" %}</a>
+            <a href="{% url 'wishlist' %}" class="nav-link">{% trans "Избранное" %}</a>
+            <a href="{% url 'profile' %}" class="nav-link active">{% trans "Профиль" %}</a>
+            <a href="{% url 'logout' %}" class="nav-link">{% trans "Выход" %}</a>
+        </div>
+    </nav>
 
-        .info-item {
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 5px;
-        }
+    <!-- === ИНФОРМАЦИЯ О ПОЛЬЗОВАТЕЛЕ === -->
+    <section class="section-container">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                👤
+            </div>
+            <div class="profile-info">
+                <h2>{{ user.get_full_name|default:user.username }}</h2>
+                <p><strong>{% trans "Email:" %}</strong> {{ user.email }}</p>
+                <p><strong>{% trans "Имя пользователя:" %}</strong> {{ user.username }}</p>
+                <p><strong>{% trans "Дата регистрации:" %}</strong> {{ user.date_joined|date:"d.m.Y" }}</p>
+                <p><strong>{% trans "Последний вход:" %}</strong> {{ user.last_login|date:"d.m.Y H:i"|default:"Никогда" }}</p>
+            </div>
+        </div>
 
-        .info-item strong {
-            color: #333;
-        }
+        <!-- === СТАТИСТИКА === -->
+        <div class="profile-stats">
+            <div class="stat-item">
+                <span class="stat-number">{{ user_orders|length }}</span>
+                <div class="stat-label">{% trans "Заказов" %}</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">{% total_products %}</span>
+                <div class="stat-label">{% trans "Товаров в каталоге" %}</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">{{ user.is_active|yesno:"Активен,Неактивен" }}</span>
+                                <div class="stat-label">{% trans "Статус аккаунта" %}</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">{{ user.is_staff|yesno:"Да,Нет" }}</span>
+                <div class="stat-label">{% trans "Администратор" %}</div>
+            </div>
+        </div>
+    </section>
 
-        .section {
-            margin-top: 2rem;
-        }
-
-        .section h3 {
-            color: #333;
-            margin-bottom: 1rem;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 0.5rem;
-        }
-
-        .item {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            background: #fff;
-        }
-
-        .item-header {
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 0.5rem;
-        }
-
-        .item-details {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 0.25rem 0.5rem;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            margin-left: 0.5rem;
-        }
-
-        .status-pending {
-            background-color: #fff3cd;
-            color: #856404;
-        }
-
-        .status-processing {
-            background-color: #cce5ff;
-            color: #004085;
-        }
-
-        .status-shipped {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .status-delivered {
-            background-color: #d1ecf1;
-            color: #0c5460;
-        }
-
-        .status-cancelled {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-
-        .no-data {
-            text-align: center;
-            color: #666;
-            font-style: italic;
-            padding: 2rem;
-        }
-
-        .messages {
-            margin-bottom: 1rem;
-        }
-
-        .alert {
-            padding: 0.75rem;
-            border-radius: 5px;
-            margin-bottom: 0.5rem;
-        }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        @media (max-width: 768px) {
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .nav-links a {
-                display: block;
-                margin: 0.5rem 0;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <!-- Сообщения -->
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}">
-                        {{ message }}
+    <!-- === ПОСЛЕДНИЕ ЗАКАЗЫ === -->
+    <section class="section-container">
+        <h2 class="section-title">{% trans "Последние заказы" %}</h2>
+        
+        {% if user_orders %}
+            <div class="orders-list">
+                {% for order in user_orders %}
+                    <div class="order-item">
+                        <div class="order-header">
+                            <div class="order-number">
+                                {% trans "Заказ" %} #{{ order.order_id }}
+                            </div>
+                            <div class="order-status status-{{ order.status }}">
+                                {{ order.get_status_display }}
+                            </div>
+                        </div>
+                        
+                        <div class="order-details">
+                            <div class="order-detail-item">
+                                <div class="order-detail-label">{% trans "Дата заказа" %}</div>
+                                <div>{{ order.order_date|date:"d.m.Y H:i" }}</div>
+                            </div>
+                            <div class="order-detail-item">
+                                <div class="order-detail-label">{% trans "Сумма" %}</div>
+                                <div>{{ order.total_amount|floatformat:0 }} ₽</div>
+                            </div>
+                            <div class="order-detail-item">
+                                <div class="order-detail-label">{% trans "Трек-номер" %}</div>
+                                <div>{{ order.tracking_number|default:"—" }}</div>
+                            </div>
+                            <div class="order-detail-item">
+                                <div class="order-detail-label">{% trans "Адрес доставки" %}</div>
+                                <div>{{ order.shipping_address|truncatechars:30 }}</div>
+                            </div>
+                        </div>
                     </div>
                 {% endfor %}
+            </div>
+            
+            {% if user_orders|length >= 10 %}
+                <div style="text-align: center; margin-top: 2rem;">
+                    <a href="#" class="btn btn-outline">
+                        {% trans "Показать все заказы" %}
+                    </a>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="empty-state">
+                <span class="empty-icon">📦</span>
+                <h3 class="empty-title">{% trans "У вас пока нет заказов" %}</h3>
+                <p class="empty-description">
+                    {% trans "Оформите первый заказ в нашем каталоге" %}
+                </p>
+                <a href="{% url 'product_list' %}" class="btn btn-primary">
+                    {% trans "Перейти к покупкам" %}
+                </a>
             </div>
         {% endif %}
+    </section>
 
-        <div class="profile-header">
-            <h1>👤 Профиль пользователя</h1>
-            <p>Добро пожаловать, {{ user.username }}!</p>
-        </div>
-
-        <div class="nav-links">
-            <a href="{% url 'home' %}">🏠 Главная</a>
-            <a href="{% url 'logout' %}">🚪 Выйти</a>
-        </div>
-
-        <div class="profile-content">
-            <h2>Информация о пользователе</h2>
-            <div class="info-grid">
-                <div class="info-item">
-                    <strong>Имя пользователя:</strong><br>
-                    {{ user.username }}
-                </div>
-                <div class="info-item">
-                    <strong>Email:</strong><br>
-                    {{ user.email|default:"Не указан" }}
-                </div>
-                <div class="info-item">
-                    <strong>Дата регистрации:</strong><br>
-                    {{ user.date_joined|date:"d.m.Y H:i" }}
-                </div>
-                <div class="info-item">
-                    <strong>Последний вход:</strong><br>
-                    {{ user.last_login|date:"d.m.Y H:i"|default:"Никогда" }}
-                </div>
-            </div>
-        </div>
-
-        <div class="profile-content">
-            <div class="section">
-                <h3>📦 Ваши заказы</h3>
-                {% if user_orders %}
-                    {% for order in user_orders %}
-                        <div class="item">
-                            <div class="item-header">
-                                Заказ №{{ order.order_id }} от {{ order.order_date|date:"d.m.Y H:i" }}
-                                <span class="status-badge status-{{ order.status }}">
-                                    {{ order.get_status_display }}
-                                </span>
-                            </div>
-                            <div class="item-details">
-                                <strong>Сумма:</strong> {{ order.total_amount }} ₽<br>
-                                <strong>Адрес доставки:</strong> {{ order.shipping_address }}<br>
-                                {% if order.tracking_number %}
-                                    <strong>Трек-номер:</strong> {{ order.tracking_number }}<br>
-                                {% endif %}
-                                <strong>Контакт:</strong> {{ order.contact_info }}
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="no-data">
-                        У вас пока нет заказов.
-                    </div>
-                {% endif %}
-            </div>
-
-            {% if user_purchases %}
-            <div class="section">
-                <h3>🛍️ Ваши покупки</h3>
-                {% for purchase in user_purchases %}
-                    <div class="item">
-                        <div class="item-header">
-                            {{ purchase.sneakers.brand }} - {{ purchase.purchase_date|date:"d.m.Y H:i" }}
-                        </div>
-                        <div class="item-details">
-                            <strong>Количество:</strong> {{ purchase.quantity }} шт.<br>
-                            <strong>Стоимость:</strong> {{ purchase.total_cost }} ₽<br>
-                            <strong>Цена за единицу:</strong> {{ purchase.sneakers.price }} ₽
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-            {% endif %}
-
-            {% if user_reviews %}
-            <div class="section">
-                <h3>⭐ Ваши отзывы</h3>
-                {% for review in user_reviews %}
-                    <div class="item">
-                        <div class="item-header">
-                            {{ review.sneakers.brand }} - 
-                            {% for i in "12345" %}
-                                {% if forloop.counter <= review.rating %}⭐{% else %}☆{% endif %}
-                            {% endfor %}
-                            <span style="font-weight: normal; color: #666;">
-                                ({{ review.created_date|date:"d.m.Y" }})
-                            </span>
-                        </div>
-                        <div class="item-details">
-                            {{ review.comment|truncatewords:30 }}
-                            {% if review.comment|wordcount > 30 %}
-                                <br><a href="{% url 'product_detail' review.sneakers.sneakers_id %}" style="color: #667eea;">Читать полностью...</a>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
+    <!-- === БЫСТРЫЕ ДЕЙСТВИЯ === -->
+    <section class="section-container">
+        <h2 class="section-title">{% trans "Быстрые действия" %}</h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <a href="{% url 'wishlist' %}" class="btn btn-outline" style="padding: 1.5rem; text-align: center;">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">💝</div>
+                <div>{% trans "Избранное" %}</div>
+            </a>
+            
+            <a href="{% url 'product_list' %}" class="btn btn-outline" style="padding: 1.5rem; text-align: center;">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🛍️</div>
+                <div>{% trans "Каталог товаров" %}</div>
+            </a>
+            
+            <a href="{% url 'category_list' %}" class="btn btn-outline" style="padding: 1.5rem; text-align: center;">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📂</div>
+                <div>{% trans "Категории" %}</div>
+            </a>
+            
+            {% if user.is_staff %}
+                <a href="/admin/" class="btn btn-primary" style="padding: 1.5rem; text-align: center;">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚙️</div>
+                    <div>{% trans "Админ-панель" %}</div>
+                </a>
             {% endif %}
         </div>
-    </div>
-</body>
-</html>
+    </section>
+
+    <!-- === НАСТРОЙКИ АККАУНТА === -->
+    <section class="section-container">
+        <h2 class="section-title">{% trans "Настройки аккаунта" %}</h2>
+        
+        <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
+            <a href="#" class="btn btn-outline">
+                {% trans "Изменить пароль" %}
+            </a>
+            <a href="#" class="btn btn-outline">
+                {% trans "Редактировать профиль" %}
+            </a>
+            <a href="#" class="btn btn-outline">
+                {% trans "Настройки уведомлений" %}
+            </a>
+            <a href="{% url 'logout' %}" class="btn btn-outline" style="color: #dc3545; border-color: #dc3545;">
+                {% trans "Выйти из аккаунта" %}
+            </a>
+        </div>
+    </section>
+
+    <!-- === ПОДВАЛ === -->
+    <footer style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border-color); text-align: center;">
+        <p class="text-secondary">
+            &copy; 2024 Sneaker Shop. {% trans "Все права защищены" %}.
+        </p>
+    </footer>
+</div>
+{% endblock %}
+

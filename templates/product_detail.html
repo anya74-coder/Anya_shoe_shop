@@ -7,215 +7,549 @@
 
 {% block extra_css %}
 <style>
+    /* === МИНИМАЛИСТИЧНЫЙ ДИЗАЙН === */
+    :root {
+        --primary-color: #000000;
+        --secondary-color: #666666;
+        --accent-color: #f5f5f5;
+        --border-color: #e0e0e0;
+        --text-primary: #000000;
+        --text-secondary: #666666;
+        --bg-white: #ffffff;
+        --bg-light: #fafafa;
+        --success-color: #28a745;
+        --danger-color: #dc3545;
+        --warning-color: #ffc107;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: var(--text-primary);
+        background-color: var(--bg-white);
+        line-height: 1.6;
+    }
+
+    .main-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    /* === НАВИГАЦИЯ === */
+    .breadcrumb {
+        background: transparent;
+        padding: 0;
+        margin-bottom: 2rem;
+        font-size: 0.875rem;
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: "›";
+        color: var(--text-secondary);
+        margin: 0 0.5rem;
+    }
+
+    .breadcrumb-item a {
+        color: var(--text-secondary);
+        text-decoration: none;
+    }
+
+    .breadcrumb-item a:hover {
+        color: var(--text-primary);
+    }
+
+    .breadcrumb-item.active {
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+
+    /* === ИЗОБРАЖЕНИЕ ТОВАРА === */
     .product-image-container {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        border-radius: 15px;
+        background: var(--bg-light);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
         padding: 2rem;
         height: 500px;
         display: flex;
         align-items: center;
         justify-content: center;
+        margin-bottom: 2rem;
     }
-    
+
     .product-image {
         max-width: 100%;
         max-height: 100%;
         object-fit: contain;
-        border-radius: 10px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        border-radius: 4px;
     }
-    
-    .product-price {
+
+    .product-placeholder {
+        font-size: 5rem;
+        color: var(--text-secondary);
+        opacity: 0.5;
+    }
+
+    /* === ИНФОРМАЦИЯ О ТОВАРЕ === */
+    .product-info {
+        background: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 2rem;
+    }
+
+    .product-title {
         font-size: 2.5rem;
-        font-weight: bold;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        letter-spacing: -0.02em;
     }
-    
+
+    .product-price {
+        font-size: 2rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1.5rem;
+    }
+
+    .product-status {
+        margin-bottom: 1.5rem;
+    }
+
+    .badge {
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border: 1px solid;
+    }
+
+    .badge.success {
+        background: var(--success-color);
+        color: white;
+        border-color: var(--success-color);
+    }
+
+    .badge.danger {
+        background: var(--danger-color);
+        color: white;
+        border-color: var(--danger-color);
+    }
+
+    /* === РЕЙТИНГ === */
+    .rating-section {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .rating-stars {
+        color: var(--warning-color);
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .rating-text {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+
+    /* === ТЕГИ === */
+    .tags-section {
+        margin-bottom: 2rem;
+    }
+
+    .section-subtitle {
+        font-size: 1.125rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
     .product-tag {
         display: inline-block;
-        padding: 0.4rem 0.8rem;
-        border-radius: 20px;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
         color: white;
-        font-size: 0.85rem;
+        font-size: 0.875rem;
         font-weight: 500;
-        margin: 0.2rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        margin: 0.25rem;
+        border: 1px solid;
+        background-color: #007bff;
+        border-color: #007bff;
     }
-    
-    .rating-stars {
-        color: #ffc107;
-        font-size: 1.2rem;
+
+    .product-tag small {
+        opacity: 0.8;
+        margin-left: 0.25rem;
     }
-    
-    .review-card {
-        border: none;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        margin-bottom: 1rem;
-        transition: transform 0.2s;
+
+    /* === КНОПКИ === */
+    .action-buttons {
+        margin-bottom: 2rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
     }
-    
-    .review-card:hover {
-        transform: translateY(-2px);
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-decoration: none;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
     }
-    
-    .review-form {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        border-radius: 15px;
+
+    .btn-primary {
+        background: var(--text-primary);
+        color: var(--bg-white);
+        border-color: var(--text-primary);
+    }
+
+    .btn-primary:hover {
+        background: var(--secondary-color);
+        border-color: var(--secondary-color);
+        color: var(--bg-white);
+    }
+
+    .btn-outline-danger {
+        background: transparent;
+        color: var(--danger-color);
+        border-color: var(--danger-color);
+    }
+
+    .btn-outline-danger:hover {
+        background: var(--danger-color);
+        color: var(--bg-white);
+    }
+
+    .btn-outline-warning {
+        background: transparent;
+        color: var(--warning-color);
+        border-color: var(--warning-color);
+    }
+
+    .btn-outline-warning:hover {
+        background: var(--warning-color);
+        color: var(--text-primary);
+    }
+
+    /* === ФОРМА ЗАКАЗА === */
+    .order-form {
+        background: var(--success-color);
+        color: white;
+        border-radius: 4px;
         padding: 2rem;
         margin-bottom: 2rem;
     }
-    
-    .star-rating {
-        display: flex;
-        gap: 0.2rem;
-        margin-bottom: 1rem;
-    }
-    
-    .star-rating input[type="radio"] {
-        display: none;
-    }
-    
-    .star-rating label {
-        font-size: 1.5rem;
-        color: #ddd;
-        cursor: pointer;
-        transition: color 0.2s;
-    }
-    
-    .star-rating label:hover,
-    .star-rating input[type="radio"]:checked ~ label {
-        color: #ffc107;
-    }
-    
-    .action-buttons .btn {
-        margin: 0.25rem;
-        border-radius: 25px;
-        padding: 0.75rem 1.5rem;
-        font-weight: 500;
-        transition: all 0.3s;
-    }
-    
-    .btn-gradient {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-    }
-    
-    .btn-gradient:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-        color: white;
-    }
-    
-    .product-meta {
-        background: white;
-        border-radius: 15px;
-        padding: 1.5rem;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+
+    .order-form h5 {
         margin-bottom: 1.5rem;
+        font-size: 1.25rem;
+        font-weight: 500;
     }
-    
+
+    .form-select, .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid rgba(255,255,255,0.3);
+        border-radius: 4px;
+        background: rgba(255,255,255,0.1);
+        color: white;
+        font-size: 1rem;
+    }
+
+    .form-select option {
+        background: var(--text-primary);
+        color: white;
+    }
+
+    .btn-light {
+        background: white;
+        color: var(--success-color);
+        border-color: white;
+    }
+
+    .btn-light:hover {
+        background: var(--bg-light);
+        color: var(--success-color);
+    }
+
+    /* === ИНФОРМАЦИОННЫЕ БЛОКИ === */
+    .info-section {
+        background: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
     .meta-item {
         display: flex;
         justify-content: space-between;
+        align-items: center;
         padding: 0.75rem 0;
-        border-bottom: 1px solid #f1f3f4;
+        border-bottom: 1px solid var(--border-color);
     }
-    
+
     .meta-item:last-child {
         border-bottom: none;
     }
-    
-    .order-form {
-        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-        color: white;
-        border-radius: 15px;
+
+    .meta-label {
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    .meta-value {
+        color: var(--text-secondary);
+    }
+
+    .store-links a {
+        color: var(--text-primary);
+        text-decoration: none;
+        margin-right: 1rem;
+    }
+
+    .store-links a:hover {
+        text-decoration: underline;
+    }
+
+    .login-prompt {
+        margin: 0;
+        text-align: center;
+    }
+
+    .login-prompt a {
+        color: var(--text-primary);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .login-prompt a:hover {
+        text-decoration: underline;
+    }
+
+    /* === ОТЗЫВЫ === */
+    .reviews-section {
+        margin-top: 3rem;
+    }
+
+    .review-form {
+        background: var(--bg-light);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
         padding: 2rem;
-        margin-top: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .star-rating {
+        display: flex;
+        gap: 0.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .star-rating input[type="radio"] {
+        display: none;
+    }
+
+    .star-rating label {
+        font-size: 1.5rem;
+        color: var(--border-color);
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    .star-rating label:hover,
+    .star-rating input[type="radio"]:checked ~ label {
+        color: var(--warning-color);
+    }
+
+    .review-form textarea {
+        background: white;
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+    }
+
+    .review-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.2s ease;
+    }
+
+    .review-card:hover {
+        border-color: var(--text-primary);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+    }
+
+    .review-author {
+        font-weight: 500;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .review-date {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+    .review-content {
+        color: var(--text-primary);
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .review-actions {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .review-actions .btn {
+        font-size: 0.75rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .no-reviews {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-secondary);
+    }
+
+    .no-reviews-icon {
+        font-size: 3rem;
+        display: block;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    /* === АДАПТИВНОСТЬ === */
+    @media (max-width: 768px) {
+        .main-container {
+            padding: 1rem;
+        }
+        
+        .product-title {
+            font-size: 2rem;
+        }
+        
+        .product-price {
+            font-size: 1.5rem;
+        }
+        
+        .product-image-container {
+            height: 300px;
+            padding: 1rem;
+        }
+        
+        .product-info {
+            padding: 1.5rem;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" class="mb-4">
+<div class="main-container">
+    <!-- === НАВИГАЦИЯ === -->
+    <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans "Главная" %}</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'products' %}">{% trans "Товары" %}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product_list' %}">{% trans "Товары" %}</a></li>
             <li class="breadcrumb-item active">{{ product.brand }}</li>
         </ol>
     </nav>
 
     <div class="row">
-        <!-- Изображение товара -->
-        <div class="col-lg-6 mb-4">
+        <!-- === ИЗОБРАЖЕНИЕ ТОВАРА === -->
+        <div class="col-lg-6">
             <div class="product-image-container">
                 {% if product.image %}
                     <img src="{{ product.image.url }}" alt="{{ product.brand }}" class="product-image">
                 {% else %}
-                    <i class="fas fa-running fa-5x text-muted"></i>
+                    <span class="product-placeholder">👟</span>
                 {% endif %}
             </div>
         </div>
 
-        <!-- Информация о товаре -->
+        <!-- === ИНФОРМАЦИЯ О ТОВАРЕ === -->
         <div class="col-lg-6">
             <div class="product-info">
-                <h1 class="display-5 fw-bold mb-3">{{ product.brand }}</h1>
+                <h1 class="product-title">{{ product.brand }}</h1>
                 
                 <!-- Цена -->
-                <div class="product-price mb-3">{{ product.price|floatformat:0 }} ₽</div>
+                <div class="product-price">{{ product.price|floatformat:0 }} ₽</div>
                 
                 <!-- Статус -->
-                <div class="mb-3">
+                <div class="product-status">
                     {% if product.is_active %}
-                        <span class="badge bg-success fs-6">
-                            <i class="fas fa-check me-1"></i>{% trans "В наличии" %}
+                        <span class="badge success">
+                            ✓ {% trans "В наличии" %}
                         </span>
                     {% else %}
-                        <span class="badge bg-danger fs-6">
-                            <i class="fas fa-times me-1"></i>{% trans "Нет в наличии" %}
+                        <span class="badge danger">
+                            ✗ {% trans "Нет в наличии" %}
                         </span>
                     {% endif %}
                 </div>
 
                 <!-- Рейтинг -->
                 {% if review_stats.avg_rating %}
-                <div class="mb-3">
+                <div class="rating-section">
                     <div class="rating-stars">
                         {% for i in "12345" %}
-                            {% if forloop.counter <= review_stats.avg_rating %}
-                                <i class="fas fa-star"></i>
-                            {% else %}
-                                <i class="far fa-star"></i>
-                            {% endif %}
+                            {% if forloop.counter <= review_stats.avg_rating %}⭐{% else %}☆{% endif %}
                         {% endfor %}
-                        <span class="ms-2 text-muted">
-                            {{ review_stats.avg_rating|floatformat:1 }}/5 
-                            ({{ review_stats.total_reviews }} {% trans "отзывов" %})
-                        </span>
+                    </div>
+                    <div class="rating-text">
+                        {{ review_stats.avg_rating|floatformat:1 }}/5 
+                        ({{ review_stats.total_reviews }} {% trans "отзывов" %})
                     </div>
                 </div>
                 {% endif %}
 
                 <!-- Теги товара -->
                 {% if product.tags.exists %}
-                <div class="mb-4">
-                    <h6 class="fw-bold mb-2">
-                        <i class="fas fa-tags me-1"></i>{% trans "Теги" %}:
-                    </h6>
+                <div class="tags-section">
+                    <div class="section-subtitle">
+                        🏷️ {% trans "Теги" %}:
+                    </div>
                     <div>
                         {% for product_tag in product.producttag_set.all %}
                             {% if product_tag.tag %}
-                                <span class="product-tag" data-color="{{ product_tag.tag.color|default:'#007bff' }}">
+                                <span class="product-tag">
                                     {{ product_tag.tag.name }}
                                     {% if product_tag.priority > 0 %}
-                                        <small class="opacity-75">({{ product_tag.priority }})</small>
+                                        <small>({{ product_tag.priority }})</small>
                                     {% endif %}
                                 </span>
                             {% endif %}
@@ -223,253 +557,192 @@
                     </div>
                 </div>
                 {% endif %}
+
                 <!-- Кнопки действий -->
-                <div class="action-buttons mb-4">
+                <div class="action-buttons">
                     {% if user.is_authenticated %}
-                        <!-- Добавить в избранное -->
-                        <form method="post" action="{% url 'toggle_wishlist' product.sneakers_id %}" class="d-inline">
-                            {% csrf_token %}
-                            <input type="hidden" name="size" value="Универсальный">
-                            <button type="submit" class="btn btn-outline-danger">
-                                <i class="fas fa-heart me-1"></i>{% trans "В избранное" %}
-                            </button>
-                        </form>
-                        
-                        <!-- Админ кнопки -->
-                        {% if user.is_staff %}
-                            <a href="{% url 'product_edit' product.sneakers_id %}" class="btn btn-outline-warning">
-                                <i class="fas fa-edit me-1"></i>{% trans "Редактировать" %}
-                            </a>
-                            <a href="{% url 'product_delete' product.sneakers_id %}" class="btn btn-outline-danger">
-                                <i class="fas fa-trash me-1"></i>{% trans "Удалить" %}
-                            </a>
-                        {% endif %}
+                        <a href="{% url 'toggle_wishlist' product.pk %}" class="btn btn-outline-warning">
+                            ❤️ {% trans "В избранное" %}
+                        </a>
+                    {% endif %}
+                    
+                    {% if user.is_staff %}
+                        <a href="{% url 'product_edit' product.pk %}" class="btn btn-outline-danger">
+                            ✏️ {% trans "Редактировать" %}
+                        </a>
                     {% endif %}
                 </div>
 
                 <!-- Форма заказа -->
-                {% if user.is_authenticated and product.is_active %}
+                {% if product.is_active and user.is_authenticated %}
                 <div class="order-form">
-                    <h5 class="mb-3">
-                        <i class="fas fa-shopping-cart me-2"></i>{% trans "Заказать товар" %}
-                    </h5>
-                    <form method="post" action="{% url 'create_order' product.sneakers_id %}">
+                    <h5>📦 {% trans "Оформить заказ" %}</h5>
+                    <form method="post" action="{% url 'create_order' product.pk %}">
                         {% csrf_token %}
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">{% trans "Количество" %}:</label>
-                                <select name="quantity" class="form-select">
-                                    {% for i in "12345" %}
-                                        <option value="{{ forloop.counter }}">{{ forloop.counter }} {% trans "пар" %}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-6 d-flex align-items-end">
-                                <button type="submit" class="btn btn-light w-100">
-                                    <i class="fas fa-shopping-cart me-1"></i>{% trans "Добавить в заказ" %}
-                                </button>
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label">{% trans "Размер" %}:</label>
+                            <select name="size" class="form-select" required>
+                                <option value="">{% trans "Выберите размер" %}</option>
+                                <option value="36">36</option>
+                                <option value="37">37</option>
+                                <option value="38">38</option>
+                                <option value="39">39</option>
+                                <option value="40">40</option>
+                                <option value="41">41</option>
+                                <option value="42">42</option>
+                                <option value="43">43</option>
+                                <option value="44">44</option>
+                                <option value="45">45</option>
+                            </select>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">{% trans "Количество" %}:</label>
+                            <input type="number" name="quantity" class="form-control" value="1" min="1" max="10" required>
+                        </div>
+                        <button type="submit" class="btn btn-light">
+                            🛒 {% trans "Заказать" %}
+                        </button>
                     </form>
                 </div>
                 {% elif not user.is_authenticated %}
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i>
-                    {% trans "Для заказа необходимо" %} 
-                    <a href="{% url 'login' %}" class="alert-link">{% trans "войти в систему" %}</a>
+                <div class="info-section">
+                    <p class="login-prompt">
+                        <a href="{% url 'login' %}">
+                            {% trans "Войдите в систему" %}
+                        </a> {% trans "для оформления заказа" %}
+                    </p>
                 </div>
                 {% endif %}
             </div>
         </div>
     </div>
 
-    <!-- Дополнительная информация -->
+    <!-- === ДОПОЛНИТЕЛЬНАЯ ИНФОРМАЦИЯ === -->
     {% if product_card %}
-    <div class="row mt-5">
-        <div class="col-12">
-            <div class="product-meta">
-                <h4 class="mb-3">
-                    <i class="fas fa-info-circle me-2 text-primary"></i>{% trans "Подробная информация" %}
-                </h4>
-                <div class="meta-item">
-                    <strong>{% trans "Название" %}:</strong>
-                    <span>{{ product_card.name }}</span>
-                </div>
-                <div class="meta-item">
-                    <strong>{% trans "Категория" %}:</strong>
-                    <span>{{ product_card.category.get_name_display }}</span>
-                </div>
-                <div class="meta-item">
-                    <strong>{% trans "Размеры" %}:</strong>
-                    <span>{{ product_card.size }}</span>
-                </div>
-                <div class="meta-item">
-                    <strong>{% trans "Цвет" %}:</strong>
-                    <span>{{ product_card.color }}</span>
-                </div>
-                <div class="meta-item">
-                    <strong>{% trans "Материал" %}:</strong>
-                    <span>{{ product_card.material }}</span>
-                </div>
-                {% if product_card.description %}
-                <div class="meta-item">
-                    <strong>{% trans "Описание" %}:</strong>
-                    <span>{{ product_card.description }}</span>
-                </div>
-                {% endif %}
-                <div class="meta-item">
-                    <strong>{% trans "Дата добавления" %}:</strong>
-                    <span>{{ product.created_at|date:"d.m.Y H:i" }}</span>
-                </div>
-            </div>
-
-            <!-- Ссылки на магазины -->
-            {% if product_card.has_store_links %}
-            <div class="product-meta mt-3">
-                <h5 class="mb-3">
-                    <i class="fas fa-external-link-alt me-2 text-primary"></i>{% trans "Купить в интернет-магазинах" %}
-                </h5>
-                <div class="d-flex flex-wrap gap-2">
-                    {% for link_name, link_url in product_card.get_store_links %}
-                        <a href="{{ link_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary">
-                            <i class="fas fa-external-link-alt me-1"></i>{{ link_name }}
-                        </a>
-                    {% endfor %}
-                </div>
-                <small class="text-muted mt-2 d-block">
-                    <i class="fas fa-exclamation-triangle me-1"></i>
-                    {% trans "Ссылки ведут на внешние сайты. Мы не несем ответственности за содержимое внешних ресурсов." %}
-                </small>
-            </div>
-            {% endif %}
+    <div class="info-section">
+        <h3 class="section-subtitle">
+            📋 {% trans "Подробная информация" %}
+        </h3>
+        
+        <div class="meta-item">
+            <span class="meta-label">{% trans "Название" %}:</span>
+            <span class="meta-value">{{ product_card.name }}</span>
         </div>
+        
+        <div class="meta-item">
+            <span class="meta-label">{% trans "Категория" %}:</span>
+            <span class="meta-value">{{ product_card.category.get_name_display }}</span>
+        </div>
+        
+        <div class="meta-item">
+            <span class="meta-label">{% trans "Размеры" %}:</span>
+            <span class="meta-value">{{ product_card.size }}</span>
+        </div>
+        
+        <div class="meta-item">
+            <span class="meta-label">{% trans "Цвет" %}:</span>
+            <span class="meta-value">{{ product_card.color }}</span>
+        </div>
+        
+        <div class="meta-item">
+            <span class="meta-label">{% trans "Материал" %}:</span>
+            <span class="meta-value">{{ product_card.material }}</span>
+        </div>
+        
+        {% if product_card.description %}
+        <div class="meta-item">
+            <span class="meta-label">{% trans "Описание" %}:</span>
+            <span class="meta-value">{{ product_card.description }}</span>
+        </div>
+        {% endif %}
+        
+        <!-- Ссылки на магазины -->
+        {% if product_card.has_store_links %}
+        <div class="meta-item">
+            <span class="meta-label">{% trans "Ссылки" %}:</span>
+            <div class="store-links">
+                {% for name, url in product_card.get_store_links %}
+                    <a href="{{ url }}" target="_blank">
+                        🔗 {{ name }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
     </div>
     {% endif %}
 
-    <!-- Секция отзывов -->
-    <div class="row mt-5">
-        <div class="col-12">
-            <h3 class="mb-4">
-                <i class="fas fa-comments me-2 text-primary"></i>{% trans "Отзывы о товаре" %}
-            </h3>
+    <!-- === ОТЗЫВЫ === -->
+    <div class="reviews-section">
+        <h3 class="section-subtitle">
+            💬 {% trans "Отзывы" %} ({{ reviews.count }})
+        </h3>
 
-            <!-- Форма добавления отзыва -->
-            {% if user.is_authenticated %}
-            <div class="review-form">
-                <h5 class="mb-3">{% trans "Оставить отзыв" %}</h5>
-                <form method="post" action="{% url 'review_create' product.sneakers_id %}">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label class="form-label">{% trans "Оценка" %}:</label>
-                        <div class="star-rating">
-                            <input type="radio" name="rating" value="5" id="star5">
-                            <label for="star5">⭐</label>
-                            <input type="radio" name="rating" value="4" id="star4">
-                            <label for="star4">⭐</label>
-                            <input type="radio" name="rating" value="3" id="star3">
-                            <label for="star3">⭐</label>
-                            <input type="radio" name="rating" value="2" id="star2">
-                            <label for="star2">⭐</label>
-                            <input type="radio" name="rating" value="1" id="star1">
-                            <label for="star1">⭐</label>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="comment" class="form-label">{% trans "Комментарий" %}:</label>
-                        <textarea name="comment" id="comment" class="form-control" rows="4" 
-                                  placeholder="{% trans 'Поделитесь своим мнением о товаре...' %}" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-gradient">
-                        <i class="fas fa-paper-plane me-1"></i>{% trans "Отправить отзыв" %}
-                    </button>
-                </form>
-            </div>
-            {% else %}
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle me-2"></i>
-                {% trans "Для добавления отзыва необходимо" %} 
-                <a href="{% url 'login' %}" class="alert-link">{% trans "войти в систему" %}</a>
-            </div>
-            {% endif %}
-
-            <!-- Список отзывов -->
-            {% if reviews %}
-            <div class="reviews-list mt-4">
-                {% for review in reviews %}
-                <div class="review-card card">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <div>
-                                <h6 class="card-title mb-1">
-                                    <i class="fas fa-user-circle me-1 text-primary"></i>
-                                    {{ review.client.full_name }}
-                                </h6>
-                                <div class="rating-stars">
-                                    {% for i in "12345" %}
-                                        {% if forloop.counter <= review.rating %}
-                                            <i class="fas fa-star"></i>
-                                        {% else %}
-                                            <i class="far fa-star"></i>
-                                        {% endif %}
-                                    {% endfor %}
-                                </div>
-                            </div>
-                            <small class="text-muted">{{ review.created_date|date:"d.m.Y H:i" }}</small>
-                        </div>
-                        <p class="card-text">{{ review.comment }}</p>
-                        
-                        <!-- Кнопки редактирования для автора отзыва или админа -->
-                        {% if user.is_authenticated and user.is_staff or review.client.email == user.email %}
-                        <div class="mt-2">
-                            <a href="{% url 'review_edit' review.review_id %}" class="btn btn-sm btn-outline-warning">
-                                <i class="fas fa-edit me-1"></i>{% trans "Редактировать" %}
-                            </a>
-                            <a href="{% url 'review_delete' review.review_id %}" class="btn btn-sm btn-outline-danger">
-                                <i class="fas fa-trash me-1"></i>{% trans "Удалить" %}
-                            </a>
-                        </div>
-                        {% endif %}
+        <!-- Форма добавления отзыва -->
+        {% if user.is_authenticated %}
+        <div class="review-form">
+            <h5>✍️ {% trans "Оставить отзыв" %}</h5>
+            <form method="post" action="{% url 'review_create' product.pk %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">{% trans "Оценка" %}:</label>
+                    <div class="star-rating">
+                        <input type="radio" name="rating" value="5" id="star5">
+                        <label for="star5">⭐</label>
+                        <input type="radio" name="rating" value="4" id="star4">
+                        <label for="star4">⭐</label>
+                        <input type="radio" name="rating" value="3" id="star3">
+                        <label for="star3">⭐</label>
+                        <input type="radio" name="rating" value="2" id="star2">
+                        <label for="star2">⭐</label>
+                        <input type="radio" name="rating" value="1" id="star1">
+                        <label for="star1">⭐</label>
                     </div>
                 </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="text-center py-5">
-                <i class="fas fa-comment-slash fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">{% trans "Пока нет отзывов" %}</h5>
-                <p class="text-muted">{% trans "Будьте первым, кто оставит отзыв о этом товаре!" %}</p>
-            </div>
-            {% endif %}
+                <div class="mb-3">
+                    <label class="form-label">{% trans "Комментарий" %}:</label>
+                    <textarea name="comment" class="form-control" rows="4" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    📝 {% trans "Отправить отзыв" %}
+                </button>
+            </form>
         </div>
+        {% endif %}
+
+        <!-- Список отзывов -->
+        {% if reviews %}
+            {% for review in reviews %}
+            <div class="review-card">
+                <div class="review-header">
+                    <div>
+                        <div class="review-author">{{ review.client.full_name }}</div>
+                        <div class="review-date">{{ review.created_date|date:"d.m.Y H:i" }}</div>
+                    </div>
+                    <div class="rating-stars">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= review.rating %}⭐{% else %}☆{% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="review-content">
+                    {{ review.comment }}
+                </div>
+                {% if user.is_staff %}
+                <div class="review-actions">
+                    <a href="{% url 'review_edit' review.pk %}" class="btn btn-outline-danger">
+                        ✏️ {% trans "Редактировать" %}
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-reviews">
+                <span class="no-reviews-icon">💬</span>
+                <p>{% trans "Отзывов пока нет. Будьте первым!" %}</p>
+            </div>
+        {% endif %}
     </div>
 </div>
-
-<script>
-// Интерактивные звездочки для рейтинга
-document.addEventListener('DOMContentLoaded', function() {
-    const stars = document.querySelectorAll('.star-rating label');
-    const inputs = document.querySelectorAll('.star-rating input');
-    
-    stars.forEach((star, index) => {
-        star.addEventListener('mouseover', function() {
-            highlightStars(index);
-        });
-        
-        star.addEventListener('click', function() {
-            inputs[index].checked = true;
-        });
-    });
-    
-    function highlightStars(index) {
-        stars.forEach((star, i) => {
-            if (i >= index) {
-                star.style.color = '#ffc107';
-            } else {
-                star.style.color = '#ddd';
-            }
-        });
-    }
-});
-</script>
 {% endblock %}
-

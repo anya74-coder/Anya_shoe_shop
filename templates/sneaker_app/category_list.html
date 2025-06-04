@@ -1,53 +1,319 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load static %}
+{% load sneaker_tags %}
 
-{% block title %}{% trans "Категории" %} - Sneaker Shop{% endblock %}
+{% block title %}{% trans "Категории - Sneaker Shop" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* === МИНИМАЛИСТИЧНЫЙ ДИЗАЙН === */
+    :root {
+        --primary-color: #000000;
+        --secondary-color: #666666;
+        --accent-color: #f5f5f5;
+        --border-color: #e0e0e0;
+        --text-primary: #000000;
+        --text-secondary: #666666;
+        --bg-white: #ffffff;
+        --bg-light: #fafafa;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: var(--text-primary);
+        background-color: var(--bg-white);
+        line-height: 1.6;
+    }
+
+    /* === ЗАГОЛОВКИ === */
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 1rem 0;
+        letter-spacing: -0.02em;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin: 0 0 1.5rem 0;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    /* === КОНТЕЙНЕРЫ === */
+    .main-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .section-container {
+        background: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    /* === НАВИГАЦИЯ === */
+    .top-nav {
+        background: var(--text-primary);
+        border: 1px solid var(--text-primary);
+        border-radius: 4px;
+        padding: 1rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .nav-links {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0;
+    }
+
+    .nav-link {
+        color: var(--bg-white);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px 4px 0 0;
+        transition: all 0.2s ease;
+        flex: 1;
+        text-align: center;
+        border-right: 1px solid rgba(255,255,255,0.2);
+        border-bottom: 3px solid transparent;
+    }
+
+    .nav-link:last-child {
+        border-right: none;
+    }
+
+    .nav-link:hover {
+        color: var(--bg-white);
+        background-color: rgba(255,255,255,0.1);
+        transform: translateY(-1px);
+    }
+
+    .nav-link.active {
+        color: var(--bg-white);
+        background-color: transparent;
+        font-weight: 600;
+        border-bottom: 3px solid var(--bg-white);
+    }
+
+    /* === КАТЕГОРИИ === */
+    .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .category-card {
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        overflow: hidden;
+        background: var(--bg-white);
+        transition: all 0.2s ease;
+    }
+
+    .category-card:hover {
+        border-color: var(--text-primary);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .category-header {
+        padding: 1.5rem;
+        background: var(--bg-light);
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .category-name {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .category-description {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+
+    .category-content {
+        padding: 1.5rem;
+    }
+
+    .category-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 0.75rem;
+        background: var(--accent-color);
+        border-radius: 4px;
+    }
+
+    .stat-number {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        display: block;
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    /* === КНОПКИ === */
+    .btn {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-decoration: none;
+        text-align: center;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+        width: 100%;
+    }
+
+    .btn-primary {
+        background: var(--text-primary);
+        color: var(--bg-white);
+        border-color: var(--text-primary);
+    }
+
+    .btn-primary:hover {
+        background: var(--secondary-color);
+        border-color: var(--secondary-color);
+        color: var(--bg-white);
+    }
+
+    /* === АДАПТИВНОСТЬ === */
+    @media (max-width: 768px) {
+        .main-container {
+            padding: 1rem;
+        }
+        
+        .section-container {
+            padding: 1.5rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .nav-links {
+            flex-direction: column;
+            gap: 0;
+        }
+        
+        .nav-link {
+            border-right: none;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            flex: none;
+            width: 100%;
+            border-radius: 4px;
+        }
+        
+        .nav-link.active {
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            border-left: 3px solid var(--bg-white);
+            background-color: rgba(255,255,255,0.1);
+        }
+        
+        .nav-link:last-child {
+            border-bottom: none;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="display-6 text-center mb-5">
-                <i class="fas fa-list me-2 text-primary"></i>
-                {% trans "Категории товаров" %}
-            </h1>
-        </div>
-    </div>
+<div class="main-container">
+    <!-- === ЗАГОЛОВОК === -->
+    <header class="text-center">
+        <h1 class="page-title">{% trans "Категории товаров" %}</h1>
+        <p class="text-secondary">{% trans "Товары по категориям" %}</p>
+    </header>
 
-    <div class="row g-4">
-        {% for category in categories %}
-            <div class="col-lg-4 col-md-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body text-center">
-                        <div class="mb-3">
-                            {% if category.name == 'men' %}
-                                <i class="fas fa-male fa-4x text-primary"></i>
-                            {% elif category.name == 'women' %}
-                                <i class="fas fa-female fa-4x text-danger"></i>
-                            {% elif category.name == 'kids' %}
-                                <i class="fas fa-child fa-4x text-warning"></i>
-                            {% else %}
-                                <i class="fas fa-tags fa-4x text-info"></i>
+    <!-- === НАВИГАЦИЯ === -->
+    <nav class="top-nav">
+        <div class="nav-links">
+            <a href="{% url 'home' %}" class="nav-link">{% trans "Главная" %}</a>
+            <a href="{% url 'product_list' %}" class="nav-link">{% trans "Каталог" %}</a>
+            <a href="{% url 'category_list' %}" class="nav-link active">{% trans "Категории" %}</a>
+            <a href="{% url 'wishlist' %}" class="nav-link">{% trans "Избранное" %}</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}" class="nav-link">{% trans "Профиль" %}</a>
+                <a href="{% url 'logout' %}" class="nav-link">{% trans "Выход" %}</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="nav-link">{% trans "Вход" %}</a>
+                <a href="{% url 'register' %}" class="nav-link">{% trans "Регистрация" %}</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- === КАТЕГОРИИ === -->
+    <section class="section-container">
+        <h2 class="section-title">{% trans "Доступные категории" %}</h2>
+        
+        {% if categories %}
+            <div class="categories-grid">
+                {% for category in categories %}
+                    <div class="category-card">
+                        <div class="category-header">
+                            <div class="category-name">{{ category.get_name_display }}</div>
+                            {% if category.description %}
+                                <div class="category-description">{{ category.description }}</div>
                             {% endif %}
                         </div>
-                        <h5 class="card-title">{{ category.get_name_display }}</h5>
-                        {% if category.description %}
-                            <p class="card-text text-muted">{{ category.description }}</p>
-                        {% endif %}
-                        <a href="{% url 'category_detail' category.pk %}" class="btn btn-gradient">
-                            <i class="fas fa-eye me-1"></i>{% trans "Смотреть товары" %}
-                        </a>
+                        <div class="category-content">
+                            <div class="category-stats">
+                                <div class="stat-item">
+                                    <span class="stat-number">{{ category.product_count|default:"0" }}</span>
+                                    <div class="stat-label">{% trans "Товаров" %}</div>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">{{ category.avg_price|floatformat:0|default:"—" }}</span>
+                                    <div class="stat-label">{% trans "Ср. цена" %}</div>
+                                </div>
+                            </div>
+                            <a href="{% url 'category_detail' category.pk %}" class="btn btn-primary">
+                                {% trans "Посмотреть товары" %}
+                            </a>
+                        </div>
                     </div>
-                </div>
+                {% endfor %}
             </div>
-        {% empty %}
-            <div class="col-12">
-                <div class="text-center py-5">
-                    <i class="fas fa-folder-open fa-4x text-muted mb-3"></i>
-                    <h4 class="text-muted">{% trans "Категории не найдены" %}</h4>
-                </div>
+        {% else %}
+            <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                <span style="font-size: 4rem; display: block; margin-bottom: 1rem;">📂</span>
+                <h3 style="margin-bottom: 1rem;">{% trans "Категории не найдены" %}</h3>
+                <p>{% trans "В данный момент категории недоступны" %}</p>
             </div>
-        {% endfor %}
-    </div>
+        {% endif %}
+    </section>
+
+    <!-- === ПОДВАЛ === -->
+    <footer style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border-color); text-align: center;">
+        <p class="text-secondary">
+            &copy; 2024 Sneaker Shop. {% trans "Все права защищены" %}.
+        </p>
+    </footer>
 </div>
 {% endblock %}

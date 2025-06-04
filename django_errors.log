@@ -5879,3 +5879,712 @@ Traceback (most recent call last):
     raise TemplateDoesNotExist(template_name, chain=chain)
 django.template.exceptions.TemplateDoesNotExist: shop/category_detail.html
 "GET /category/2/ HTTP/1.1" 500 77651
+Internal Server Error: /contact/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 1087, in contact_view
+    return render(request, 'pages/contact.html')
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: pages/contact.html
+"GET /contact/ HTTP/1.1" 500 75805
+Internal Server Error: /
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 117, in home
+    return render(request, 'home.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/backends/django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loaders/cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loaders/base.py", line 28, in get_template
+    return Template(
+        contents,
+    ...<2 lines>...
+        self.engine,
+    )
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader_tags.py", line 299, in do_extends
+    nodelist = parser.parse()
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/defaulttags.py", line 962, in do_if
+    nodelist = parser.parse(("elif", "else", "endif"))
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/defaulttags.py", line 862, in do_for
+    nodelist_loop = parser.parse(
+        (
+    ...<2 lines>...
+        )
+    )
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/defaulttags.py", line 962, in do_if
+    nodelist = parser.parse(("elif", "else", "endif"))
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 523, in parse
+    self.unclosed_block_tag(parse_until)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 590, in unclosed_block_tag
+    raise self.error(token, msg)
+django.template.exceptions.TemplateSyntaxError: Unclosed tag on line 440: 'if'. Looking for one of: elif, else, endif.
+"GET / HTTP/1.1" 500 232235
+Internal Server Error: /search/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 453, in search_products
+    return render(request, 'search/search_results.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: search/search_results.html
+"GET /search/?query= HTTP/1.1" 500 77678
+Internal Server Error: /search/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 453, in search_products
+    return render(request, 'search/search_results.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: search/search_results.html
+"GET /search/?query=%D1%86%D0%BA%D0%BB%D0%BF HTTP/1.1" 500 77878
+Internal Server Error: /category/3/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 382, in category_detail
+    return render(request, 'shop/category_detail.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: shop/category_detail.html
+"GET /category/3/ HTTP/1.1" 500 77651
+Internal Server Error: /category/1/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 382, in category_detail
+    return render(request, 'shop/category_detail.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: shop/category_detail.html
+"GET /category/1/ HTTP/1.1" 500 77682
+Internal Server Error: /category/2/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 382, in category_detail
+    return render(request, 'shop/category_detail.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: shop/category_detail.html
+"GET /category/2/ HTTP/1.1" 500 77682
+Internal Server Error: /category/1/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 382, in category_detail
+    return render(request, 'shop/category_detail.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: shop/category_detail.html
+"GET /category/1/ HTTP/1.1" 500 77682
+Internal Server Error: /search/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 453, in search_products
+    return render(request, 'search/search_results.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: search/search_results.html
+"GET /search/?query=sdfljqf HTTP/1.1" 500 77741
+Internal Server Error: /search/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 453, in search_products
+    return render(request, 'search/search_results.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: search/search_results.html
+"GET /search/ HTTP/1.1" 500 77339
+Internal Server Error: /contact/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 1079, in contact_view
+    return render(request, 'pages/contact.html')
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: pages/contact.html
+"GET /contact/ HTTP/1.1" 500 75805
+Internal Server Error: /statistics/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 976, in statistics_view
+    return render(request, 'sneaker_app/statistics.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/backends/django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loaders/cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loaders/base.py", line 28, in get_template
+    return Template(
+        contents,
+    ...<2 lines>...
+        self.engine,
+    )
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader_tags.py", line 299, in do_extends
+    nodelist = parser.parse()
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/defaulttags.py", line 962, in do_if
+    nodelist = parser.parse(("elif", "else", "endif"))
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 489, in parse
+    raise self.error(token, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 487, in parse
+    filter_expression = self.compile_filter(token.contents)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 609, in compile_filter
+    return FilterExpression(token, self)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 705, in __init__
+    filter_func = parser.find_filter(filter_name)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 615, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'div'
+"GET /statistics/ HTTP/1.1" 500 262399
+Internal Server Error: /statistics/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 976, in statistics_view
+    return render(request, 'sneaker_app/statistics.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/backends/django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loaders/cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loaders/base.py", line 28, in get_template
+    return Template(
+        contents,
+    ...<2 lines>...
+        self.engine,
+    )
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader_tags.py", line 299, in do_extends
+    nodelist = parser.parse()
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/defaulttags.py", line 962, in do_if
+    nodelist = parser.parse(("elif", "else", "endif"))
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 489, in parse
+    raise self.error(token, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 487, in parse
+    filter_expression = self.compile_filter(token.contents)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 609, in compile_filter
+    return FilterExpression(token, self)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 705, in __init__
+    filter_func = parser.find_filter(filter_name)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 615, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'div'
+"GET /statistics/ HTTP/1.1" 500 262399
+Internal Server Error: /statistics/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 976, in statistics_view
+    return render(request, 'sneaker_app/statistics.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/backends/django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loaders/cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loaders/base.py", line 28, in get_template
+    return Template(
+        contents,
+    ...<2 lines>...
+        self.engine,
+    )
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader_tags.py", line 299, in do_extends
+    nodelist = parser.parse()
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/defaulttags.py", line 962, in do_if
+    nodelist = parser.parse(("elif", "else", "endif"))
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 489, in parse
+    raise self.error(token, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 487, in parse
+    filter_expression = self.compile_filter(token.contents)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 609, in compile_filter
+    return FilterExpression(token, self)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 705, in __init__
+    filter_func = parser.find_filter(filter_name)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 615, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'div'
+"GET /statistics/ HTTP/1.1" 500 262399
+Internal Server Error: /statistics/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 976, in statistics_view
+    return render(request, 'sneaker_app/statistics.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/backends/django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loaders/cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loaders/base.py", line 28, in get_template
+    return Template(
+        contents,
+    ...<2 lines>...
+        self.engine,
+    )
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader_tags.py", line 299, in do_extends
+    nodelist = parser.parse()
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/defaulttags.py", line 962, in do_if
+    nodelist = parser.parse(("elif", "else", "endif"))
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 489, in parse
+    raise self.error(token, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 487, in parse
+    filter_expression = self.compile_filter(token.contents)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 609, in compile_filter
+    return FilterExpression(token, self)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 705, in __init__
+    filter_func = parser.find_filter(filter_name)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 615, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'div'
+"GET /statistics/ HTTP/1.1" 500 262399
+Internal Server Error: /statistics/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/utils/decorators.py", line 192, in _view_wrapper
+    result = _process_exception(request, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/utils/decorators.py", line 190, in _view_wrapper
+    response = view_func(request, *args, **kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 976, in statistics_view
+    return render(request, 'sneaker_app/statistics.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/backends/django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loaders/cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loaders/base.py", line 28, in get_template
+    return Template(
+        contents,
+    ...<2 lines>...
+        self.engine,
+    )
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader_tags.py", line 299, in do_extends
+    nodelist = parser.parse()
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 518, in parse
+    raise self.error(token, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/defaulttags.py", line 962, in do_if
+    nodelist = parser.parse(("elif", "else", "endif"))
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 489, in parse
+    raise self.error(token, e)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 487, in parse
+    filter_expression = self.compile_filter(token.contents)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 609, in compile_filter
+    return FilterExpression(token, self)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 705, in __init__
+    filter_func = parser.find_filter(filter_name)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/base.py", line 615, in find_filter
+    raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
+django.template.exceptions.TemplateSyntaxError: Invalid filter: 'div'
+"GET /statistics/ HTTP/1.1" 500 262399
+Internal Server Error: /reviews/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 505, in reviews_list
+    return render(request, 'reviews/reviews_list.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: reviews/reviews_list.html
+"GET /reviews/ HTTP/1.1" 500 79419
+Internal Server Error: /reviews/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 505, in reviews_list
+    return render(request, 'reviews/reviews_list.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: reviews/reviews_list.html
+"GET /reviews/ HTTP/1.1" 500 79419
+Internal Server Error: /reviews/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 505, in reviews_list
+    return render(request, 'reviews/reviews_list.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: reviews/reviews_list.html
+"GET /reviews/ HTTP/1.1" 500 79419
+Internal Server Error: /category/1/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 382, in category_detail
+    return render(request, 'shop/category_detail.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: shop/category_detail.html
+"GET /category/1/ HTTP/1.1" 500 77682
+Internal Server Error: /reviews/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 505, in reviews_list
+    return render(request, 'reviews/reviews_list.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: reviews/reviews_list.html
+"GET /reviews/ HTTP/1.1" 500 79478
+Internal Server Error: /category/1/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 382, in category_detail
+    return render(request, 'shop/category_detail.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: shop/category_detail.html
+"GET /category/1/ HTTP/1.1" 500 77682
+Internal Server Error: /category/2/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 382, in category_detail
+    return render(request, 'shop/category_detail.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: shop/category_detail.html
+"GET /category/2/ HTTP/1.1" 500 77682

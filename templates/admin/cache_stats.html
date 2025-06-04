@@ -1,185 +1,669 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Статистика кеша - Sneaker Shop</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+{% extends 'base.html' %}
+{% load static %}
+{% load sneaker_tags %}
 
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f8f9fa;
-            line-height: 1.6;
-        }
+{% block title %}Статистика кэша - Sneaker Shop Admin{% endblock %}
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 2rem 20px;
-        }
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #000000;
+        --secondary-color: #666666;
+        --accent-color: #f5f5f5;
+        --border-color: #e0e0e0;
+        --text-primary: #000000;
+        --text-secondary: #666666;
+        --bg-white: #ffffff;
+        --bg-light: #fafafa;
+        --success-color: #28a745;
+        --danger-color: #dc3545;
+        --warning-color: #ffc107;
+        --info-color: #17a2b8;
+    }
 
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: var(--text-primary);
+        background-color: var(--bg-white);
+        line-height: 1.6;
+    }
 
-        .cache-section {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-        }
+    .admin-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
 
-        .cache-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+    /* === ЗАГОЛОВОК === */
+    .admin-header {
+        background: var(--text-primary);
+        color: var(--bg-white);
+        padding: 3rem 2rem;
+        border-radius: 4px;
+        margin-bottom: 3rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .admin-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.05) 50%, transparent 70%);
+        animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+
+    .admin-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin: 0 0 1rem 0;
+        letter-spacing: -0.02em;
+        position: relative;
+        z-index: 1;
+    }
+
+    .admin-subtitle {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin: 0;
+        font-weight: 400;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* === СЕТКА СТАТИСТИКИ === */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .stat-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 2rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: var(--text-primary);
+        transform: scaleY(0);
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        border-color: var(--text-primary);
+    }
+
+    .stat-card:hover::before {
+        transform: scaleY(1);
+    }
+
+    .stat-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .stat-icon {
+        font-size: 2rem;
+        padding: 0.75rem;
+        background: var(--bg-light);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 3.5rem;
+        height: 3.5rem;
+    }
+
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
+    }
+
+    .stat-description {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        margin: 0;
+        font-weight: 400;
+    }
+
+    .status-active {
+        color: var(--success-color);
+    }
+
+    .status-inactive {
+        color: var(--danger-color);
+    }
+
+    .status-partial {
+        color: var(--warning-color);
+    }
+
+    /* === СЕКЦИИ === */
+    .section-container {
+        background: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        margin-bottom: 2rem;
+        overflow: hidden;
+    }
+
+    .section-header {
+        background: var(--bg-light);
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .section-content {
+        padding: 2rem;
+    }
+
+    /* === КЛЮЧИ КЭША === */
+    .cache-key-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--border-color);
+        transition: all 0.2s ease;
+    }
+
+    .cache-key-item:hover {
+        background-color: var(--bg-light);
+        margin: 0 -2rem;
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+
+    .cache-key-item:last-child {
+        border-bottom: none;
+    }
+
+    .cache-key-name {
+        font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+        font-weight: 500;
+        color: var(--text-primary);
+        font-size: 0.875rem;
+        background: var(--bg-light);
+        padding: 0.25rem 0.5rem;
+        border-radius: 3px;
+    }
+
+    .cache-key-status {
+        padding: 0.375rem 0.875rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .status-cached {
+        background-color: rgba(40, 167, 69, 0.1);
+        color: var(--success-color);
+        border: 1px solid rgba(40, 167, 69, 0.2);
+    }
+
+    .status-not-cached {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: var(--danger-color);
+        border: 1px solid rgba(220, 53, 69, 0.2);
+    }
+
+    /* === КНОПКИ === */
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+    }
+
+    .btn {
+        padding: 0.875rem 1.75rem;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-decoration: none;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .btn-primary {
+        background: var(--text-primary);
+        color: var(--bg-white);
+        border-color: var(--text-primary);
+    }
+
+    .btn-primary:hover {
+        background: var(--secondary-color);
+        border-color: var(--secondary-color);
+        color: var(--bg-white);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .btn-danger {
+        background: transparent;
+        color: var(--danger-color);
+        border-color: var(--danger-color);
+    }
+
+    .btn-danger:hover {
+        background: var(--danger-color);
+        color: var(--bg-white);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    }
+
+    .btn-success {
+        background: transparent;
+        color: var(--success-color);
+        border-color: var(--success-color);
+    }
+
+    .btn-success:hover {
+        background: var(--success-color);
+        color: var(--bg-white);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    }
+
+    /* === АЛЕРТЫ === */
+    .alert {
+        padding: 1rem 1.5rem;
+        border-radius: 4px;
+        margin-bottom: 1.5rem;
+        border: 1px solid;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .alert-success {
+        background-color: rgba(40, 167, 69, 0.1);
+        border-color: var(--success-color);
+        color: var(--success-color);
+    }
+
+    .alert-info {
+        background-color: rgba(23, 162, 184, 0.1);
+        border-color: var(--info-color);
+        color: var(--info-color);
+    }
+
+    /* === ДЕТАЛИ КЭША === */
+    .cache-details {
+        background: var(--bg-light);
+        border-radius: 4px;
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+
+    .detail-label {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.875rem;
+    }
+
+    .detail-value {
+        font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        background: var(--bg-white);
+        padding: 0.25rem 0.5rem;
+        border-radius: 3px;
+        border: 1px solid var(--border-color);
+    }
+
+    /* === ИНСТРУКЦИИ === */
+    .instructions {
+        background: var(--bg-light);
+        padding: 2rem;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        line-height: 1.7;
+    }
+
+    .instructions h4 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .instructions ol,
+    .instructions ul {
+        margin: 0;
+        padding-left: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .instructions li {
+        margin-bottom: 0.5rem;
+    }
+
+    .instructions code {
+        background: var(--bg-white);
+        padding: 0.125rem 0.375rem;
+        border-radius: 3px;
+        font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+        font-size: 0.8rem;
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+    }
+
+    /* === АДАПТИВНОСТЬ === */
+    @media (max-width: 768px) {
+        .admin-container {
             padding: 1rem;
-            border-bottom: 1px solid #eee;
         }
-
-        .cache-item:last-child {
-            border-bottom: none;
+        
+        .admin-title {
+            font-size: 2rem;
         }
-
-        .cache-key {
-            font-weight: bold;
-            color: #333;
+        
+        .stats-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
         }
-
-        .cache-status {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
+        
+        .action-buttons {
+            flex-direction: column;
         }
-
-        .cached {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .not-cached {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .actions {
-            text-align: center;
-            margin-top: 2rem;
-        }
-
+        
         .btn {
-            background: #667eea;
-            color: white;
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            margin: 0 1rem;
-            transition: background 0.3s;
-            display: inline-block;
+            width: 100%;
+            justify-content: center;
         }
-
-        .btn:hover {
-            background: #5a6fd8;
+        
+        .cache-key-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
         }
-
-        .btn-danger {
-            background: #dc3545;
-        }
-
-        .btn-danger:hover {
-            background: #c82333;
-        }
-
-        .info-box {
-            background: #e7f3ff;
-            border: 1px solid #b3d9ff;
+        
+        .section-content {
             padding: 1rem;
-            border-radius: 5px;
-            margin-bottom: 2rem;
         }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>📊 Статистика кеша</h1>
-            <p>Мониторинг состояния кеширования</p>
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <!-- Заголовок -->
+    <div class="admin-header">
+        <h1 class="admin-title">🗄️ Мониторинг кэша</h1>
+        <p class="admin-subtitle">Статистика и управление кэшированием Django</p>
+    </div>
+
+    <!-- Сообщения -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                <span>{{ message }}</span>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Уведомление об очистке -->
+    {% if was_cleared %}
+        <div class="alert alert-success">
+            <span>✅ Кэш был успешно очищен! Все данные удалены из памяти.</span>
+        </div>
+    {% endif %}
+
+    <!-- Основная статистика -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-header">
+                <h3 class="stat-title">Статус</h3>
+                <div class="stat-icon">🏃‍♂️</div>
+            </div>
+            <div class="stat-value status-active">Активен</div>
+            <p class="stat-description">Django кэш работает нормально</p>
         </div>
 
-        <div class="info-box">
-            <h3>ℹ️ Информация о кеше</h3>
-            <p>Здесь отображается статус основных кешированных данных в системе.</p>
-            <p><strong>Зеленый</strong> - данные закешированы, <strong>красный</strong> - данные не в кеше.</p>
+        <div class="stat-card">
+            <div class="stat-header">
+                <h3 class="stat-title">Ключи</h3>
+                <div class="stat-icon">🔑</div>
+            </div>
+            <div class="stat-value status-partial">
+                {% with cached_count=0 %}
+                    {% for key, status in cache_info.items %}
+                        {% if status %}
+                            {% with cached_count=cached_count|add:1 %}{% endwith %}
+                        {% endif %}
+                    {% endfor %}
+                    {{ cached_count }}
+                {% endwith %}
+            </div>
+            <p class="stat-description">из {{ cache_info|length }} отслеживаемых</p>
         </div>
 
-        <div class="cache-section">
-            <h2>🗂️ Состояние кеша</h2>
-            
-            <div class="cache-item">
-                <span class="cache-key">Статистика главной страницы</span>
-                <span class="cache-status {% if cache_info.home_stats %}cached{% else %}not-cached{% endif %}">
-                    {% if cache_info.home_stats %}✅ Закешировано{% else %}❌ Не в кеше{% endif %}
-                </span>
+        <div class="stat-card">
+            <div class="stat-header">
+                <h3 class="stat-title">Время жизни</h3>
+                <div class="stat-icon">⏰</div>
             </div>
-
-            <div class="cache-item">
-                <span class="cache-key">Популярные товары</span>
-                <span class="cache-status {% if cache_info.popular_products %}cached{% else %}not-cached{% endif %}">
-                    {% if cache_info.popular_products %}✅ Закешировано{% else %}❌ Не в кеше{% endif %}
-                </span>
-            </div>
-
-            <div class="cache-item">
-                <span class="cache-key">Новые товары</span>
-                <span class="cache-status {% if cache_info.new_products %}cached{% else %}not-cached{% endif %}">
-                    {% if cache_info.new_products %}✅ Закешировано{% else %}❌ Не в кеше{% endif %}
-                </span>
-            </div>
-
-            <div class="cache-item">
-                <span class="cache-key">Детальная статистика</span>
-                <span class="cache-status {% if cache_info.detailed_statistics %}cached{% else %}not-cached{% endif %}">
-                    {% if cache_info.detailed_statistics %}✅ Закешировано{% else %}❌ Не в кеше{% endif %}
-                </span>
-            </div>
+            <div class="stat-value status-active">5 мин</div>
+            <p class="stat-description">Стандартное время кэширования</p>
         </div>
 
-        <div class="cache-section">
-            <h2>🔧 Управление кешем</h2>
-            <p>Используйте эти инструменты для управления кешем системы:</p>
-            
-            <div class="actions">
-                <a href="{% url 'home' %}" class="btn">🏠 На главную</a>
-                <a href="{% url 'clear_cache' %}" class="btn btn-danger" onclick="return confirm('Вы уверены, что хотите очистить весь кеш?')">
-                    🗑️ Очистить кеш
-                </a>
+        <div class="stat-card">
+            <div class="stat-header">
+                <h3 class="stat-title">Тип кэша</h3>
+                <div class="stat-icon">💾</div>
             </div>
-        </div>
-
-        <div class="cache-section">
-            <h2>📈 Рекомендации</h2>
-            <ul style="padding-left: 2rem;">
-                <li>Главная страница кешируется на 15 минут</li>
-                <li>Каталог товаров кешируется на 10 минут</li>
-                <li>Детали товара кешируются на 30 минут</li>
-                <li>Статистика кешируется на 1 час</li>
-                <li>Результаты поиска кешируются на 10 минут</li>
-            </ul>
+            <div class="stat-value status-active">LocMem</div>
+            <p class="stat-description">Локальная память сервера</p>
         </div>
     </div>
-</body>
-</html>
+
+    <!-- Детальная информация о ключах кэша -->
+    <div class="section-container">
+        <div class="section-header">
+            <h2 class="section-title">
+                🔍 Детальная информация о кэше
+            </h2>
+        </div>
+        <div class="section-content">
+            {% for key, status in cache_info.items %}
+                <div class="cache-key-item">
+                    <span class="cache-key-name">{{ key }}</span>
+                    <span class="cache-key-status {% if status %}status-cached{% else %}status-not-cached{% endif %}">
+                        {% if status %}
+                            ✅ Кэширован
+                        {% else %}
+                            ❌ Не кэширован
+                        {% endif %}
+                    </span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Действия с кэшем -->
+    <div class="section-container">
+        <div class="section-header">
+            <h2 class="section-title">
+                ⚡ Управление кэшем
+            </h2>
+        </div>
+        <div class="section-content">
+            <div class="action-buttons">
+                <a href="{% url 'clear_cache' %}" class="btn btn-danger" 
+                   onclick="return confirm('Вы уверены, что хотите очистить весь кэш?')">
+                    🗑️ Очистить весь кэш
+                </a>
+                
+                <a href="{% url 'cache_stats' %}" class="btn btn-primary">
+                    🔄 Обновить статистику
+                </a>
+                
+                <a href="{% url 'home' %}" class="btn btn-success">
+                    🏠 На главную
+                </a>
+            </div>
+
+            <!-- Дополнительная информация -->
+            <div class="cache-details">
+                <div class="detail-row">
+                    <span class="detail-label">Backend кэша:</span>
+                    <span class="detail-value">django.core.cache.backends.locmem.LocMemCache</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Максимум записей:</span>
+                    <span class="detail-value">1000</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Частота очистки:</span>
+                    <span class="detail-value">1/3</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Время по умолчанию:</span>
+                    <span class="detail-value">300 секунд (5 минут)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Тестирование кэша -->
+    <div class="section-container">
+        <div class="section-header">
+            <h2 class="section-title">
+                🧪 Тестирование кэша
+            </h2>
+        </div>
+        <div class="section-content">
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.875rem;">
+                Используйте эти теги для проверки работы кэша:
+            </p>
+            
+            <div class="cache-details">
+                <div class="detail-row">
+                    <span class="detail-label">Общее количество товаров:</span>
+                    <span class="detail-value">{% total_products %}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Товары в диапазоне 1000-5000:</span>
+                    <span class="detail-value">{% price_range 1000 5000 %}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Средний рейтинг:</span>
+                    <span class="detail-value">{% avg_product_rating %}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Статус кэша 'total_products_count':</span>
+                    <span class="detail-value">{% cache_status 'total_products_count' %}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Инструкции по использованию -->
+    <div class="section-container">
+        <div class="section-header">
+            <h2 class="section-title">
+                📖 Инструкции по тестированию
+            </h2>
+        </div>
+        <div class="section-content">
+            <div class="instructions">
+                <h4>Как проверить работу кэша:</h4>
+                <ol>
+                    <li><strong>Первое посещение:</strong> Данные загружаются из базы данных (медленно)</li>
+                    <li><strong>Обновите страницу:</strong> Данные загружаются из кэша (быстро)</li>
+                    <li><strong>Очистите кэш:</strong> Нажмите "Очистить весь кэш"</li>
+                    <li><strong>Снова обновите:</strong> Данные опять загружаются из БД</li>
+                </ol>
+                
+                <h4>Ключи кэша в системе:</h4>
+                <ul>
+                    <li><code>total_products_count</code> - общее количество товаров</li>
+                    <li><code>price_range_X_Y</code> - товары в ценовом диапазоне</li>
+                    <li><code>top_brands_N</code> - топ N брендов</li>
+                    <li><code>avg_product_rating</code> - средний рейтинг товаров</li>
+                </ul>
+
+                <h4>Дополнительные команды для тестирования:</h4>
+                <ol>
+                    <li>Откройте Django shell: <code>python manage.py shell</code></li>
+                    <li>Импортируйте кэш: <code>from django.core.cache import cache</code></li>
+                    <li>Проверьте ключ: <code>cache.get('total_products_count')</code></li>
+                    <li>Очистите кэш: <code>cache.clear()</code></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

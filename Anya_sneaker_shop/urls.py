@@ -62,6 +62,7 @@ urlpatterns = [
     path('product/create/', product_create, name='product_create'),
     path('product/<int:pk>/edit/', product_edit, name='product_edit'),
     path('product/<int:pk>/delete/', product_delete, name='product_delete'),
+    path('product/quick-create/', product_quick_create, name='product_quick_create'),
     
     # Заказы
     path('product/<int:product_pk>/order/', create_order, name='create_order'),
@@ -108,7 +109,8 @@ urlpatterns = [
 
  # ✅ Управление кешем (только для админов)
     path('admin-tools/cache-stats/', cache_stats, name='cache_stats'),
-    path('admin-tools/clear-cache/', clear_cache, name='clear_cache'),  
+    path('admin-tools/clear-cache/', clear_cache, name='clear_cache'),
+    path('admin-tools/cache-test/', cache_test, name='cache_test'),
 
     # Джанго-форма создания кроссовок
     path('product/create-django-form/', product_create_django_form, name='product_create_django_form'),

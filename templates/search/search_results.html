@@ -1,0 +1,467 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+{% load sneaker_tags %}
+
+{% block title %}{% trans "Поиск - Sneaker Shop" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* === МИНИМАЛИСТИЧНЫЙ ДИЗАЙН === */
+    :root {
+        --primary-color: #000000;
+        --secondary-color: #666666;
+        --accent-color: #f5f5f5;
+        --border-color: #e0e0e0;
+        --text-primary: #000000;
+        --text-secondary: #666666;
+        --bg-white: #ffffff;
+        --bg-light: #fafafa;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: var(--text-primary);
+        background-color: var(--bg-white);
+        line-height: 1.6;
+    }
+
+    /* === ЗАГОЛОВКИ === */
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 1rem 0;
+        letter-spacing: -0.02em;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin: 0 0 1.5rem 0;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    /* === КОНТЕЙНЕРЫ === */
+    .main-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .section-container {
+        background: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    /* === НАВИГАЦИЯ === */
+    .top-nav {
+        background: var(--text-primary);
+        border: 1px solid var(--text-primary);
+        border-radius: 4px;
+        padding: 1rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .nav-links {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0;
+    }
+
+    .nav-link {
+        color: var(--bg-white);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px 4px 0 0;
+        transition: all 0.2s ease;
+        flex: 1;
+        text-align: center;
+        border-right: 1px solid rgba(255,255,255,0.2);
+        border-bottom: 3px solid transparent;
+    }
+
+    .nav-link:last-child {
+        border-right: none;
+    }
+
+    .nav-link:hover {
+        color: var(--bg-white);
+        background-color: rgba(255,255,255,0.1);
+        transform: translateY(-1px);
+    }
+
+    .nav-link.active {
+        color: var(--bg-white);
+        background-color: transparent;
+        font-weight: 600;
+        border-bottom: 3px solid var(--bg-white);
+    }
+
+    /* === ПОИСК === */
+    .search-form {
+        margin-bottom: 2rem;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        font-size: 1rem;
+        outline: none;
+    }
+
+    .search-input:focus {
+        border-color: var(--text-primary);
+    }
+
+    /* === ТОВАРЫ === */
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .product-card {
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        overflow: hidden;
+        background: var(--bg-white);
+        transition: all 0.2s ease;
+    }
+
+    .product-card:hover {
+        border-color: var(--text-primary);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .product-image {
+        height: 200px;
+        background: var(--accent-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .product-image img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .product-info {
+        padding: 1.5rem;
+    }
+
+    .product-brand {
+        font-size: 1.125rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .product-price {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+
+    .product-meta {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+    }
+
+    /* === КНОПКИ === */
+    .btn {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-decoration: none;
+        text-align: center;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+
+    .btn-primary {
+        background: var(--text-primary);
+        color: var(--bg-white);
+        border-color: var(--text-primary);
+    }
+
+    .btn-primary:hover {
+        background: var(--secondary-color);
+        border-color: var(--secondary-color);
+        color: var(--bg-white);
+    }
+
+    .btn-secondary {
+        background: var(--bg-white);
+        color: var(--text-primary);
+        border-color: var(--border-color);
+    }
+
+    .btn-secondary:hover {
+        background: var(--accent-color);
+        border-color: var(--text-primary);
+        color: var(--text-primary);
+    }
+
+    .btn-small {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+    }
+
+    /* === ПАГИНАЦИЯ === */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 2rem;
+    }
+
+    .pagination-link {
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        color: var(--text-primary);
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .pagination-link:hover {
+        background: var(--accent-color);
+        border-color: var(--text-primary);
+    }
+
+    .pagination-link.current {
+        background: var(--text-primary);
+        color: var(--bg-white);
+        border-color: var(--text-primary);
+    }
+
+    .pagination-link.disabled {
+        color: var(--text-secondary);
+        cursor: not-allowed;
+    }
+
+    .pagination-link.disabled:hover {
+        background: transparent;
+        border-color: var(--border-color);
+    }
+
+    /* === АДАПТИВНОСТЬ === */
+    @media (max-width: 768px) {
+        .main-container {
+            padding: 1rem;
+        }
+        
+        .section-container {
+            padding: 1.5rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .nav-links {
+            flex-direction: column;
+            gap: 0;
+        }
+        
+        .nav-link {
+            border-right: none;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            flex: none;
+            width: 100%;
+            border-radius: 4px;
+        }
+        
+        .nav-link.active {
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            border-left: 3px solid var(--bg-white);
+            background-color: rgba(255,255,255,0.1);
+        }
+        
+        .nav-link:last-child {
+            border-bottom: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-container">
+    <!-- === ЗАГОЛОВОК === -->
+    <header class="text-center">
+        <h1 class="page-title">{% trans "Результаты поиска" %}</h1>
+        {% if query %}
+            <p class="text-secondary">{% trans "Поиск по запросу:" %} "{{ query }}"</p>
+        {% endif %}
+    </header>
+
+    <!-- === НАВИГАЦИЯ === -->
+    <nav class="top-nav">
+        <div class="nav-links">
+            <a href="{% url 'home' %}" class="nav-link">{% trans "Главная" %}</a>
+            <a href="{% url 'product_list' %}" class="nav-link">{% trans "Каталог" %}</a>
+            <a href="{% url 'category_list' %}" class="nav-link">{% trans "Категории" %}</a>
+            <a href="{% url 'wishlist' %}" class="nav-link">{% trans "Избранное" %}</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}" class="nav-link">{% trans "Профиль" %}</a>
+                <a href="{% url 'logout' %}" class="nav-link">{% trans "Выход" %}</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="nav-link">{% trans "Вход" %}</a>
+                <a href="{% url 'register' %}" class="nav-link">{% trans "Регистрация" %}</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- === ФОРМА ПОИСКА === -->
+    <section class="section-container">
+        <form method="get" class="search-form">
+            <input type="text" name="q" class="search-input" 
+                   placeholder="{% trans 'Введите запрос для поиска...' %}"
+                   value="{{ query }}">
+        </form>
+    </section>
+
+    <!-- === РЕЗУЛЬТАТЫ ПОИСКА === -->
+    <section class="section-container">
+        <h2 class="section-title">
+            {% if query %}
+                {% trans "Найдено товаров:" %} {{ total_found }}
+            {% else %}
+                {% trans "Введите запрос для поиска" %}
+            {% endif %}
+        </h2>
+        
+        {% if results %}
+            <div class="products-grid">
+                {% for product in results %}
+                    <div class="product-card">
+                        <div class="product-image">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.brand }}">
+                            {% else %}
+                                <span style="font-size: 3rem; color: var(--text-secondary);">👟</span>
+                            {% endif %}
+                        </div>
+                        <div class="product-info">
+                            <div class="product-brand">{{ product.brand }}</div>
+                            <div class="product-price">{{ product.price|floatformat:0 }} ₽</div>
+                            
+                            <div class="product-meta">
+                                {% if product.is_active %}
+                                    <span style="color: #28a745;">✓ {% trans "В наличии" %}</span>
+                                {% else %}
+                                    <span style="color: #dc3545;">✗ {% trans "Нет в наличии" %}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="product-meta">
+                                {% trans "Добавлен" %}: {{ product.created_at|date:"d.m.Y" }}
+                            </div>
+                            
+                            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                                <a href="{% url 'product_detail' product.pk %}" class="btn btn-primary btn-small">
+                                    {% trans "Подробнее" %}
+                                </a>
+                                <a href="{% url 'toggle_wishlist' product.pk %}" class="btn btn-secondary btn-small">
+                                    ❤️
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- === ПАГИНАЦИЯ === -->
+            {% if results.has_other_pages %}
+            <div class="pagination">
+                {% if results.has_previous %}
+                    <a href="?q={{ query }}&page=1" class="pagination-link">{% trans "Первая" %}</a>
+                    <a href="?q={{ query }}&page={{ results.previous_page_number }}" class="pagination-link">‹ {% trans "Назад" %}</a>
+                {% else %}
+                    <span class="pagination-link disabled">{% trans "Первая" %}</span>
+                    <span class="pagination-link disabled">‹ {% trans "Назад" %}</span>
+                {% endif %}
+
+                <span class="pagination-link current">
+                    {% trans "Страница" %} {{ results.number }} {% trans "из" %} {{ results.paginator.num_pages }}
+                </span>
+
+                {% if results.has_next %}
+                    <a href="?q={{ query }}&page={{ results.next_page_number }}" class="pagination-link">{% trans "Вперед" %} ›</a>
+                    <a href="?q={{ query }}&page={{ results.paginator.num_pages }}" class="pagination-link">{% trans "Последняя" %}</a>
+                {% else %}
+                    <span class="pagination-link disabled">{% trans "Вперед" %} ›</span>
+                    <span class="pagination-link disabled">{% trans "Последняя" %}</span>
+                {% endif %}
+            </div>
+            {% endif %}
+
+                {% elif query %}
+            <!-- === ПУСТОЙ РЕЗУЛЬТАТ === -->
+            <div style="text-align: center; padding: 4rem 2rem; color: var(--text-secondary);">
+                <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.5;">🔍</div>
+                <h3 style="font-size: 1.5rem; font-weight: 500; margin-bottom: 1rem; color: var(--text-primary);">
+                    {% trans "Ничего не найдено" %}
+                </h3>
+                <p style="margin-bottom: 2rem;">
+                    {% trans "По запросу" %} "{{ query }}" {% trans "товары не найдены" %}
+                </p>
+                <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
+                    <a href="{% url 'product_list' %}" class="btn btn-primary">
+                        {% trans "Все товары" %}
+                    </a>
+                    <a href="{% url 'category_list' %}" class="btn btn-secondary">
+                        {% trans "Категории" %}
+                    </a>
+                </div>
+            </div>
+        {% else %}
+            <!-- === НАЧАЛЬНОЕ СОСТОЯНИЕ === -->
+            <div style="text-align: center; padding: 4rem 2rem; color: var(--text-secondary);">
+                <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.5;">🔍</div>
+                <h3 style="font-size: 1.5rem; font-weight: 500; margin-bottom: 1rem; color: var(--text-primary);">
+                    {% trans "Поиск товаров" %}
+                </h3>
+                <p style="margin-bottom: 2rem;">
+                    {% trans "Введите название бренда, цвет или другие характеристики товара" %}
+                </p>
+                <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
+                    <a href="{% url 'product_list' %}" class="btn btn-primary">
+                        {% trans "Посмотреть все товары" %}
+                    </a>
+                    <a href="{% url 'category_list' %}" class="btn btn-secondary">
+                        {% trans "Выбрать категорию" %}
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </section>
+
+    <!-- === ПОДВАЛ === -->
+    <footer style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border-color); text-align: center;">
+        <p style="color: var(--text-secondary);">
+            &copy; 2024 Sneaker Shop. {% trans "Все права защищены" %}.
+        </p>
+    </footer>
+</div>
+{% endblock %}

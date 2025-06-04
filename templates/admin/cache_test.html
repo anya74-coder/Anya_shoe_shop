@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load sneaker_tags %}
+
+{% block title %}Тест кэша - Sneaker Shop Admin{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 2rem auto; padding: 2rem; font-family: Arial, sans-serif;">
+    <h1>🧪 Тестирование кэша</h1>
+    
+    <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+        <h3>📊 Результаты теста</h3>
+        <p><strong>Время загрузки данных:</strong> {{ load_time }} мс</p>
+        <p><strong>Общее количество товаров:</strong> {{ total_products }}</p>
+        <p><strong>Средний рейтинг:</strong> {{ avg_rating }}</p>
+    </div>
+    
+    <div style="background: #e9ecef; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+        <h3>🔍 Статус кэша</h3>
+        <p><strong>Товары кэшированы:</strong> 
+            {% if cache_status.total_products_cached %}
+                <span style="color: green;">✅ Да</span>
+            {% else %}
+                <span style="color: red;">❌ Нет</span>
+            {% endif %}
+        </p>
+        <p><strong>Рейтинг кэширован:</strong> 
+            {% if cache_status.avg_rating_cached %}
+                <span style="color: green;">✅ Да</span>
+            {% else %}
+                <span style="color: red;">❌ Нет</span>
+            {% endif %}
+        </p>
+    </div>
+    
+    <div style="background: #d4edda; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+        <h3>🏷️ Тестирование шаблонных тегов</h3>
+        <p><strong>Общее количество товаров (тег):</strong> {% total_products %}</p>
+        <p><strong>Товары до 50000 руб:</strong> {% price_range 0 50000 %}</p>
+        <p><strong>Средний рейтинг (тег):</strong> {% avg_product_rating %}</p>
+        <p><strong>Статус кэша total_products:</strong> {% cache_status 'total_products_count' %}</p>
+    </div>
+    
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <a href="{% url 'cache_test' %}" style="background: #007bff; color: white; padding: 0.75rem 1.5rem; text-decoration: none; border-radius: 4px;">
+            🔄 Повторить тест
+        </a>
+        <a href="{% url 'clear_cache' %}" style="background: #dc3545; color: white; padding: 0.75rem 1.5rem; text-decoration: none; border-radius: 4px;"
+           onclick="return confirm('Очистить кэш?')">
+            🗑️ Очистить кэш
+        </a>
+        <a href="{% url 'cache_stats' %}" style="background: #28a745; color: white; padding: 0.75rem 1.5rem; text-decoration: none; border-radius: 4px;">
+            📊 Статистика кэша
+        </a>
+    </div>
+</div>
+{% endblock %}

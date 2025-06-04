@@ -1,337 +1,458 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Избранное - Sneaker Shop</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+{% load sneaker_tags %}
 
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f8f9fa;
-            line-height: 1.6;
-        }
+{% block title %}{% trans "Избранное - Sneaker Shop" %}{% endblock %}
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+{% block extra_css %}
+<style>
+    /* === МИНИМАЛИСТИЧНЫЙ ДИЗАЙН === */
+    :root {
+        --primary-color: #000000;
+        --secondary-color: #666666;
+        --accent-color: #f5f5f5;
+        --border-color: #e0e0e0;
+        --text-primary: #000000;
+        --text-secondary: #666666;
+        --bg-white: #ffffff;
+        --bg-light: #fafafa;
+        --success-color: #28a745;
+        --danger-color: #dc3545;
+    }
 
-        .header {
-            background: linear-gradient(135deg, #e91e63 0%, #ad1457 100%);
-            color: white;
-            padding: 2rem 0;
-            text-align: center;
-        }
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: var(--text-primary);
+        background-color: var(--bg-white);
+        line-height: 1.6;
+    }
 
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
+    /* === ЗАГОЛОВКИ === */
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 1rem 0;
+        letter-spacing: -0.02em;
+    }
 
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin: 0 0 1.5rem 0;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    /* === КОНТЕЙНЕРЫ === */
+    .main-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .section-container {
+        background: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    /* === НАВИГАЦИЯ === */
+    .top-nav {
+        background: var(--text-primary);
+        border: 1px solid var(--text-primary);
+        border-radius: 4px;
+        padding: 1rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .nav-links {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0;
+    }
+
+    .nav-link {
+        color: var(--bg-white);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px 4px 0 0;
+        transition: all 0.2s ease;
+        flex: 1;
+        text-align: center;
+        border-right: 1px solid rgba(255,255,255,0.2);
+        border-bottom: 3px solid transparent;
+    }
+
+    .nav-link:last-child {
+        border-right: none;
+    }
+
+    .nav-link:hover {
+        color: var(--bg-white);
+        background-color: rgba(255,255,255,0.1);
+        transform: translateY(-1px);
+    }
+
+    .nav-link.active {
+        color: var(--bg-white);
+        background-color: transparent;
+        font-weight: 600;
+        border-bottom: 3px solid var(--bg-white);
+    }
+
+    /* === ТОВАРЫ В ИЗБРАННОМ === */
+    .wishlist-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .wishlist-item {
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        overflow: hidden;
+        background: var(--bg-white);
+        transition: all 0.2s ease;
+        position: relative;
+    }
+
+    .wishlist-item:hover {
+        border-color: var(--text-primary);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .product-image {
+        height: 200px;
+        background: var(--accent-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 3rem;
+        color: var(--text-secondary);
+    }
+
+    .product-image img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .product-info {
+        padding: 1.5rem;
+    }
+
+    .product-brand {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .product-price {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+
+    .product-meta {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+    }
+
+    .product-meta-item {
+        margin-bottom: 0.25rem;
+    }
+
+    /* === КНОПКИ === */
+    .btn {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-decoration: none;
+        text-align: center;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+
+    .btn-primary {
+        background: var(--text-primary);
+        color: var(--bg-white);
+        border-color: var(--text-primary);
+    }
+
+    .btn-primary:hover {
+        background: var(--secondary-color);
+        border-color: var(--secondary-color);
+        color: var(--bg-white);
+    }
+
+    .btn-danger {
+        background: var(--danger-color);
+        color: var(--bg-white);
+        border-color: var(--danger-color);
+    }
+
+    .btn-danger:hover {
+        background: #c82333;
+        border-color: #c82333;
+        color: var(--bg-white);
+    }
+
+    .btn-small {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+    }
+
+    .btn-group {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .btn-group .btn {
+        flex: 1;
+    }
+
+    /* === ПУСТОЕ СОСТОЯНИЕ === */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--text-secondary);
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        display: block;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .empty-title {
+        font-size: 1.5rem;
+        font-weight: 500;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+    }
+
+    .empty-description {
+        margin-bottom: 2rem;
+    }
+
+    /* === СТАТИСТИКА === */
+    .wishlist-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        background: var(--bg-light);
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    /* === АДАПТИВНОСТЬ === */
+    @media (max-width: 768px) {
+        .main-container {
+            padding: 1rem;
+        }
+        
+        .section-container {
+            padding: 1.5rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
         .nav-links {
-            margin-top: 1rem;
+            flex-direction: column;
+            gap: 0;
         }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            margin: 0 1rem;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-
-        .nav-links a:hover {
-            background: rgba(255,255,255,0.2);
-        }
-
-        .wishlist-stats {
-            background: white;
-            padding: 1.5rem;
-            margin: 2rem 0;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        .wishlist-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .wishlist-item {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-        }
-
-        .wishlist-item:hover {
-            transform: translateY(-5px);
-        }
-
-        .item-image {
-            height: 200px;
-            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            color: #999;
-        }
-
-        .item-image img {
+        
+        .nav-link {
+            border-right: none;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            flex: none;
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            border-radius: 4px;
         }
+        
+        .nav-link.active {
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            border-left: 3px solid var(--bg-white);
+            background-color: rgba(255,255,255,0.1);
+        }
+        
+        .nav-link:last-child {
+            border-bottom: none;
+        }
+        
+        .btn-group {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
 
-        .item-info {
-            padding: 1.5rem;
-        }
-
-        .item-brand {
-            font-weight: bold;
-            color: #e91e63;
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .item-price {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 0.5rem;
-        }
-
-        .item-details {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-        }
-
-        .item-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: transform 0.2s;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            flex: 1;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .empty-wishlist {
-            text-align: center;
-            padding: 4rem 2rem;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .empty-wishlist h3 {
-            color: #666;
-            margin-bottom: 1rem;
-        }
-
-        .empty-wishlist p {
-            color: #999;
-            margin-bottom: 2rem;
-        }
-
-        .btn-large {
-            padding: 1rem 2rem;
-            font-size: 1.1rem;
-        }
-
-        .messages {
-            margin-bottom: 1rem;
-        }
-
-        .alert {
-            padding: 0.75rem;
-            border-radius: 5px;
-            margin-bottom: 0.5rem;
-        }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        /* ✅ Стили для формы удаления */
-        .remove-form {
-            display: inline;
-        }
-
-        .remove-form button {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background 0.3s;
-            width: 100%;
-        }
-
-        .remove-form button:hover {
-            background: #c82333;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .wishlist-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .item-actions {
-                flex-direction: column;
-            }
-        }
-    </style>
-</head>
-<body>
-    <header class="header">
-        <div class="container">
-            <h1>❤️ Избранное</h1>
-            <p>Ваши любимые товары</p>
-            <div class="nav-links">
-                <a href="{% url 'home' %}">🏠 Главная</a>
-                <a href="{% url 'product_list' %}">📦 Каталог</a>
-                <a href="{% url 'profile' %}">👤 Профиль</a>
-            </div>
-        </div>
+{% block content %}
+<div class="main-container">
+    <!-- === ЗАГОЛОВОК === -->
+    <header class="text-center">
+        <h1 class="page-title">{% trans "Избранное" %}</h1>
+        <p class="text-secondary">{% trans "Ваши любимые товары" %}</p>
     </header>
 
-    <div class="container">
-        <!-- Сообщения -->
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-
-        <!-- Статистика избранного -->
-        <div class="wishlist-stats">
-            <h2>📊 Статистика избранного</h2>
-            <p><strong>Товаров в избранном:</strong> {{ wishlist_items|length }}</p>
-            {% if wishlist_items %}
-                {% load sneaker_tags %}
-                <p><strong>Общая стоимость:</strong> 
-                    {% for item in wishlist_items %}
-                        {{ item.sneakers.price|multiply:item.quantity }}
-                        {% if not forloop.last %} + {% endif %}
-                    {% endfor %} ₽
-                </p>
+    <!-- === НАВИГАЦИЯ === -->
+    <nav class="top-nav">
+        <div class="nav-links">
+            <a href="{% url 'home' %}" class="nav-link">{% trans "Главная" %}</a>
+            <a href="{% url 'product_list' %}" class="nav-link">{% trans "Каталог" %}</a>
+            <a href="{% url 'category_list' %}" class="nav-link">{% trans "Категории" %}</a>
+            <a href="{% url 'wishlist' %}" class="nav-link active">{% trans "Избранное" %}</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}" class="nav-link">{% trans "Профиль" %}</a>
+                <a href="{% url 'logout' %}" class="nav-link">{% trans "Выход" %}</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="nav-link">{% trans "Вход" %}</a>
+                <a href="{% url 'register' %}" class="nav-link">{% trans "Регистрация" %}</a>
             {% endif %}
         </div>
+    </nav>
 
-        {% if wishlist_items %}
+    {% if wishlist_items %}
+        <!-- === СТАТИСТИКА === -->
+        <section class="section-container">
+            <div class="wishlist-stats">
+                <div class="stat-item">
+                    <span class="stat-number">{{ wishlist_items|length }}</span>
+                    <div class="stat-label">{% trans "Товаров" %}</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">{{ categories_count }}</span>
+                    <div class="stat-label">{% trans "Категорий" %}</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">{{ total_value|floatformat:0 }} ₽</span>
+                    <div class="stat-label">{% trans "Общая стоимость" %}</div>
+                </div>
+            </div>
+            
+            {% if categories %}
+                <div style="margin-top: 1rem;">
+                    <h3 style="font-size: 1rem; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary);">
+                        {% trans "Категории в избранном:" %}
+                    </h3>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        {% for category in categories %}
+                            <span style="padding: 0.25rem 0.75rem; background: var(--accent-color); border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.875rem; color: var(--text-primary);">
+                                {{ category }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </section>
+
+
+        <!-- === ТОВАРЫ В ИЗБРАННОМ === -->
+        <section class="section-container">
+            <h2 class="section-title">{% trans "Ваши избранные товары" %}</h2>
+            
             <div class="wishlist-grid">
                 {% for item in wishlist_items %}
                     <div class="wishlist-item">
-                        <div class="item-image">
+                        <div class="product-image">
                             {% if item.sneakers.image %}
                                 <img src="{{ item.sneakers.image.url }}" alt="{{ item.sneakers.brand }}">
                             {% else %}
                                 👟
                             {% endif %}
                         </div>
-                        <div class="item-info">
-                            <div class="item-brand">{{ item.sneakers.brand }}</div>
-                            <div class="item-price">{{ item.sneakers.price|floatformat:0 }} ₽</div>
-                            <div class="item-details">
-                                <div><strong>Размер:</strong> {{ item.size }}</div>
-                                <div><strong>Количество:</strong> {{ item.quantity }}</div>
-                                <div><strong>Добавлено:</strong> {{ item.added_date|date:"d.m.Y" }}</div>
-                                {% if item.sneakers.product_card %}
-                                    <div><strong>Цвет:</strong> {{ item.sneakers.product_card.color }}</div>
-                                {% endif %}
+                        
+                        <div class="product-info">
+                            <div class="product-brand">{{ item.sneakers.brand }}</div>
+                            <div class="product-price">{{ item.sneakers.price|floatformat:0 }} ₽</div>
+                            
+                            <div class="product-meta">
+                                <div class="product-meta-item">
+                                    <strong>{% trans "Размер:" %}</strong> {{ item.size }}
+                                </div>
+                                <div class="product-meta-item">
+                                    <strong>{% trans "Количество:" %}</strong> {{ item.quantity }}
+                                </div>
+                                <div class="product-meta-item">
+                                    <strong>{% trans "Добавлено:" %}</strong> {{ item.added_date|date:"d.m.Y" }}
+                                </div>
                             </div>
-                            <div class="item-actions">
-                                <a href="{% url 'product_detail' item.sneakers.sneakers_id %}" class="btn btn-primary">
-                                    👁️ Просмотр
+                            
+                            <div class="btn-group">
+                                <a href="{% url 'product_detail' item.sneakers.pk %}" class="btn btn-primary btn-small">
+                                    {% trans "Подробнее" %}
                                 </a>
-                                
-                                <!-- ✅ Исправленная форма для удаления -->
-                                <form method="post" action="{% url 'remove_from_wishlist' item.wishlist_id %}" class="remove-form">
-                                    {% csrf_token %}
-                                    <button type="submit" onclick="return confirm('Удалить товар из избранного?')">
-                                        🗑️ Удалить
-                                    </button>
-                                </form>
+                                <a href="{% url 'remove_from_wishlist' item.wishlist_id %}" class="btn btn-danger btn-small">
+                                    {% trans "Удалить" %}
+                                </a>
                             </div>
                         </div>
                     </div>
                 {% endfor %}
             </div>
-        {% else %}
-            <div class="empty-wishlist">
-                <h3>💔 Ваш список избранного пуст</h3>
-                <p>Добавьте товары в избранное, чтобы не потерять их из виду!</p>
-                <a href="{% url 'product_list' %}" class="btn btn-primary btn-large">
-                    🛍️ Перейти к покупкам
+        </section>
+    {% else %}
+        <!-- === ПУСТОЕ СОСТОЯНИЕ === -->
+        <section class="section-container">
+            <div class="empty-state">
+                <span class="empty-icon">💝</span>
+                <h2 class="empty-title">{% trans "Ваш список избранного пуст" %}</h2>
+                <p class="empty-description">
+                    {% trans "Добавьте товары в избранное, чтобы не потерять их" %}
+                </p>
+                <a href="{% url 'product_list' %}" class="btn btn-primary">
+                                        {% trans "Перейти к покупкам" %}
                 </a>
             </div>
-        {% endif %}
+        </section>
+    {% endif %}
 
-        <!-- Подсказки -->
-        <div style="background: white; padding: 1.5rem; border-radius: 10px; margin-top: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <h3>💡 Полезные советы:</h3>
-            <ul style="margin-left: 1.5rem; color: #666;">
-                <li>Добавляйте товары в избранное, чтобы следить за изменением цен</li>
-                <li>Используйте избранное для сравнения похожих товаров</li>
-                <li>Товары остаются в избранном даже после выхода из аккаунта</li>
-                <li>Вы можете добавить один товар несколько раз с разными размерами</li>
-            </ul>
-        </div>
-    </div>
-</body>
-</html>
+    <!-- === ПОДВАЛ === -->
+    <footer style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border-color); text-align: center;">
+        <p class="text-secondary">
+            &copy; 2024 Sneaker Shop. {% trans "Все права защищены" %}.
+        </p>
+    </footer>
+</div>
+{% endblock %}
+

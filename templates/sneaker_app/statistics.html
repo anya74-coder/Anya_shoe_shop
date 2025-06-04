@@ -4,78 +4,699 @@
 
 {% block title %}{% trans "Статистика" %} - Sneaker Shop{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* === МИНИМАЛИСТИЧНЫЙ ДИЗАЙН === */
+    :root {
+        --primary-color: #000000;
+        --secondary-color: #666666;
+        --accent-color: #f5f5f5;
+        --border-color: #e0e0e0;
+        --text-primary: #000000;
+        --text-secondary: #666666;
+        --bg-white: #ffffff;
+        --bg-light: #fafafa;
+        --success-color: #28a745;
+        --info-color: #17a2b8;
+        --warning-color: #ffc107;
+        --danger-color: #dc3545;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: var(--text-primary);
+        background-color: var(--bg-white);
+        line-height: 1.6;
+    }
+
+    /* === ЗАГОЛОВКИ === */
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 1rem 0;
+        letter-spacing: -0.02em;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin: 0 0 1.5rem 0;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .subsection-title {
+        font-size: 1.125rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin: 0 0 1rem 0;
+    }
+
+    /* === КОНТЕЙНЕРЫ === */
+    .main-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .section-container {
+        background: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    /* === НАВИГАЦИЯ === */
+    .top-nav {
+        background: var(--text-primary);
+        border: 1px solid var(--text-primary);
+        border-radius: 4px;
+        padding: 1rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .nav-links {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0;
+    }
+
+    .nav-link {
+        color: var(--bg-white);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px 4px 0 0;
+        transition: all 0.2s ease;
+        flex: 1;
+        text-align: center;
+        border-right: 1px solid rgba(255,255,255,0.2);
+        border-bottom: 3px solid transparent;
+    }
+
+    .nav-link:last-child {
+        border-right: none;
+    }
+
+    .nav-link:hover {
+        color: var(--bg-white);
+        background-color: rgba(255,255,255,0.1);
+        transform: translateY(-1px);
+    }
+
+    .nav-link.active {
+        color: var(--bg-white);
+        background-color: transparent;
+        font-weight: 600;
+        border-bottom: 3px solid var(--bg-white);
+    }
+
+    /* === СТАТИСТИЧЕСКИЕ КАРТОЧКИ === */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card:hover {
+        border-color: var(--text-primary);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+
+    .stat-card.primary {
+        border-left: 4px solid var(--text-primary);
+    }
+
+    .stat-card.success {
+        border-left: 4px solid var(--success-color);
+    }
+
+    .stat-card.info {
+        border-left: 4px solid var(--info-color);
+    }
+
+    .stat-card.warning {
+        border-left: 4px solid var(--warning-color);
+    }
+
+    .stat-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        display: block;
+        opacity: 0.8;
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        display: block;
+        margin-bottom: 0.5rem;
+        line-height: 1;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 500;
+    }
+
+    /* === ДЕМОНСТРАЦИЯ ТЕГОВ === */
+    .demo-section {
+        background: var(--bg-light);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 2rem;
+    }
+
+    .demo-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+
+    .demo-item {
+        background: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 1.5rem;
+    }
+
+    .demo-item h4 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .demo-result {
+        font-size: 1.125rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        background: var(--accent-color);
+        padding: 0.75rem;
+        border-radius: 4px;
+        border: 1px solid var(--border-color);
+        margin-top: 0.5rem;
+    }
+
+    /* === ТОП БРЕНДОВ === */
+    .top-brands {
+        background: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 1.5rem;
+    }
+
+    .top-brands h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .top-brands ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .top-brands li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        background: var(--bg-light);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        transition: all 0.2s ease;
+    }
+
+    .top-brands li:hover {
+        background: var(--accent-color);
+        border-color: var(--text-primary);
+    }
+
+    .brand-name {
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    .brand-count {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        background: var(--bg-white);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        border: 1px solid var(--border-color);
+    }
+
+    .brand-rating {
+        font-size: 0.875rem;
+        color: var(--warning-color);
+        margin-left: 0.5rem;
+    }
+
+    /* === АДАПТИВНОСТЬ === */
+    @media (max-width: 768px) {
+        .main-container {
+            padding: 1rem;
+        }
+        
+        .section-container {
+            padding: 1.5rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .nav-links {
+            flex-direction: column;
+            gap: 0;
+        }
+        
+        .nav-link {
+            border-right: none;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            flex: none;
+            width: 100%;
+            border-radius: 4px;
+        }
+        
+        .nav-link.active {
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            border-left: 3px solid var(--bg-white);
+            background-color: rgba(255,255,255,0.1);
+        }
+        
+        .nav-link:last-child {
+            border-bottom: none;
+        }
+        
+        .demo-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .stat-card {
+            padding: 1.5rem;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="display-6 text-center mb-5">
-                <i class="fas fa-chart-bar me-2 text-primary"></i>
-                {% trans "Статистика магазина" %}
-            </h1>
-        </div>
-    </div>
+<div class="main-container">
+    <!-- === ЗАГОЛОВОК === -->
+    <header class="text-center">
+        <h1 class="page-title">
+            <span style="margin-right: 0.5rem;">📊</span>
+            {% trans "Статистика магазина" %}
+        </h1>
+        <p style="color: var(--text-secondary); font-size: 1.125rem;">
+            {% trans "Аналитика и показатели работы" %}
+        </p>
+    </header>
 
-    <!-- Общая статистика -->
-    <div class="row g-4 mb-5">
-        <div class="col-lg-3 col-md-6">
-            <div class="card border-0 bg-primary text-white h-100">
-                <div class="card-body text-center">
-                    <i class="fas fa-shopping-bag fa-3x mb-3"></i>
-                    <h3>{{ stats.total_products }}</h3>
-                    <p class="mb-0">{% trans "Товаров в каталоге" %}</p>
-                </div>
-            </div>
+    <!-- === НАВИГАЦИЯ === -->
+    <nav class="top-nav">
+        <div class="nav-links">
+            <a href="{% url 'home' %}" class="nav-link">{% trans "Главная" %}</a>
+            <a href="{% url 'product_list' %}" class="nav-link">{% trans "Каталог" %}</a>
+            <a href="{% url 'category_list' %}" class="nav-link">{% trans "Категории" %}</a>
+            <a href="{% url 'statistics' %}" class="nav-link active">{% trans "Статистика" %}</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}" class="nav-link">{% trans "Профиль" %}</a>
+                <a href="{% url 'logout' %}" class="nav-link">{% trans "Выход" %}</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="nav-link">{% trans "Вход" %}</a>
+                <a href="{% url 'register' %}" class="nav-link">{% trans "Регистрация" %}</a>
+            {% endif %}
         </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="card border-0 bg-success text-white h-100">
-                <div class="card-body text-center">
-                    <i class="fas fa-tags fa-3x mb-3"></i>
-                    <h3>{{ stats.total_brands }}</h3>
-                    <p class="mb-0">{% trans "Брендов" %}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="card border-0 bg-warning text-white h-100">
-                <div class="card-body text-center">
-                    <i class="fas fa-star fa-3x mb-3"></i>
-                    <h3>{{ stats.total_reviews }}</h3>
-                    <p class="mb-0">{% trans "Отзывов" %}</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="card border-0 bg-info text-white h-100">
-                <div class="card-body text-center">
-                    <i class="fas fa-chart-line fa-3x mb-3"></i>
-                    <h3>{{ stats.avg_rating|floatformat:1 }}</h3>
-                    <p class="mb-0">{% trans "Средний рейтинг" %}</p>
-                </div>
-            </div>
-        </div>
-    </div>
+    </nav>
 
-    <!-- Демонстрация шаблонных тегов -->
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card border-0 bg-light">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">
-                        <i class="fas fa-code me-2"></i>
-                        {% trans "Демонстрация шаблонных тегов" %}
-                    </h5>
+    <!-- === ОБЩАЯ СТАТИСТИКА === -->
+    <section class="section-container">
+        <h2 class="section-title">{% trans "Общая статистика" %}</h2>
+        
+        <div class="stats-grid">
+            <div class="stat-card primary">
+                <span class="stat-icon">🛍️</span>
+                <span class="stat-number">{{ stats.total_products }}</span>
+                <div class="stat-label">{% trans "Товаров в каталоге" %}</div>
+            </div>
+            
+            <div class="stat-card success">
+                <span class="stat-icon">🏷️</span>
+                <span class="stat-number">{{ stats.total_brands }}</span>
+                <div class="stat-label">{% trans "Брендов" %}</div>
+            </div>
+            
+            <div class="stat-card warning">
+                <span class="stat-icon">⭐</span>
+                <span class="stat-number">{{ stats.total_reviews }}</span>
+                <div class="stat-label">{% trans "Отзывов" %}</div>
+            </div>
+            
+            <div class="stat-card info">
+                <span class="stat-icon">📈</span>
+                <span class="stat-number">{{ stats.avg_rating|floatformat:1 }}</span>
+                <div class="stat-label">{% trans "Средний рейтинг" %}</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- === ДЕМОНСТРАЦИЯ ШАБЛОННЫХ ТЕГОВ === -->
+    <section class="section-container">
+        <h2 class="section-title">
+            <span style="margin-right: 0.5rem;">🏷️</span>
+            {% trans "Демонстрация шаблонных тегов" %}
+        </h2>
+        
+        <div class="demo-grid">
+            <div class="demo-item">
+                <h4>{% trans "Простые теги" %}</h4>
+                
+                <div style="margin-bottom: 1rem;">
+                    <strong>{% trans "Общее количество товаров:" %}</strong>
+                    <div class="demo-result">{% total_products %} товаров</div>
                 </div>
-                <div class="card-body">
-                    <p><strong>{% trans "Простой тег" %}:</strong> {% total_products %} товаров</p>
-                    <p><strong>{% trans "Тег с параметрами" %}:</strong> {% price_range 0 50000 %} товаров до 50000₽</p>
-                    <p><strong>{% trans "Фильтр валюты" %}:</strong> {{ 15000|currency }}</p>
-                    <p><strong>{% trans "Приветствие пользователя" %}:</strong> {% user_greeting %}</p>
+                
+                <div style="margin-bottom: 1rem;">
+                    <strong>{% trans "Товары до 50,000₽:" %}</strong>
+                    <div class="demo-result">{% price_range 0 50000 %} товаров</div>
+                </div>
+                
+                <div>
+                    <strong>{% trans "Приветствие пользователя:" %}</strong>
+                    <div class="demo-result">{% user_greeting %}</div>
+                </div>
+            </div>
+            
+            <div class="demo-item">
+                                <h4>{% trans "Фильтры и форматирование" %}</h4>
+                
+                <div style="margin-bottom: 1rem;">
+                    <strong>{% trans "Умножение (100 × 1.2):" %}</strong>
+                    <div class="demo-result">{{ 100|multiply:1.2 }}</div>
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <strong>{% trans "Форматирование валюты:" %}</strong>
+                    <div class="demo-result">{{ 15000|currency }}</div>
+                </div>
+                
+                <div>
+                    <strong>{% trans "Средний рейтинг товаров:" %}</strong>
+                    <div class="demo-result">⭐ {% avg_product_rating %}</div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
+        
+        <!-- === ТОП БРЕНДОВ (INCLUSION TAG) === -->
+        <div style="margin-top: 2rem;">
             {% show_top_brands 5 %}
         </div>
-    </div>
+    </section>
+
+    <!-- === СТАТИСТИКА КАТАЛОГА === -->
+    <section class="section-container">
+        <h2 class="section-title">
+            <span style="margin-right: 0.5rem;">📦</span>
+            {% trans "Статистика каталога" %}
+        </h2>
+        
+        <div class="stats-grid">
+            <div class="stat-card primary">
+                <span class="stat-icon">💰</span>
+                <span class="stat-number">{{ catalog_stats.avg_price|floatformat:0 }}₽</span>
+                <div class="stat-label">{% trans "Средняя цена" %}</div>
+            </div>
+            
+            <div class="stat-card success">
+                <span class="stat-icon">🔝</span>
+                <span class="stat-number">{{ catalog_stats.max_price|floatformat:0 }}₽</span>
+                <div class="stat-label">{% trans "Максимальная цена" %}</div>
+            </div>
+            
+            <div class="stat-card info">
+                <span class="stat-icon">🔻</span>
+                <span class="stat-number">{{ catalog_stats.min_price|floatformat:0 }}₽</span>
+                <div class="stat-label">{% trans "Минимальная цена" %}</div>
+            </div>
+            
+            <div class="stat-card warning">
+                <span class="stat-icon">💎</span>
+                <span class="stat-number">{{ catalog_stats.total_value|floatformat:0 }}₽</span>
+                <div class="stat-label">{% trans "Общая стоимость" %}</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- === ТОП БРЕНДОВ === -->
+    <section class="section-container">
+        <h2 class="section-title">
+            <span style="margin-right: 0.5rem;">🏆</span>
+            {% trans "Топ брендов" %}
+        </h2>
+        
+        {% if brand_stats %}
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+                {% for brand in brand_stats %}
+                    <div style="background: var(--bg-light); border: 1px solid var(--border-color); border-radius: 4px; padding: 1.5rem; transition: all 0.2s ease;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--text-primary); margin: 0;">
+                                {{ brand.brand }}
+                            </h3>
+                            <span style="background: var(--text-primary); color: var(--bg-white); padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.875rem; font-weight: 500;">
+                                #{{ forloop.counter }}
+                            </span>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 600; color: var(--text-primary);">
+                                    {{ brand.count }}
+                                </div>
+                                <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                                    {% trans "товаров" %}
+                                </div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 1.5rem; font-weight: 600; color: var(--text-primary);">
+                                    {{ brand.avg_price|floatformat:0 }}₽
+                                </div>
+                                <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                                    {% trans "средняя цена" %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                <span style="font-size: 3rem; display: block; margin-bottom: 1rem; opacity: 0.5;">📊</span>
+                <p>{% trans "Нет данных о брендах" %}</p>
+            </div>
+        {% endif %}
+    </section>
+
+    <!-- === СТАТИСТИКА КАТЕГОРИЙ === -->
+    <section class="section-container">
+        <h2 class="section-title">
+            <span style="margin-right: 0.5rem;">📂</span>
+            {% trans "Статистика по категориям" %}
+        </h2>
+        
+        {% if category_stats %}
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                {% for category in category_stats %}
+                    <div style="background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 4px; padding: 1.5rem; text-align: center; transition: all 0.2s ease;">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">
+                            {% if category.name == 'men' %}👨
+                            {% elif category.name == 'women' %}👩
+                            {% elif category.name == 'kids' %}👶
+                            {% else %}📦{% endif %}
+                        </div>
+                        
+                        <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--text-primary); margin-bottom: 1rem;">
+                            {{ category.get_name_display }}
+                        </h3>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                            <div>
+                                <div style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary);">
+                                    {{ category.product_count }}
+                                </div>
+                                <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                                    {% trans "товаров" %}
+                                </div>
+                            </div>
+                            <div>
+                                <div style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary);">
+                                    {{ category.avg_price|floatformat:0|default:"—" }}₽
+                                </div>
+                                <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                                    {% trans "средняя цена" %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                <span style="font-size: 3rem; display: block; margin-bottom: 1rem; opacity: 0.5;">📂</span>
+                <p>{% trans "Нет данных о категориях" %}</p>
+            </div>
+        {% endif %}
+    </section>
+
+    <!-- === СТАТИСТИКА ОТЗЫВОВ === -->
+    <section class="section-container">
+        <h2 class="section-title">
+            <span style="margin-right: 0.5rem;">💬</span>
+            {% trans "Статистика отзывов" %}
+        </h2>
+        
+        <div class="stats-grid">
+            <div class="stat-card primary">
+                <span class="stat-icon">📝</span>
+                <span class="stat-number">{{ review_stats.total_reviews }}</span>
+                <div class="stat-label">{% trans "Всего отзывов" %}</div>
+            </div>
+            
+            <div class="stat-card success">
+                <span class="stat-icon">✅</span>
+                <span class="stat-number">{{ review_stats.approved_reviews }}</span>
+                <div class="stat-label">{% trans "Одобренных отзывов" %}</div>
+            </div>
+            
+            <div class="stat-card warning">
+                <span class="stat-icon">⭐</span>
+                <span class="stat-number">{{ review_stats.avg_rating|floatformat:1 }}</span>
+                <div class="stat-label">{% trans "Средний рейтинг" %}</div>
+            </div>
+            
+            <div class="stat-card info">
+                <span class="stat-icon">🎯</span>
+                <span class="stat-number">
+                    {% widthratio review_stats.approved_reviews review_stats.total_reviews 100 %}%
+                </span>
+                <div class="stat-label">{% trans "Процент одобрения" %}</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- === СТАТИСТИКА КЛИЕНТОВ === -->
+    <section class="section-container">
+        <h2 class="section-title">
+            <span style="margin-right: 0.5rem;">👥</span>
+            {% trans "Статистика клиентов" %}
+        </h2>
+        
+        <div class="stats-grid">
+            <div class="stat-card primary">
+                <span class="stat-icon">👤</span>
+                <span class="stat-number">{{ client_stats.total_clients }}</span>
+                <div class="stat-label">{% trans "Всего клиентов" %}</div>
+            </div>
+            
+            <div class="stat-card success">
+                <span class="stat-icon">✅</span>
+                <span class="stat-number">{{ client_stats.active_clients }}</span>
+                <div class="stat-label">{% trans "Активных клиентов" %}</div>
+            </div>
+            
+            <div class="stat-card info">
+                <span class="stat-icon">📊</span>
+                <span class="stat-number">
+                    {% widthratio client_stats.active_clients client_stats.total_clients 100 %}%
+                </span>
+                <div class="stat-label">{% trans "Процент активности" %}</div>
+            </div>
+            
+            <div class="stat-card warning">
+                <span class="stat-icon">📈</span>
+                <span class="stat-number">
+                    {% if client_stats.total_clients > 0 %}
+                        {% widthratio review_stats.total_reviews client_stats.total_clients 1 %}
+                    {% else %}
+                        0
+                    {% endif %}
+                </span>
+                <div class="stat-label">{% trans "Отзывов на клиента" %}</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- === БЫСТРЫЕ ДЕЙСТВИЯ === -->
+    <section class="section-container">
+        <h2 class="section-title">
+            <span style="margin-right: 0.5rem;">⚡</span>
+            {% trans "Быстрые действия" %}
+        </h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <a href="{% url 'product_list' %}" style="display: block; padding: 1.5rem; text-align: center; background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 4px; text-decoration: none; color: var(--text-primary); transition: all 0.2s ease;">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🛍️</div>
+                <div style="font-weight: 500;">{% trans "Каталог товаров" %}</div>
+            </a>
+            
+            <a href="{% url 'category_list' %}" style="display: block; padding: 1.5rem; text-align: center; background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 4px; text-decoration: none; color: var(--text-primary); transition: all 0.2s ease;">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📂</div>
+                <div style="font-weight: 500;">{% trans "Категории" %}</div>
+            </a>
+            
+            <a href="{% url 'reviews_list' %}" style="display: block; padding: 1.5rem; text-align: center; background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 4px; text-decoration: none; color: var(--text-primary); transition: all 0.2s ease;">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">💬</div>
+                <div style="font-weight: 500;">{% trans "Отзывы" %}</div>
+            </a>
+            
+            {% if user.is_staff %}
+                <a href="/admin/" style="display: block; padding: 1.5rem; text-align: center; background: var(--text-primary); border: 1px solid var(--text-primary); border-radius: 4px; text-decoration: none; color: var(--bg-white); transition: all 0.2s ease;">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚙️</div>
+                    <div style="font-weight: 500;">{% trans "Админ-панель" %}</div>
+                </a>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- === ПОДВАЛ === -->
+    <footer style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border-color); text-align: center;">
+        <p style="color: var(--text-secondary);">
+            &copy; 2024 Sneaker Shop. {% trans "Все права защищены" %}.
+        </p>
+    </footer>
 </div>
 {% endblock %}

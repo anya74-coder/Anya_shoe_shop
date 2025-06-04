@@ -1,489 +1,828 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load static %}
 {% load sneaker_tags %}
 
-{% block title %}{% trans "Каталог товаров" %} - Sneaker Shop{% endblock %}
+{% block title %}{% trans "Каталог товаров - Sneaker Shop" %}{% endblock %}
 
 {% block extra_css %}
 <style>
-    .product-card {
+    /* === МИНИМАЛИСТИЧНЫЙ ДИЗАЙН === */
+    :root {
+        --primary-color: #000000;
+        --secondary-color: #666666;
+        --accent-color: #f5f5f5;
+        --border-color: #e0e0e0;
+        --text-primary: #000000;
+        --text-secondary: #666666;
+        --bg-white: #ffffff;
+        --bg-light: #fafafa;
+        --nav-bg: #f8f9fa;
+        --nav-text: #2c3e50;
+        --nav-hover: #34495e;
+        --nav-active: #ffffff;
+        --success-color: #28a745;
+        --danger-color: #dc3545;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: var(--text-primary);
+        background-color: var(--bg-white);
+        line-height: 1.6;
+    }
+
+    /* === ЗАГОЛОВКИ === */
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 1rem 0;
+        letter-spacing: -0.02em;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin: 0 0 1.5rem 0;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .subsection-title {
+        font-size: 1.125rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin: 0 0 1rem 0;
+    }
+
+    /* === РАЗДЕЛИТЕЛИ === */
+    .section-divider {
+        height: 1px;
+        background-color: var(--border-color);
+        margin: 3rem 0;
         border: none;
-        border-radius: 15px;
+    }
+
+    /* === КОНТЕЙНЕРЫ === */
+    .main-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .section-container {
+        background: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    /* === НАВИГАЦИЯ === */
+    .top-nav {
+        background: var(--text-primary);
+        border: 1px solid var(--text-primary);
+        border-radius: 4px;
+        padding: 1rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .nav-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0;
+    }
+
+    .nav-links {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0;
+    }
+
+    .nav-link {
+        color: var(--bg-white);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px 4px 0 0;
+        transition: all 0.2s ease;
+        flex: 1;
+        text-align: center;
+        border-right: 1px solid rgba(255,255,255,0.2);
+        position: relative;
+        border-bottom: 3px solid transparent;
+    }
+
+    .nav-link:last-child {
+        border-right: none;
+    }
+
+    .nav-link:hover {
+        color: var(--bg-white);
+        background-color: rgba(255,255,255,0.1);
+        transform: translateY(-1px);
+    }
+
+    .nav-link.active {
+        color: var(--bg-white);
+        background-color: transparent;
+        font-weight: 600;
+        border-bottom: 3px solid var(--bg-white);
+    }
+
+    /* === КНОПКИ УПРАВЛЕНИЯ === */
+    .admin-controls {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .quick-create-form {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        background: var(--success-color);
+        padding: 0.75rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+    }
+
+    .quick-create-form input {
+        padding: 0.5rem;
+        border: 1px solid rgba(255,255,255,0.3);
+        border-radius: 3px;
+        background: rgba(255,255,255,0.9);
+        color: var(--text-primary);
+        font-size: 0.875rem;
+        width: 120px;
+    }
+
+    .quick-create-form input::placeholder {
+        color: var(--text-secondary);
+    }
+
+    /* === ФИЛЬТРЫ === */
+    .filters-form {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .filter-label {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .filter-input {
+        padding: 0.5rem;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        font-size: 0.875rem;
+        outline: none;
+    }
+
+    .filter-input:focus {
+        border-color: var(--text-primary);
+    }
+
+    /* === КНОПКИ === */
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-decoration: none;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+    }
+
+    .btn-primary {
+        background: var(--text-primary);
+        color: var(--bg-white);
+        border-color: var(--text-primary);
+    }
+
+    .btn-primary:hover {
+        background: var(--secondary-color);
+        border-color: var(--secondary-color);
+        color: var(--bg-white);
+        transform: translateY(-1px);
+    }
+
+    .btn-success {
+        background: var(--success-color);
+        color: var(--bg-white);
+        border-color: var(--success-color);
+    }
+
+    .btn-success:hover {
+        background: #218838;
+        border-color: #218838;
+        color: var(--bg-white);
+    }
+
+    .btn-outline {
+        background: transparent;
+        color: var(--text-secondary);
+        border-color: var(--border-color);
+    }
+
+    .btn-outline:hover {
+        background: var(--accent-color);
+        color: var(--text-primary);
+        border-color: var(--text-primary);
+    }
+
+    .btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+    }
+
+    /* === СЕТКА ТОВАРОВ === */
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .product-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
         overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         transition: all 0.3s ease;
-        height: 100%;
+        position: relative;
     }
-    
+
     .product-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        border-color: var(--text-primary);
     }
-    
+
     .product-image {
-        height: 250px;
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        height: 200px;
+        background: var(--bg-light);
         display: flex;
         align-items: center;
         justify-content: center;
+        font-size: 3rem;
+        color: var(--text-secondary);
         position: relative;
         overflow: hidden;
     }
-    
+
     .product-image img {
-        max-width: 100%;
-        max-height: 100%;
+        width: 100%;
+        height: 100%;
         object-fit: cover;
-        transition: transform 0.3s;
     }
-    
-    .product-card:hover .product-image img {
-        transform: scale(1.05);
+
+    .product-info {
+        padding: 1.5rem;
     }
-    
-    .product-tags {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        z-index: 2;
+
+    .product-brand {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 1.125rem;
+        margin-bottom: 0.5rem;
     }
-    
-    .product-tag {
-        display: inline-block;
+
+    .product-price {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+
+    .product-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+    .product-status {
         padding: 0.25rem 0.5rem;
-        border-radius: 12px;
-        color: white;
+        border-radius: 3px;
         font-size: 0.75rem;
         font-weight: 500;
-        margin: 0.1rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
-    
-    .admin-controls {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        z-index: 3;
+
+    .status-active {
+        background: rgba(40, 167, 69, 0.1);
+        color: var(--success-color);
     }
-    
-    .admin-controls .btn {
-        padding: 0.25rem 0.5rem;
-        margin: 0.1rem;
-        border-radius: 50%;
-        width: 35px;
-        height: 35px;
-        display: inline-flex;
-        align-items: center;
+
+    .status-inactive {
+        background: rgba(220, 53, 69, 0.1);
+        color: var(--danger-color);
+    }
+
+    .product-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    /* === ПАГИНАЦИЯ === */
+    .pagination-container {
+        display: flex;
         justify-content: center;
+        margin: 2rem 0;
     }
-    
-    .product-price {
-        font-size: 1.5rem;
-        font-weight: bold;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+
+    .pagination {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
     }
-    
-    .rating-stars {
-        color: #ffc107;
+
+    .page-link {
+        padding: 0.5rem 0.75rem;
+        border: 1px solid var(--border-color);
+        color: var(--text-secondary);
+        text-decoration: none;
+        border-radius: 4px;
+        transition: all 0.2s ease;
     }
-    
-    .filters-section {
-        background: white;
-        border-radius: 15px;
-        padding: 1.5rem;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+
+    .page-link:hover {
+        background: var(--accent-color);
+        color: var(--text-primary);
+        border-color: var(--text-primary);
+    }
+
+    .page-link.active {
+        background: var(--text-primary);
+        color: var(--bg-white);
+        border-color: var(--text-primary);
+    }
+
+    .page-link.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* === СТАТИСТИКА === */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
         margin-bottom: 2rem;
     }
-    
-    .create-product-btn {
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-        border: none;
-        color: white;
-        font-size: 1.5rem;
-        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
-        z-index: 1000;
-        transition: all 0.3s;
+
+    .stat-card {
+        background: var(--bg-light);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 1.5rem;
+        text-align: center;
     }
-    
-    .create-product-btn:hover {
-        transform: scale(1.1);
-        box-shadow: 0 6px 20px rgba(40, 167, 69, 0.6);
-        color: white;
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    /* === СООБЩЕНИЯ === */
+    .alert {
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+        border: 1px solid;
+    }
+
+    .alert-success {
+        background: rgba(40, 167, 69, 0.1);
+        color: var(--success-color);
+        border-color: var(--success-color);
+    }
+
+    .alert-danger {
+        background: rgba(220, 53, 69, 0.1);
+        color: var(--danger-color);
+        border-color: var(--danger-color);
+    }
+
+    .alert-info {
+        background: rgba(23, 162, 184, 0.1);
+        color: #17a2b8;
+        border-color: #17a2b8;
+    }
+
+    /* === ПУСТОЕ СОСТОЯНИЕ === */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--text-secondary);
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .empty-title {
+        font-size: 1.5rem;
+        font-weight: 500;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+    }
+
+    .empty-text {
+        margin-bottom: 2rem;
+    }
+
+    /* === АДАПТИВНОСТЬ === */
+    @media (max-width: 768px) {
+        .main-container {
+            padding: 1rem;
+        }
+        
+        .section-container {
+            padding: 1.5rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .nav-links {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .nav-link {
+            border-right: none;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .nav-link:last-child {
+            border-bottom: none;
+        }
+        
+        .products-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        .filters-form {
+            grid-template-columns: 1fr;
+        }
+        
+        .admin-controls {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .quick-create-form {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .quick-create-form input {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .product-actions {
+            flex-direction: column;
+        }
+        
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-4">
-    <!-- Заголовок и статистика -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="display-6 text-center mb-4">
-                <i class="fas fa-shopping-bag me-2 text-primary"></i>
-                {% trans "Каталог товаров" %}
-            </h1>
-            
-            <!-- Статистика -->
-            <div class="row text-center mb-4">
-                <div class="col-md-3">
-                    <div class="card border-0 bg-primary text-white">
-                        <div class="card-body">
-                            <h4>{% total_products %}</h4>
-                            <small>{% trans "Всего товаров" %}</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card border-0 bg-success text-white">
-                        <div class="card-body">
-                            <h4>{{ products|length }}</h4>
-                            <small>{% trans "На странице" %}</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card border-0 bg-warning text-white">
-                        <div class="card-body">
-                            <h4>{% price_range 0 50000 %}</h4>
-                            <small>{% trans "До 50000₽" %}</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card border-0 bg-info text-white">
-                        <div class="card-body">
-                            <h4>{% avg_product_rating %}</h4>
-                            <small>{% trans "Средний рейтинг" %}</small>
-                        </div>
-                    </div>
-                </div>
+<div class="main-container">
+    <!-- === НАВИГАЦИЯ === -->
+    <nav class="top-nav">
+        <div class="nav-container">
+            <div class="nav-links">
+                <a href="{% url 'product_list' %}" class="nav-link active">
+                     {% trans "Все товары" %}
+                </a>
+                <a href="{% url 'popular_products' %}" class="nav-link">
+                     {% trans "Популярные" %}
+                </a>
+                <a href="{% url 'new_products' %}" class="nav-link">
+                     {% trans "Новинки" %}
+                </a>
+                <a href="{% url 'category_list' %}" class="nav-link">
+                     {% trans "Категории" %}
+                </a>
             </div>
         </div>
-    </div>
+    </nav>
 
-    <!-- Фильтры -->
-    <div class="filters-section">
-        <h5 class="mb-3">
-            <i class="fas fa-filter me-2"></i>{% trans "Фильтры" %}
-        </h5>
-        <form method="get" class="row g-3">
-            <div class="col-md-3">
-                <label class="form-label">{% trans "Бренд" %}:</label>
-                <input type="text" name="brand" class="form-control" 
-                       value="{{ request.GET.brand }}" placeholder="{% trans 'Поиск по бренду...' %}">
+    <!-- === ЗАГОЛОВОК И УПРАВЛЕНИЕ === -->
+    <div class="section-container">
+        <div class="section-title">
+            <span> {% trans "Каталог товаров" %}</span>
+            {% if user.is_staff %}
+                <div class="admin-controls">
+                    <a href="{% url 'product_create' %}" class="btn btn-primary">
+                        ➕ {% trans "Добавить товар" %}
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- === БЫСТРОЕ СОЗДАНИЕ (только для персонала) === -->
+        {% if user.is_staff %}
+        <form method="post" action="{% url 'product_quick_create' %}" class="quick-create-form">
+            {% csrf_token %}
+            <span style="color: white; font-weight: 500;">⚡ {% trans "Быстрое создание" %}:</span>
+            <input type="text" name="brand" placeholder="{% trans 'Бренд' %}" required>
+            <input type="number" name="price" step="0.01" min="0.01" placeholder="{% trans 'Цена' %}" required>
+            <button type="submit" class="btn btn-sm" style="background: rgba(255,255,255,0.2); color: white; border-color: rgba(255,255,255,0.3);">
+                 {% trans "Создать" %}
+            </button>
+        </form>
+        {% endif %}
+
+        <!-- === СООБЩЕНИЯ === -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- === ФИЛЬТРЫ === -->
+        <form method="get" class="filters-form">
+            <div class="filter-group">
+                <label class="filter-label">{% trans "Бренд" %}</label>
+                <input type="text" name="brand" class="filter-input" 
+                       value="{{ request.GET.brand }}" 
+                       placeholder="{% trans 'Поиск по бренду' %}">
             </div>
-            <div class="col-md-2">
-                <label class="form-label">{% trans "Цена от" %}:</label>
-                <input type="number" name="price_min" class="form-control" 
-                       value="{{ request.GET.price_min }}" placeholder="0">
+            <div class="filter-group">
+                <label class="filter-label">{% trans "Мин. цена" %}</label>
+                <input type="number" name="price_min" class="filter-input" 
+                       value="{{ request.GET.price_min }}" 
+                       placeholder="{% trans 'От' %}" step="0.01">
             </div>
-            <div class="col-md-2">
-                <label class="form-label">{% trans "Цена до" %}:</label>
-                <input type="number" name="price_max" class="form-control" 
-                       value="{{ request.GET.price_max }}" placeholder="100000">
+            <div class="filter-group">
+                <label class="filter-label">{% trans "Макс. цена" %}</label>
+                <input type="number" name="price_max" class="filter-input" 
+                       value="{{ request.GET.price_max }}" 
+                       placeholder="{% trans 'До' %}" step="0.01">
             </div>
-            <div class="col-md-3">
-                <label class="form-label">{% trans "Сортировка" %}:</label>
-                <select name="sort" class="form-select">
-                    <option value="">{% trans "По умолчанию" %}</option>
-                    <option value="price" {% if request.GET.sort == 'price' %}selected{% endif %}>
-                        {% trans "По цене (возрастание)" %}
-                    </option>
-                    <option value="-price" {% if request.GET.sort == '-price' %}selected{% endif %}>
-                        {% trans "По цене (убывание)" %}
-                    </option>
-                    <option value="-created_at" {% if request.GET.sort == '-created_at' %}selected{% endif %}>
-                        {% trans "Сначала новые" %}
-                    </option>
-                    <option value="brand" {% if request.GET.sort == 'brand' %}selected{% endif %}>
-                        {% trans "По бренду" %}
-                    </option>
-                </select>
-            </div>
-            <div class="col-md-2 d-flex align-items-end">
-                <button type="submit" class="btn btn-gradient w-100">
-                    <i class="fas fa-search me-1"></i>{% trans "Применить" %}
+            <div class="filter-group" style="align-self: end;">
+                <button type="submit" class="btn btn-outline">
+                    🔍 {% trans "Фильтровать" %}
                 </button>
             </div>
         </form>
     </div>
 
-    <!-- Список товаров -->
-    <div class="row g-4">
-        {% for product in products %}
-        <div class="col-lg-4 col-md-6">
-            <div class="card product-card">
-                <div class="product-image">
-                    <!-- Теги товара -->
-                    {% if product.tags.exists %}
-                    <div class="product-tags">
-                        {% for product_tag in product.producttag_set.all|slice:":2" %}
-                            <span class="product-tag" data-color="{{ product_tag.tag.color|default:'#007bff' }}">
-                                {{ product_tag.tag.name }}
-                            </span>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                    
-                    <!-- Админ контролы -->
-                    {% if user.is_staff %}
-                    <div class="admin-controls">
-                        <a href="{% url 'product_edit' product.sneakers_id %}" 
-                           class="btn btn-warning btn-sm" title="{% trans 'Редактировать' %}">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                        <a href="{% url 'product_delete' product.sneakers_id %}" 
-                           class="btn btn-danger btn-sm" title="{% trans 'Удалить' %}"
-                           onclick="return confirm('Вы уверены, что хотите удалить этот товар?')">
-                            <i class="fas fa-trash"></i>
-                        </a>
-                    </div>
-                    {% endif %}
-                    
-                    <!-- Изображение или иконка -->
-                    {% if product.image %}
-                        <img src="{{ product.image.url }}" alt="{{ product.brand }}" class="img-fluid">
-                    {% else %}
-                        <i class="fas fa-running fa-4x text-muted"></i>
-                    {% endif %}
-                </div>
-                
-                <div class="card-body d-flex flex-column">
-                    <!-- Заголовок и бренд -->
-                    <h5 class="card-title mb-2">
-                        <a href="{% url 'product_detail' product.sneakers_id %}" 
-                           class="text-decoration-none text-dark">
-                            {{ product.brand }}
-                        </a>
-                    </h5>
-                    
-                    <!-- Цена -->
-                    <div class="product-price mb-2">{{ product.price|floatformat:0 }} ₽</div>
-                    
-                    <!-- Рейтинг -->
-                    {% if product.avg_rating %}
-                    <div class="mb-2">
-                        <div class="rating-stars">
-                            {% for i in "12345" %}
-                                {% if forloop.counter <= product.avg_rating %}
-                                    <i class="fas fa-star"></i>
-                                {% else %}
-                                    <i class="far fa-star"></i>
-                                {% endif %}
-                            {% endfor %}
-                            <small class="text-muted ms-1">
-                                ({{ product.review_count }} {% trans "отзывов" %})
-                            </small>
-                        </div>
-                    </div>
-                    {% endif %}
-                    
-                    <!-- Статус товара -->
-                    <div class="mb-3">
-                        {% if product.is_active %}
-                            <span class="badge bg-success">
-                                <i class="fas fa-check me-1"></i>{% trans "В наличии" %}
-                            </span>
-                        {% else %}
-                            <span class="badge bg-danger">
-                                <i class="fas fa-times me-1"></i>{% trans "Нет в наличии" %}
-                            </span>
-                        {% endif %}
-                    </div>
-                    
-                    <!-- Дата добавления -->
-                    <small class="text-muted mb-3">
-                        <i class="fas fa-calendar me-1"></i>
-                        {% trans "Добавлен" %}: {{ product.created_at|date:"d.m.Y" }}
-                    </small>
-                    
-                    <!-- Кнопки действий -->
-                    <div class="mt-auto">
-                        <div class="d-grid gap-2">
-                            <a href="{% url 'product_detail' product.sneakers_id %}" 
-                               class="btn btn-gradient">
-                                <i class="fas fa-eye me-1"></i>{% trans "Подробнее" %}
-                            </a>
-                            
-                            {% if user.is_authenticated and product.is_active %}
-                            <div class="row g-1">
-                                <div class="col-6">
-                                    <form method="post" action="{% url 'toggle_wishlist' product.sneakers_id %}">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="size" value="Универсальный">
-                                        <button type="submit" class="btn btn-outline-danger btn-sm w-100">
-                                            <i class="fas fa-heart"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                                <div class="col-6">
-                                    <a href="{% url 'create_order' product.sneakers_id %}" 
-                                       class="btn btn-outline-success btn-sm w-100">
-                                        <i class="fas fa-shopping-cart"></i>
-                                    </a>
-                                </div>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
+    <!-- === СТАТИСТИКА === -->
+    {% if stats %}
+    <div class="section-container">
+        <h3 class="subsection-title"> {% trans "Статистика каталога" %}</h3>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-number">{{ stats.total_products }}</span>
+                <div class="stat-label">{% trans "Всего товаров" %}</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">{{ stats.avg_price|floatformat:0 }}</span>
+                <div class="stat-label">{% trans "Средняя цена" %}</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">{{ stats.max_price|floatformat:0 }}</span>
+                <div class="stat-label">{% trans "Макс. цена" %}</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">{{ stats.min_price|floatformat:0 }}</span>
+                <div class="stat-label">{% trans "Мин. цена" %}</div>
             </div>
         </div>
-        {% empty %}
-        <div class="col-12">
-            <div class="text-center py-5">
-                <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                <h4 class="text-muted">{% trans "Товары не найдены" %}</h4>
-                <p class="text-muted">{% trans "Попробуйте изменить параметры поиска" %}</p>
-                <a href="{% url 'products' %}" class="btn btn-gradient">
-                    <i class="fas fa-refresh me-1"></i>{% trans "Сбросить фильтры" %}
+    </div>
+    {% endif %}
+
+    <!-- === СПИСОК ТОВАРОВ === -->
+    <div class="section-container">
+        <h3 class="subsection-title">
+             {% trans "Товары" %} 
+            {% if products.paginator.count %}
+                ({{ products.start_index }}-{{ products.end_index }} {% trans "из" %} {{ products.paginator.count }} {% trans "найдено" %})
+            {% endif %}
+        </h3>
+        
+        {% if products %}
+            <div class="products-grid">
+                {% for product in products %}
+                    <div class="product-card">
+                        <div class="product-image">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.brand }}">
+                            {% else %}
+                                <span style="font-size: 3rem; color: var(--text-secondary);">👟</span>
+                            {% endif %}
+                        </div>
+                        <div class="product-info">
+                            <div class="product-brand">{{ product.brand }}</div>
+                            <div class="product-price">{{ product.price|floatformat:0 }} ₽</div>
+                            
+                            <div class="product-meta">
+                                {% if product.is_active %}
+                                    <span style="color: #28a745;">✓ {% trans "В наличии" %}</span>
+                                {% else %}
+                                    <span style="color: #dc3545;">✗ {% trans "Нет в наличии" %}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="product-meta">
+                                {% trans "Добавлен" %}: {{ product.created_at|date:"d.m.Y" }}
+                            </div>
+                            
+                            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                                <a href="{% url 'product_detail' product.pk %}" class="btn btn-primary btn-small">
+                                    {% trans "Подробнее" %}
+                                </a>
+                                <a href="{% url 'toggle_wishlist' product.pk %}" class="btn btn-secondary btn-small">
+                                    ❤️
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- === ПАГИНАЦИЯ === -->
+            {% if products.has_other_pages %}
+            <div class="pagination">
+                {% if products.has_previous %}
+                    <a href="?page=1{% if request.GET.brand %}&brand={{ request.GET.brand }}{% endif %}{% if request.GET.price_min %}&price_min={{ request.GET.price_min }}{% endif %}{% if request.GET.price_max %}&price_max={{ request.GET.price_max }}{% endif %}" 
+                       class="pagination-link">{% trans "Первая" %}</a>
+                    <a href="?page={{ products.previous_page_number }}{% if request.GET.brand %}&brand={{ request.GET.brand }}{% endif %}{% if request.GET.price_min %}&price_min={{ request.GET.price_min }}{% endif %}{% if request.GET.price_max %}&price_max={{ request.GET.price_max }}{% endif %}" 
+                       class="pagination-link">‹ {% trans "Назад" %}</a>
+                {% else %}
+                    <span class="pagination-link disabled">{% trans "Первая" %}</span>
+                    <span class="pagination-link disabled">‹ {% trans "Назад" %}</span>
+                {% endif %}
+
+                <span class="pagination-link current">
+                    {% trans "Страница" %} {{ products.number }} {% trans "из" %} {{ products.paginator.num_pages }}
+                </span>
+
+                {% if products.has_next %}
+                    <a href="?page={{ products.next_page_number }}{% if request.GET.brand %}&brand={{ request.GET.brand }}{% endif %}{% if request.GET.price_min %}&price_min={{ request.GET.price_min }}{% endif %}{% if request.GET.price_max %}&price_max={{ request.GET.price_max }}{% endif %}" 
+                       class="pagination-link">{% trans "Вперед" %} ›</a>
+                    <a href="?page={{ products.paginator.num_pages }}{% if request.GET.brand %}&brand={{ request.GET.brand }}{% endif %}{% if request.GET.price_min %}&price_min={{ request.GET.price_min }}{% endif %}{% if request.GET.price_max %}&price_max={{ request.GET.price_max }}{% endif %}" 
+                       class="pagination-link">{% trans "Последняя" %}</a>
+                {% else %}
+                    <span class="pagination-link disabled">{% trans "Вперед" %} ›</span>
+                    <span class="pagination-link disabled">{% trans "Последняя" %}</span>
+                {% endif %}
+            </div>
+            {% endif %}
+
+        {% else %}
+            <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                <span style="font-size: 4rem; display: block; margin-bottom: 1rem;">📦</span>
+                <h3 style="margin-bottom: 1rem;">{% trans "Товары не найдены" %}</h3>
+                <p>{% trans "Попробуйте изменить параметры фильтрации" %}</p>
+                <a href="{% url 'product_list' %}" class="btn btn-secondary" style="margin-top: 1rem;">
+                    {% trans "Сбросить фильтры" %}
+                </a>
+            </div>
+        {% endif %}
+    </section>
+
+    <!-- === БЫСТРЫЕ ДЕЙСТВИЯ === -->
+    <section class="section-container">
+        <h2 class="section-title">{% trans "Быстрые действия" %}</h2>
+        
+        <div class="stats-grid">
+            <div class="stat-item">
+                <h3 class="subsection-title">{% trans "Главная" %}</h3>
+                <p class="text-secondary">{% trans "Вернуться на главную" %}</p>
+                <a href="{% url 'home' %}" class="btn btn-secondary btn-small">
+                    {% trans "Перейти" %}
+                </a>
+            </div>
+            
+            <div class="stat-item">
+                <h3 class="subsection-title">{% trans "Категории" %}</h3>
+                <p class="text-secondary">{% trans "Товары по категориям" %}</p>
+                <a href="{% url 'category_list' %}" class="btn btn-secondary btn-small">
+                    {% trans "Перейти" %}
+                </a>
+            </div>
+            
+            <div class="stat-item">
+                <h3 class="subsection-title">{% trans "Поиск" %}</h3>
+                <p class="text-secondary">{% trans "Расширенный поиск" %}</p>
+                <a href="{% url 'search_products' %}" class="btn btn-secondary btn-small">
+                    {% trans "Перейти" %}
+                </a>
+            </div>
+            
+            <div class="stat-item">
+                <h3 class="subsection-title">{% trans "Избранное" %}</h3>
+                <p class="text-secondary">{% trans "Сохраненные товары" %}</p>
+                <a href="{% url 'wishlist' %}" class="btn btn-secondary btn-small">
+                    {% trans "Перейти" %}
                 </a>
             </div>
         </div>
-        {% endfor %}
-    </div>
+    </section>
 
-    <!-- Пагинация -->
-    {% if products.has_other_pages %}
-    <nav aria-label="{% trans 'Навигация по страницам' %}" class="mt-5">
-        <ul class="pagination justify-content-center">
-            {% if products.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page=1">
-                        <i class="fas fa-angle-double-left"></i>
-                    </a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ products.previous_page_number }}">
-                        <i class="fas fa-angle-left"></i>
-                    </a>
-                </li>
-            {% endif %}
-
-            {% for num in products.paginator.page_range %}
-                {% if products.number == num %}
-                    <li class="page-item active">
-                        <span class="page-link">{{ num }}</span>
-                    </li>
-                {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
-                    <li class="page-item">
-                        <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ num }}">{{ num }}</a>
-                    </li>
-                {% endif %}
-            {% endfor %}
-
-            {% if products.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ products.next_page_number }}">
-                        <i class="fas fa-angle-right"></i>
-                    </a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link" href="?{% if request.GET.urlencode %}{{ request.GET.urlencode }}&{% endif %}page={{ products.paginator.num_pages }}">
-                        <i class="fas fa-angle-double-right"></i>
-                    </a>
-                </li>
-            {% endif %}
-        </ul>
-    </nav>
-    
-    <!-- Информация о пагинации -->
-    <div class="text-center mt-3">
-        <small class="text-muted">
-            {% trans "Показано" %} {{ products.start_index }} - {{ products.end_index }} 
-            {% trans "из" %} {{ products.paginator.count }} {% trans "товаров" %}
-        </small>
-    </div>
-    {% endif %}
+    <!-- === ПОДВАЛ === -->
+    <footer style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border-color); text-align: center;">
+        <p class="text-secondary">
+            &copy; 2024 Sneaker Shop. {% trans "Все права защищены" %}.
+        </p>
+        <p class="text-secondary" style="font-size: 0.875rem; margin-top: 0.5rem;">
+            {% trans "Профессиональный каталог спортивной обуви" %}
+        </p>
+    </footer>
 </div>
 
-<!-- Кнопка создания товара для админов -->
-{% if user.is_staff %}
-<a href="{% url 'product_create' %}" class="create-product-btn" 
-   title="{% trans 'Добавить новый товар' %}">
-    <i class="fas fa-plus"></i>
-</a>
-{% endif %}
-
-<!-- JavaScript для улучшения UX -->
+<!-- === JAVASCRIPT === -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Применяем цвета к тегам
-    document.querySelectorAll('.product-tag[data-color]').forEach(function(tag) {
-        const color = tag.getAttribute('data-color');
-        if (color) {
-            tag.style.backgroundColor = color;
+    // Подсветка активной навигации
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
         }
     });
     
-    // Анимация для кнопок избранного
-    document.querySelectorAll('form[action*="toggle_wishlist"]').forEach(function(form) {
-        form.addEventListener('submit', function(e) {
-            const button = form.querySelector('button');
-            const icon = button.querySelector('i');
-            
-            // Анимация сердечка
-            icon.classList.add('fa-beat');
-            setTimeout(function() {
-                icon.classList.remove('fa-beat');
-            }, 1000);
+    // Автофокус на первое поле фильтра
+    const firstFilterInput = document.querySelector('.filter-input');
+    if (firstFilterInput && window.innerWidth > 768) {
+        firstFilterInput.focus();
+    }
+    
+    // Плавная прокрутка для якорных ссылок
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
         });
     });
-    
-    // Автоматическая отправка формы фильтров при изменении сортировки
-    const sortSelect = document.querySelector('select[name="sort"]');
-    if (sortSelect) {
-        sortSelect.addEventListener('change', function() {
-            this.form.submit();
-        });
-    }
-    
-    // Плавная прокрутка к результатам после фильтрации
-    if (window.location.search.includes('brand') || window.location.search.includes('price')) {
-        const resultsContainer = document.querySelector('.row.g-4');
-        if (resultsContainer) {
-            resultsContainer.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
-            });
-        }
-    }
 });
-
-// Добавляем CSS класс для градиентных кнопок
-const style = document.createElement('style');
-style.textContent = `
-    .btn-gradient {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        color: white;
-        transition: all 0.3s;
-    }
-    
-    .btn-gradient:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-        color: white;
-    }
-    
-    .fa-beat {
-        animation: fa-beat 1s ease-in-out;
-    }
-    
-    @keyframes fa-beat {
-        0%, 90% { transform: scale(1); }
-        45% { transform: scale(1.25); }
-    }
-`;
-document.head.appendChild(style);
 </script>
 {% endblock %}

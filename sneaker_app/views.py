@@ -119,88 +119,86 @@ def home(request):
 @cache_page(60 * 10)  # ✅ Кешируем каталог на 10 минут
 def product_list(request):
     """
-    Список товаров с фильтрацией, поиском и пагинацией
+    Список товаров с фильтрацией и пагинацией
     """
-    # Кешируем только данные товаров, а не всю страницу
-    cache_key = f'products_list_{request.GET.urlencode()}'
-    products_data = cache.get(cache_key)
+    # Базовый queryset активных товаров
+    queryset = Catalog.objects.filter(is_active=True)
     
-    if products_data is None:
-        # Получаем все активные товары
-        products = Catalog.objects.filter(is_active=True).annotate(
-            avg_rating=Avg('reviews__rating'),
-            review_count=Count('reviews')
-        )
-        
-        # Получаем список всех брендов для фильтра
-        brands = Catalog.objects.values_list('brand', flat=True).distinct().order_by('brand')
-        
-        # Фильтрация по поиску
-        search_query = request.GET.get('search')
-        if search_query:
-            products = products.filter(
-                Q(brand__icontains=search_query) |
-                Q(product_card__name__icontains=search_query) |
-                Q(product_card__description__icontains=search_query)
-            )
-        
-        # Фильтрация по бренду
-        brand_filter = request.GET.get('brand')
-        if brand_filter:
-            products = products.filter(brand=brand_filter)
-        
-        # Фильтрация по цене
-        price_min = request.GET.get('price_min')
-        if price_min:
-            try:
-                products = products.filter(price__gte=float(price_min))
-            except ValueError:
-                pass
-        
-        price_max = request.GET.get('price_max')
-        if price_max:
-            try:
-                products = products.filter(price__lte=float(price_max))
-            except ValueError:
-                pass
-        
-        # Сортировка
-        sort_by = request.GET.get('sort', '-created_at')
-        if sort_by in ['-created_at', 'created_at', 'price', '-price', 'brand']:
-            products = products.order_by(sort_by)
-        
-        # Статистика
-        stats = products.aggregate(
-            total_products=Count('sneakers_id'),
-            avg_price=Avg('price'),
-            min_price=Min('price'),
-            max_price=Max('price')
-        )
-        
-        # Пагинация
-        paginator = Paginator(products, 12)
-        page = request.GET.get('page')
-        
+    # Получаем все категории для фильтра
+    categories = Category.objects.all().order_by('name')
+    
+    # Фильтрация по категории
+    category_filter = request.GET.get('category')
+    if category_filter:
         try:
-            products = paginator.page(page)
-        except PageNotAnInteger:
-            products = paginator.page(1)
-        except EmptyPage:
-            products = paginator.page(paginator.num_pages)
-        
-        # Кешируем только данные товаров на 10 минут
-        cache.set(cache_key, products, 60 * 10)
+            category_id = int(category_filter)
+            # Фильтруем через связанную таблицу ProductCards
+            queryset = queryset.filter(product_card__category_id=category_id)
+        except (ValueError, TypeError):
+            pass
+    
+    # Фильтрация по бренду
+    brand_filter = request.GET.get('brand')
+    if brand_filter:
+        queryset = queryset.filter(brand__icontains=brand_filter)
+    
+    # Фильтрация по цене
+    price_min = request.GET.get('price_min')
+    if price_min:
+        try:
+            queryset = queryset.filter(price__gte=float(price_min))
+        except (ValueError, TypeError):
+            pass
+    
+    price_max = request.GET.get('price_max')
+    if price_max:
+        try:
+            queryset = queryset.filter(price__lte=float(price_max))
+        except (ValueError, TypeError):
+            pass
+    
+    # Сортировка
+    sort_by = request.GET.get('sort', '-created_at')
+    valid_sorts = ['-created_at', 'created_at', 'price', '-price', 'brand', '-brand']
+    if sort_by in valid_sorts:
+        queryset = queryset.order_by(sort_by)
     else:
-        products = products_data
+        queryset = queryset.order_by('-created_at')
+    
+    # Статистика для отфильтрованных товаров
+    stats = queryset.aggregate(
+        total_products=Count('sneakers_id'),
+        avg_price=Avg('price'),
+        max_price=Max('price'),
+        min_price=Min('price')
+    )
+    
+    # Пагинация
+    paginator = Paginator(queryset, 12)  # 12 товаров на страницу
+    page = request.GET.get('page')
+    
+    try:
+        products = paginator.page(page)
+    except PageNotAnInteger:
+        products = paginator.page(1)
+    except EmptyPage:
+        products = paginator.page(paginator.num_pages)
     
     context = {
         'products': products,
-        'brands': brands,
+        'categories': categories,
         'stats': stats,
-        'user': request.user,  # ✅ Пользователь всегда актуальный
+        'current_filters': {
+            'category': category_filter,
+            'brand': brand_filter,
+            'price_min': price_min,
+            'price_max': price_max,
+            'sort': sort_by,
+        }
     }
     
     return render(request, 'products/product_list.html', context)
+
 
 @cache_page(60 * 10)  # ✅ Кешируем каталог на 10 минут  
 def catalog_list(request):

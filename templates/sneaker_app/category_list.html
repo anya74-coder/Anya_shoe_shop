@@ -293,9 +293,10 @@
                                     <div class="stat-label">{% trans "Ср. цена" %}</div>
                                 </div>
                             </div>
-                            <a href="{% url 'category_detail' category.pk %}" class="btn btn-primary">
+                            <a href="{% url 'product_list' %}?category={{ category.pk }}" class="btn btn-primary">
                                 {% trans "Посмотреть товары" %}
                             </a>
+
                         </div>
                     </div>
                 {% endfor %}
@@ -312,7 +313,7 @@
     <!-- === ПОДВАЛ === -->
     <footer style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border-color); text-align: center;">
         <p class="text-secondary">
-            &copy; 2024 Sneaker Shop. {% trans "Все права защищены" %}.
+            &copy; 2025 Sneaker Shop. {% trans "Все права защищены" %}.
         </p>
     </footer>
 </div>

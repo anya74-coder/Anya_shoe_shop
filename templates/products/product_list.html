@@ -201,6 +201,29 @@
         border-color: var(--text-primary);
     }
 
+    .filter-input select,
+    .filter-input {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.7rem center;
+        background-size: 1rem;
+        padding-right: 2.5rem;
+    }
+
+    .filter-input select {
+        cursor: pointer;
+    }
+
+    .filter-input select:focus {
+        outline: none;
+        border-color: var(--text-primary);
+        box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+    }
+
+
     /* === КНОПКИ === */
     .btn {
         padding: 0.75rem 1.5rem;
@@ -600,6 +623,18 @@
         <!-- === ФИЛЬТРЫ === -->
         <form method="get" class="filters-form">
             <div class="filter-group">
+                <label class="filter-label">{% trans "Категория" %}</label>
+                <select name="category" class="filter-input">
+                    <option value="">{% trans "Все категории" %}</option>
+                    {% for category in categories %}
+                        <option value="{{ category.pk }}" 
+                                {% if request.GET.category == category.pk|stringformat:"s" %}selected{% endif %}>
+                            {{ category.get_name_display }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
                 <label class="filter-label">{% trans "Бренд" %}</label>
                 <input type="text" name="brand" class="filter-input" 
                        value="{{ request.GET.brand }}" 
@@ -782,7 +817,7 @@
     <!-- === ПОДВАЛ === -->
     <footer style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border-color); text-align: center;">
         <p class="text-secondary">
-            &copy; 2024 Sneaker Shop. {% trans "Все права защищены" %}.
+            &copy; 2025 Sneaker Shop. {% trans "Все права защищены" %}.
         </p>
         <p class="text-secondary" style="font-size: 0.875rem; margin-top: 0.5rem;">
             {% trans "Профессиональный каталог спортивной обуви" %}

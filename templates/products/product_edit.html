@@ -1,267 +1,652 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Редактировать {{ product.brand }} - Sneaker Shop</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
 
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f8f9fa;
-            line-height: 1.6;
-        }
+{% block title %}{% trans "Редактировать товар" %} - {{ product.brand }} - Sneaker Shop{% endblock %}
 
-        .container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 0 20px;
-        }
+{% block extra_css %}
+<style>
+    /* === МИНИМАЛИСТИЧНЫЙ ДИЗАЙН === */
+    :root {
+        --primary-color: #000000;
+        --secondary-color: #666666;
+        --accent-color: #f5f5f5;
+        --border-color: #e0e0e0;
+        --text-primary: #000000;
+        --text-secondary: #666666;
+        --bg-white: #ffffff;
+        --bg-light: #fafafa;
+        --success-color: #28a745;
+        --danger-color: #dc3545;
+        --warning-color: #ffc107;
+    }
 
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1rem 0;
-            margin-bottom: 2rem;
-            border-radius: 10px;
-            text-align: center;
-        }
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: var(--text-primary);
+        background-color: var(--bg-white);
+        line-height: 1.6;
+    }
 
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            margin: 0 1rem;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
+    .main-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
 
-        .nav-links a:hover {
-            background: rgba(255,255,255,0.2);
-        }
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 2rem;
+        text-align: center;
+        letter-spacing: -0.02em;
+    }
 
-        .form-container {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
+    /* === НАВИГАЦИЯ === */
+    .breadcrumb {
+        background: transparent;
+        padding: 0;
+        margin-bottom: 2rem;
+        font-size: 0.875rem;
+    }
 
-        .current-image {
-            margin-bottom: 1rem;
-            text-align: center;
-        }
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: "›";
+        color: var(--text-secondary);
+        margin: 0 0.5rem;
+    }
 
-        .current-image img {
-            max-width: 200px;
-            max-height: 200px;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+    .breadcrumb-item a {
+        color: var(--text-secondary);
+        text-decoration: none;
+    }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
+    .breadcrumb-item a:hover {
+        color: var(--text-primary);
+    }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-            color: #333;
-        }
+    .breadcrumb-item.active {
+        color: var(--text-primary);
+        font-weight: 500;
+    }
 
-        .form-group input, .form-group textarea, .form-group select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
+    /* === ИНФОРМАЦИОННАЯ ПАНЕЛЬ === */
+    .product-info-panel {
+        background: var(--bg-light);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
 
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
-        }
+    .info-title {
+        font-size: 1.125rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
 
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
 
-        .checkbox-group input[type="checkbox"] {
-            width: auto;
-        }
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
 
-        .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: transform 0.2s;
-            text-decoration: none;
-            display: inline-block;
-        }
+    .info-label {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 500;
+    }
 
-        .btn:hover {
-            transform: translateY(-2px);
-        }
+    .info-value {
+        font-size: 0.875rem;
+        color: var(--text-primary);
+        font-weight: 500;
+    }
 
-        .btn-secondary {
-            background: #6c757d;
-            margin-left: 1rem;
-        }
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 3px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
 
-        .btn-danger {
-            background: #dc3545;
-            margin-left: 1rem;
-        }
+    .status-active {
+        background: rgba(40, 167, 69, 0.1);
+        color: var(--success-color);
+    }
 
-        .messages {
-            margin-bottom: 1rem;
-        }
+    .status-inactive {
+        background: rgba(220, 53, 69, 0.1);
+        color: var(--danger-color);
+    }
 
-        .alert {
-            padding: 0.75rem;
-            border-radius: 5px;
-            margin-bottom: 0.5rem;
-        }
+    /* === ФОРМА === */
+    .form-container {
+        background: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
 
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
 
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
+    .form-label {
+        display: block;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+    }
 
-        .required {
-            color: #dc3545;
-        }
+    .required {
+        color: var(--danger-color);
+    }
 
-        .product-info {
-            background: #f8f9fa;
+    .form-control, .form-select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        font-size: 1rem;
+        transition: all 0.2s ease;
+        background: var(--bg-white);
+        color: var(--text-primary);
+    }
+
+    .form-control:focus, .form-select:focus {
+        outline: none;
+        border-color: var(--text-primary);
+        box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+    }
+
+    .form-control.is-invalid {
+        border-color: var(--danger-color);
+    }
+
+    .invalid-feedback {
+        color: var(--danger-color);
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: block;
+    }
+
+    .form-help {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        margin-top: 0.25rem;
+    }
+
+    /* === ТЕКУЩЕЕ ИЗОБРАЖЕНИЕ === */
+    .current-image-container {
+        background: var(--bg-light);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 1.5rem;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .current-image-title {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+
+    .current-image {
+        max-width: 200px;
+        max-height: 200px;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border: 1px solid var(--border-color);
+    }
+
+    /* === ФАЙЛОВЫЙ ИНПУТ === */
+    .file-input-container {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .file-input {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+
+    .file-input-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 2rem;
+        border: 2px dashed var(--border-color);
+        border-radius: 4px;
+        background: var(--bg-light);
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: center;
+    }
+
+    .file-input-label:hover {
+        border-color: var(--text-primary);
+        background: var(--accent-color);
+        color: var(--text-primary);
+    }
+
+    .file-input-icon {
+        font-size: 2rem;
+    }
+
+    .file-input-text {
+        font-weight: 500;
+    }
+
+    /* === ЧЕКБОКС === */
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .checkbox-input {
+        width: 1.25rem;
+        height: 1.25rem;
+        border: 2px solid var(--border-color);
+        border-radius: 3px;
+        background: var(--bg-white);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .checkbox-input:checked {
+        background: var(--text-primary);
+        border-color: var(--text-primary);
+    }
+
+    .checkbox-label {
+        font-weight: 500;
+        color: var(--text-primary);
+        cursor: pointer;
+        margin: 0;
+    }
+
+    /* === КНОПКИ === */
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-decoration: none;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary {
+        background: var(--text-primary);
+        color: var(--bg-white);
+        border-color: var(--text-primary);
+    }
+
+    .btn-primary:hover {
+        background: var(--secondary-color);
+        border-color: var(--secondary-color);
+        color: var(--bg-white);
+        transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+        background: transparent;
+        color: var(--text-secondary);
+        border-color: var(--border-color);
+    }
+
+    .btn-secondary:hover {
+        background: var(--accent-color);
+        color: var(--text-primary);
+        border-color: var(--text-primary);
+    }
+
+    .btn-danger {
+        background: var(--danger-color);
+        color: var(--bg-white);
+        border-color: var(--danger-color);
+    }
+
+    .btn-danger:hover {
+        background: #c82333;
+        border-color: #c82333;
+        color: var(--bg-white);
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--border-color);
+    }
+
+    /* === СООБЩЕНИЯ === */
+    .alert {
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1.5rem;
+        border: 1px solid;
+    }
+
+    .alert-success {
+        background: rgba(40, 167, 69, 0.1);
+        color: var(--success-color);
+        border-color: var(--success-color);
+    }
+
+    .alert-danger {
+        background: rgba(220, 53, 69, 0.1);
+        color: var(--danger-color);
+        border-color: var(--danger-color);
+    }
+
+    .alert-warning {
+        background: rgba(255, 193, 7, 0.1);
+        color: var(--warning-color);
+        border-color: var(--warning-color);
+    }
+
+    /* === ПОДСКАЗКИ === */
+    .tips-section {
+        background: var(--bg-light);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 2rem;
+        margin-top: 2rem;
+    }
+
+    .tips-title {
+        font-size: 1.125rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .tips-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .tips-list li {
+        padding: 0.5rem 0;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        position: relative;
+        padding-left: 1.5rem;
+    }
+
+    .tips-list li::before {
+        content: "💡";
+        position: absolute;
+        left: 0;
+        font-size: 1rem;
+    }
+
+    /* === АДАПТИВНОСТЬ === */
+    @media (max-width: 768px) {
+        .main-container {
             padding: 1rem;
-            border-radius: 5px;
-            margin-bottom: 2rem;
         }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <header class="header">
-            <h1>✏️ Редактировать товар</h1>
-            <div class="nav-links">
-                <a href="{% url 'home' %}">🏠 Главная</a>
-                <a href="{% url 'product_list' %}">📦 Каталог</a>
-                <a href="{% url 'product_detail' product.sneakers_id %}">👁️ Просмотр товара</a>
-                <a href="{% url 'profile' %}">👤 Профиль</a>
-            </div>
-        </header>
+        
+        .form-container {
+            padding: 1.5rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+        }
+        
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
 
-        <!-- Сообщения -->
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
+        .file-input-label {
+            padding: 1.5rem;
+        }
 
-        <!-- Информация о товаре -->
-        <div class="product-info">
-            <h3>📋 Текущая информация о товаре</h3>
-            <p><strong>ID:</strong> {{ product.sneakers_id }}</p>
-            <p><strong>Дата создания:</strong> {{ product.created_at|date:"d.m.Y H:i" }}</p>
-            <p><strong>Статус:</strong> 
-                {% if product.is_active %}
-                    <span style="color: #28a745;">✅ Активен</span>
-                {% else %}
-                    <span style="color: #dc3545;">❌ Неактивен</span>
-                {% endif %}
-            </p>
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-title {
+            font-size: 1.75rem;
+        }
+        
+        .product-info-panel,
+        .form-container,
+        .tips-section {
+            padding: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-container">
+    <!-- === НАВИГАЦИЯ === -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans "Главная" %}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product_list' %}">{% trans "Товары" %}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product_detail' product.sneakers_id %}">{{ product.brand }}</a></li>
+            <li class="breadcrumb-item active">{% trans "Редактировать" %}</li>
+        </ol>
+    </nav>
+
+    <h1 class="page-title">
+        ✏️ {% trans "Редактировать товар" %}
+    </h1>
+
+    <!-- === СООБЩЕНИЯ === -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- === ИНФОРМАЦИЯ О ТОВАРЕ === -->
+    <div class="product-info-panel">
+        <div class="info-title">
+            📋 {% trans "Текущая информация о товаре" %}
         </div>
-
-        <div class="form-container">
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                
-                <div class="form-group">
-                    <label for="brand">Бренд <span class="required">*</span></label>
-                    <input type="text" id="brand" name="brand" value="{{ product.brand }}" required 
-                           placeholder="Например: Nike, Adidas, Puma...">
-                </div>
-
-                <div class="form-group">
-                    <label for="price">Цена (₽) <span class="required">*</span></label>
-                    <input type="number" id="price" name="price" value="{{ product.price }}" required 
-                           min="0" step="0.01" placeholder="0.00">
-                </div>
-
-                <div class="form-group">
-                    <label for="image">Изображение товара</label>
-                    
-                    {% if product.image %}
-                        <div class="current-image">
-                            <p><strong>Текущее изображение:</strong></p>
-                            <img src="{{ product.image.url }}" alt="{{ product.brand }}">
-                        </div>
+        <div class="info-grid">
+            <div class="info-item">
+                                <div class="info-value">#{{ product.sneakers_id }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">{% trans "Дата создания" %}</div>
+                <div class="info-value">{{ product.created_at|date:"d.m.Y H:i" }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">{% trans "Статус" %}</div>
+                <div class="info-value">
+                    {% if product.is_active %}
+                        <span class="status-badge status-active">✅ {% trans "Активен" %}</span>
+                    {% else %}
+                        <span class="status-badge status-inactive">❌ {% trans "Неактивен" %}</span>
                     {% endif %}
-                    
-                    <input type="file" id="image" name="image" accept="image/*">
-                    <small style="color: #666; font-size: 0.9rem;">
-                        {% if product.image %}
-                            Выберите новое изображение, если хотите заменить текущее.
-                        {% else %}
-                            Поддерживаемые форматы: JPG, PNG, GIF. Максимальный размер: 5MB
-                        {% endif %}
-                    </small>
                 </div>
-
-                <div class="form-group">
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="is_active" name="is_active" 
-                               {% if product.is_active %}checked{% endif %}>
-                        <label for="is_active">Товар активен (доступен для заказа)</label>
-                    </div>
-                </div>
-
-                <div style="margin-top: 2rem;">
-                    <button type="submit" class="btn">
-                        ✅ Сохранить изменения
-                    </button>
-                    <a href="{% url 'product_detail' product.sneakers_id %}" class="btn btn-secondary">
-                        ❌ Отмена
-                    </a>
-                </div>
-            </form>
-        </div>
-
-        <div style="background: white; padding: 1.5rem; border-radius: 10px; margin-top: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <h3>💡 Подсказки:</h3>
-            <ul style="margin-left: 1.5rem; color: #666;">
-                <li>Изменения вступят в силу сразу после сохранения</li>
-                <li>При загрузке нового изображения старое будет заменено</li>
-                <li>Неактивные товары скрыты от покупателей в каталоге</li>
-                <li>Для добавления подробной информации используйте карточку товара</li>
-            </ul>
+            </div>
+            <div class="info-item">
+                <div class="info-label">{% trans "Текущая цена" %}</div>
+                <div class="info-value">{{ product.price|floatformat:0 }} ₽</div>
+            </div>
         </div>
     </div>
-</body>
-</html>
+
+    <!-- === ФОРМА РЕДАКТИРОВАНИЯ === -->
+    <div class="form-container">
+        <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+            
+            <!-- Бренд -->
+            <div class="form-group">
+                <label for="id_brand" class="form-label">
+                    {% trans "Бренд" %} <span class="required">*</span>
+                </label>
+                <input 
+                    type="text" 
+                    name="brand" 
+                    class="form-control" 
+                    id="id_brand" 
+                    value="{{ product.brand }}"
+                    required
+                    placeholder="{% trans 'Например: Nike, Adidas, Puma...' %}"
+                >
+                <div class="form-help">{% trans "Официальное название бренда" %}</div>
+            </div>
+
+            <!-- Цена -->
+            <div class="form-group">
+                <label for="id_price" class="form-label">
+                    {% trans "Цена" %} <span class="required">*</span>
+                </label>
+                <input 
+                    type="number" 
+                    name="price" 
+                    class="form-control" 
+                    id="id_price" 
+                    step="0.01" 
+                    min="0.01"
+                    value="{{ product.price }}"
+                    required
+                    placeholder="{% trans 'Цена в рублях' %}"
+                >
+                <div class="form-help">{% trans "Цена указывается в рублях" %}</div>
+            </div>
+
+            <!-- Изображение -->
+            <div class="form-group">
+                <label for="id_image" class="form-label">
+                    {% trans "Изображение товара" %}
+                </label>
+                
+                {% if product.image %}
+                    <div class="current-image-container">
+                        <div class="current-image-title">{% trans "Текущее изображение" %}</div>
+                        <img src="{{ product.image.url }}" alt="{{ product.brand }}" class="current-image">
+                    </div>
+                {% endif %}
+                
+                <div class="file-input-container">
+                    <input 
+                        type="file" 
+                        name="image" 
+                        class="file-input" 
+                        id="id_image"
+                        accept="image/*"
+                    >
+                    <label for="id_image" class="file-input-label">
+                        <span class="file-input-icon">📷</span>
+                        <div>
+                            <div class="file-input-text">
+                                {% if product.image %}
+                                    {% trans "Выберите новое изображение" %}
+                                {% else %}
+                                    {% trans "Выберите изображение" %}
+                                {% endif %}
+                            </div>
+                            <div class="form-help">{% trans "JPG, PNG, GIF до 5MB" %}</div>
+                        </div>
+                    </label>
+                </div>
+                {% if product.image %}
+                    <div class="form-help">{% trans "Выберите новое изображение, если хотите заменить текущее" %}</div>
+                {% else %}
+                    <div class="form-help">{% trans "Поддерживаемые форматы: JPG, PNG, GIF. Максимальный размер: 5MB" %}</div>
+                {% endif %}
+            </div>
+
+            <!-- Статус активности -->
+            <div class="form-group">
+                <div class="checkbox-container">
+                    <input 
+                        type="checkbox" 
+                        name="is_active" 
+                        class="checkbox-input" 
+                        id="id_is_active"
+                        {% if product.is_active %}checked{% endif %}
+                    >
+                    <label for="id_is_active" class="checkbox-label">
+                        {% trans "Товар активен (доступен для заказа)" %}
+                    </label>
+                </div>
+                <div class="form-help">{% trans "Неактивные товары не отображаются в каталоге" %}</div>
+            </div>
+
+            <!-- Кнопки действий -->
+            <div class="form-actions">
+                <a href="{% url 'product_detail' product.sneakers_id %}" class="btn btn-secondary">
+                    ← {% trans "Отмена" %}
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    ✅ {% trans "Сохранить изменения" %}
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- === ПОДСКАЗКИ === -->
+    <div class="tips-section">
+        <div class="tips-title">
+            💡 {% trans "Полезные подсказки" %}
+        </div>
+        <ul class="tips-list">
+            <li>{% trans "Изменения вступят в силу сразу после сохранения" %}</li>
+            <li>{% trans "При загрузке нового изображения старое будет заменено" %}</li>
+            <li>{% trans "Неактивные товары скрыты от покупателей в каталоге" %}</li>
+            <li>{% trans "Для добавления подробной информации используйте карточку товара" %}</li>
+            <li>{% trans "Рекомендуется использовать изображения в соотношении 4:3 или 16:9" %}</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+

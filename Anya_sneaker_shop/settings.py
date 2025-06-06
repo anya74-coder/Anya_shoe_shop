@@ -50,12 +50,12 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django.middleware.locale.LocaleMiddleware",
 ]
 
 ROOT_URLCONF = "Anya_sneaker_shop.urls"
@@ -72,6 +72,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "django.template.context_processors.media",
+                "django.template.context_processors.i18n",
             ],
         },
     },
@@ -106,6 +107,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 LANGUAGE_CODE = 'ru'
 TIME_ZONE = 'Europe/Moscow'
+USE_L10N = True
 USE_I18N = True
 USE_TZ = True
 
@@ -118,6 +120,8 @@ LANGUAGES = [
 LOCALE_PATHS = [
     BASE_DIR / 'locale',
 ]
+
+USE_I18N_PATTERNS = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = "static/"
@@ -171,12 +175,12 @@ MESSAGE_TAGS = {
     messages.ERROR: 'error',
 }
 
-# ✅ БЕЗОПАСНОСТЬ ДЛЯ ПРОДАКШН
+# БЕЗОПАСНОСТЬ ДЛЯ ПРОДАКШН
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
 
-# ✅ ЛОГИРОВАНИЕ ДЛЯ ПРОДАКШН
+#  ЛОГИРОВАНИЕ ДЛЯ ПРОДАКШН
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

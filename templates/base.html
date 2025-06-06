@@ -7,9 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Sneaker Shop{% endblock %}</title>
     
-    <!-- ✅ Bootstrap 5 CSS - обновляем до последней версии -->
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- ✅ Bootstrap Icons -->
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -39,6 +39,123 @@
         
         .gradient-bg {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        }
+        
+        /* ✅ КНОПКА ПОИСКА */
+        .search-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            margin-right: 1rem;
+            text-decoration: none;
+        }
+        
+        .search-btn:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.3);
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(255,255,255,0.2);
+        }
+        
+        .search-btn i {
+            font-size: 1.1rem;
+        }
+        
+        /* ✅ ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКОВ */
+        .language-switcher {
+            margin-left: 1rem;
+        }
+        
+        .language-switcher .dropdown-toggle {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        
+        .language-switcher .dropdown-toggle:hover,
+        .language-switcher .dropdown-toggle:focus {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,255,255,0.3);
+            color: white;
+            box-shadow: none;
+        }
+        
+        .language-switcher .dropdown-toggle::after {
+            margin-left: 0.5rem;
+        }
+        
+        .language-switcher .dropdown-menu {
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            min-width: 160px;
+            padding: 0.5rem 0;
+        }
+        
+        .language-switcher .dropdown-item {
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+        }
+        
+        .language-switcher .dropdown-item:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .language-switcher .dropdown-item.active {
+            background: var(--secondary-color);
+            color: white;
+            font-weight: 500;
+        }
+        
+        .flag-icon {
+            width: 24px;
+            height: 18px;
+            border-radius: 3px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        
+        .flag-ru {
+            background: linear-gradient(to bottom, white 33%, #0052cc 33%, #0052cc 66%, #cc0000 66%);
+            border: 1px solid #ddd;
+        }
+        
+        .flag-en {
+            background: 
+                linear-gradient(45deg, #012169 25%, transparent 25%), 
+                linear-gradient(-45deg, #012169 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #012169 75%), 
+                linear-gradient(-45deg, transparent 75%, #012169 75%),
+                linear-gradient(to bottom, #C8102E 0%, #C8102E 100%);
+            background-size: 6px 6px, 6px 6px, 6px 6px, 6px 6px, 100% 100%;
+            background-position: 0 0, 0 3px, 3px -3px, -3px 0px, 0 0;
+            border: 1px solid #ddd;
+        }
+        
+        .current-language {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
         .product-card {
@@ -77,7 +194,6 @@
             flex: 1;
         }
         
-        /* ✅ Стили для виджетов */
         .widget-card {
             border: none;
             border-radius: 20px;
@@ -91,118 +207,56 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.15);
         }
         
-        .widget-header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: white;
-            border-radius: 20px 20px 0 0;
-            padding: 1.5rem;
+        /* ✅ НАВИГАЦИОННЫЕ ССЫЛКИ */
+        .navbar-nav .nav-link {
+            transition: all 0.2s ease;
+            border-radius: 20px;
+            margin: 0 0.2rem;
+            padding: 0.5rem 1rem !important;
         }
         
-        .stats-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 15px;
-            padding: 2rem;
-            text-align: center;
-            transition: all 0.3s ease;
+        .navbar-nav .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-1px);
         }
         
-        .stats-card:hover {
-            transform: scale(1.05);
-        }
-        
-        .brand-badge {
-            background: linear-gradient(135deg, var(--success-color) 0%, #48cae4 100%);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            display: inline-block;
-            margin: 0.25rem;
-        }
-        
-        .brand-badge:hover {
-            transform: scale(1.1);
-            color: white;
-            text-decoration: none;
-        }
-        
-        /* ✅ Поисковая форма */
-        .search-container {
-            position: relative;
-        }
-        
-        .search-input {
-            border-radius: 25px;
-            padding-left: 2.5rem;
-            border: 2px solid rgba(255,255,255,0.3);
-            background: rgba(255,255,255,0.9);
-        }
-        
-        .search-input:focus {
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 0.2rem rgba(240, 147, 251, 0.25);
-        }
-        
-        .search-icon {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #6c757d;
-        }
-        
-        /* ✅ Адаптивность */
+        /* ✅ АДАПТИВНОСТЬ */
         @media (max-width: 768px) {
-            .widget-header {
-                padding: 1rem;
+            .language-switcher {
+                margin-left: 0;
+                margin-top: 0.5rem;
             }
             
-            .stats-card {
-                padding: 1rem;
+            .search-btn {
+                margin-right: 0;
+                margin-bottom: 0.5rem;
+            }
+            
+            .navbar-nav {
+                align-items: flex-start;
+            }
+            
+            .d-flex.me-3 {
                 margin-bottom: 1rem;
             }
         }
         
-        /* ✅ Анимации */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        /* ✅ АНИМАЦИИ */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
         
-        .fade-in-up {
-            animation: fadeInUp 0.6s ease-out;
-        }
-        
-        /* ✅ Кнопки */
-        .btn-gradient {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            border: none;
-            border-radius: 25px;
-            padding: 0.75rem 2rem;
-            color: white;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-gradient:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-            color: white;
+        .search-btn:active {
+            animation: pulse 0.2s ease;
         }
     </style>
     
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <!-- ✅ Navigation - обновляем с поиском и авторизацией -->
+    <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark gradient-bg sticky-top">
         <div class="container">
             <a class="navbar-brand" href="{% url 'home' %}">
@@ -235,48 +289,36 @@
                             <i class="fas fa-fire"></i> {% trans "Популярное" %}
                         </a>
                     </li>
-                {% if user.is_staff %}
+                    {% if user.is_staff %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'statistics' %}">
-                            <i class="fas fa-chart-bar"></i> {% trans "Статистика" %}
+                        <a class="nav-link" href="{% url 'product_create' %}">
+                            <i class="fas fa-plus"></i> {% trans "Добавить" %}
                         </a>
                     </li>
-                {% endif %}
+                    {% endif %}
                 </ul>
                 
-                <!-- Поиск -->
-                <form class="d-flex me-3 search-container" method="get" action="{% url 'search_products' %}">
-                    <div class="position-relative">
-                        <i class="fas fa-search search-icon"></i>
-                        <input class="form-control search-input" type="search" name="query" 
-                               placeholder="{% trans 'Поиск товаров...' %}" 
-                               value="{{ request.GET.query }}">
-                    </div>
-                    <button class="btn btn-outline-light ms-2" type="submit">
+                <!-- ✅ КНОПКА ПОИСКА -->
+                <div class="d-flex align-items-center">
+                    <a href="{% url 'search_products' %}" class="search-btn" title="{% trans 'Поиск товаров' %}">
                         <i class="fas fa-search"></i>
-                    </button>
-                </form>
+                    </a>
+                </div>
                 
-                <!-- Меню пользователя -->
+                <!-- Пользователь -->
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
-                               data-bs-toggle="dropdown">
-                                <i class="fas fa-user-circle"></i> {{ user.username }}
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user"></i> {{ user.username }}
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
+                            <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="{% url 'profile' %}">
-                                    <i class="fas fa-user"></i> {% trans "Профиль" %}
+                                    <i class="fas fa-user-circle"></i> {% trans "Профиль" %}
                                 </a></li>
-                                {% if user.is_staff %}
-                                    <li><a class="dropdown-item" href="/admin/">
-                                        <i class="fas fa-cog"></i> {% trans "Админ-панель" %}
-                                    </a></li>
-                                    <li><a class="dropdown-item" href="{% url 'cache_stats' %}">
-                                        <i class="fas fa-database"></i> {% trans "Кеш" %}
-                                    </a></li>
-                                {% endif %}
+                                <li><a class="dropdown-item" href="{% url 'wishlist' %}">
+                                    <i class="fas fa-heart"></i> {% trans "Избранное" %}
+                                </a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{% url 'logout' %}">
                                     <i class="fas fa-sign-out-alt"></i> {% trans "Выйти" %}
@@ -296,114 +338,124 @@
                         </li>
                     {% endif %}
                 </ul>
+                
+                <!-- ✅ ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКОВ -->
+                <div class="language-switcher">
+                    <div class="dropdown">
+                        <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="current-language">
+                                {% get_current_language as LANGUAGE_CODE %}
+                                {% if LANGUAGE_CODE == 'ru' %}
+                                    <span class="flag-icon flag-ru"></span>
+                                    <span>RU</span>
+                                {% else %}
+                                    <span class="flag-icon flag-en"></span>
+                                    <span>EN</span>
+                                {% endif %}
+                            </div>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            {% get_available_languages as LANGUAGES %}
+                            {% get_current_language as LANGUAGE_CODE %}
+                            {% for lang_code, lang_name in LANGUAGES %}
+                                <li>
+                                    <form action="{% url 'set_language' %}" method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input name="next" type="hidden" value="{{ request.get_full_path|slice:'3:' }}" />
+                                        <input name="language" type="hidden" value="{{ lang_code }}" />
+                                        <button type="submit" class="dropdown-item {% if lang_code == LANGUAGE_CODE %}active{% endif %}">
+                                            {% if lang_code == 'ru' %}
+                                                <span class="flag-icon flag-ru"></span>
+                                                <span>Русский</span>
+                                            {% else %}
+                                                <span class="flag-icon flag-en"></span>
+                                                <span>English</span>
+                                            {% endif %}
+                                        </button>
+                                    </form>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
 
-    <!-- ✅ Messages - улучшенные уведомления -->
-    {% if messages %}
-        <div class="container mt-3">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {% if message.tags == 'success' %}
-                        <i class="fas fa-check-circle me-2"></i>
-                    {% elif message.tags == 'error' %}
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                    {% elif message.tags == 'info' %}
-                        <i class="fas fa-info-circle me-2"></i>
-                    {% elif message.tags == 'warning' %}
-                        <i class="fas fa-exclamation-circle me-2"></i>
-                    {% endif %}
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-
-    <!-- ✅ Main Content -->
-    <main class="container-fluid my-4">
-        {% block content %}{% endblock %}
+    <!-- Main Content -->
+    <main>
+        {% block content %}
+        {% endblock %}
     </main>
 
-    <!-- ✅ Footer - улучшенный дизайн -->
-    <footer class="footer py-5">
+    <!-- Footer -->
+    <footer class="footer py-4 mt-5">
         <div class="container">
             <div class="row">
-                <div class="col-md-4 mb-4">
-                    <h5><i class="fas fa-running"></i> Sneaker Shop</h5>
-                    <p class="mb-3">{% trans "Лучшие кроссовки для активной жизни" %}</p>
-                    <div class="social-links">
-                        <a href="#" class="text-light me-3 fs-4"><i class="fab fa-facebook"></i></a>
-                        <a href="#" class="text-light me-3 fs-4"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-light me-3 fs-4"><i class="fab fa-telegram"></i></a>
-                        <a href="#" class="text-light fs-4"><i class="fab fa-vk"></i></a>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <h6>{% trans "Быстрые ссылки" %}</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="{% url 'product_list' %}" class="text-light text-decoration-none">{% trans "Каталог" %}</a></li>
-                        <li><a href="{% url 'popular_products' %}" class="text-light text-decoration-none">{% trans "Популярное" %}</a></li>
-                        <li><a href="{% url 'new_products' %}" class="text-light text-decoration-none">{% trans "Новинки" %}</a></li>
-                        <li><a href="{% url 'cache_stats' %}" class="text-light text-decoration-none">{% trans "Кеш" %}</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <h6>{% trans "Контакты" %}</h6>
-                    <ul class="list-unstyled">
-                        <li><i class="fas fa-phone me-2"></i> +7 (495) 123-45-67</li>
-                        <li><i class="fas fa-envelope me-2"></i> info@sneakershop.ru</li>
-                        <li><i class="fas fa-map-marker-alt me-2"></i> {% trans "Москва, ул. Примерная, 123" %}</li>
-                    </ul>
-                </div>
-            </div>
-            <hr class="my-4">
-            <div class="row align-items-center">
                 <div class="col-md-6">
-                    <p class="mb-0">&copy; 2025 Sneaker Shop. {% trans "Все права защищены" %}.</p>
+                    <h5><i class="fas fa-running"></i> Sneaker Shop</h5>
+                    <p class="mb-0">{% trans "Лучшие кроссовки для вашего стиля жизни" %}</p>
                 </div>
                 <div class="col-md-6 text-md-end">
-                    <small>{% trans "Сделано с" %} <i class="fas fa-heart text-danger"></i> {% trans "для любителей кроссовок" %}</small>
+                    <p class="mb-0">&copy; 2024 Sneaker Shop. {% trans "Все права защищены" %}.</p>
                 </div>
             </div>
         </div>
     </footer>
 
-    <!-- ✅ Bootstrap 5 JS -->
+    <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- ✅ Кастомный JavaScript -->
+    <!-- ✅ ДОПОЛНИТЕЛЬНЫЙ JAVASCRIPT -->
     <script>
-        // Анимация появления карточек
+        // Анимация для кнопки поиска
         document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.product-card, .widget-card');
-            cards.forEach((card, index) => {
-                setTimeout(() => {
-                    card.classList.add('fade-in-up');
-                }, index * 100);
+            const searchBtn = document.querySelector('.search-btn');
+            
+            if (searchBtn) {
+                searchBtn.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.1) rotate(10deg)';
+                });
+                
+                searchBtn.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1) rotate(0deg)';
+                });
+                
+                searchBtn.addEventListener('click', function(e) {
+                    // Добавляем эффект пульсации при клике
+                    this.style.animation = 'pulse 0.3s ease';
+                    setTimeout(() => {
+                        this.style.animation = '';
+                    }, 300);
+                });
+            }
+            
+            // Улучшенная анимация для навигационных ссылок
+            const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 4px 15px rgba(255,255,255,0.2)';
+                });
+                
+                link.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'none';
+                });
+            });
+            
+            // Плавное закрытие мобильного меню при клике на ссылку
+            const navbarToggler = document.querySelector('.navbar-toggler');
+            const navbarCollapse = document.querySelector('.navbar-collapse');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth < 992) { // Только на мобильных устройствах
+                        navbarCollapse.classList.remove('show');
+                    }
+                });
             });
         });
-
-        // Автоскрытие уведомлений
-        setTimeout(function() {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                const bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
-            });
-        }, 5000);
-
-        // Улучшенный поиск с подсказками
-        const searchInput = document.querySelector('.search-input');
-        if (searchInput) {
-            searchInput.addEventListener('input', function() {
-                if (this.value.length >= 2) {
-                    // Здесь можно добавить AJAX поиск с подсказками
-                    console.log('Поиск:', this.value);
-                }
-            });
-        }
     </script>
     
     {% block extra_js %}{% endblock %}

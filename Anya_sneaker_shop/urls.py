@@ -32,20 +32,22 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
-from django.conf.urls.i18n import i18n_patterns  # ✅ Добавляем для интернационализации
+from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from sneaker_app.views import *
 
+# ✅ URLs без языкового префикса (для API, админки, смены языка)
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('i18n/', include('django.conf.urls.i18n')),  # ✅ Добавляем для переключения языков
+    path('i18n/', include('django.conf.urls.i18n')),  # ✅ Для переключения языков
+]
 
+# ✅ URLs с языковыми префиксами (/en/, /ru/)
+urlpatterns += i18n_patterns(
     # Главная страница
-
     path('', home, name='home'),
     path('home/', home, name='home_page'),
     path('redirect-home/', redirect_to_home, name='redirect_home'),
@@ -76,7 +78,6 @@ urlpatterns = [
     # Избранное
     path('wishlist/', wishlist_view, name='wishlist'),
     path('product/<int:product_pk>/toggle-wishlist/', toggle_wishlist, name='toggle_wishlist'),
-    # ✅ Новый URL для удаления из избранного
     path('wishlist/remove/<int:wishlist_id>/', remove_from_wishlist, name='remove_from_wishlist'),
     
     # Категории
@@ -107,7 +108,7 @@ urlpatterns = [
     path('brand/<str:brand_name>/', brand_products, name='brand_products'),
     path('price/<int:min_price>-<int:max_price>/', price_range_products, name='price_range_products'),
 
- # ✅ Управление кешем (только для админов)
+    # Управление кешем (только для админов)
     path('admin-tools/cache-stats/', cache_stats, name='cache_stats'),
     path('admin-tools/clear-cache/', clear_cache, name='clear_cache'),
     path('admin-tools/cache-test/', cache_test, name='cache_test'),
@@ -119,20 +120,19 @@ urlpatterns = [
     path('popular/', popular_products, name='popular_products'),
     path('new/', new_products, name='new_products'),
 
-    # Добавьте эти строки в urlpatterns:
+    # Алиасы
     path('products-alias/', product_list, name='products'),
     path('categories-alias/', category_list, name='categories'),
     path('popular-alias/', popular_products, name='popular'),
     path('new-alias/', new_products, name='new'),
 
+    prefix_default_language=False,  # ✅ Не добавлять префикс для русского языка
+)
 
-]
-
-# Добавляем обслуживание медиа файлов в режиме разработки
+# Добавляем обслуживание медиа файлов
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 else:
-    # ✅ Для продакшн режима
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

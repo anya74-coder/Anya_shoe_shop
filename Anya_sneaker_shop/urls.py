@@ -111,6 +111,7 @@ urlpatterns += i18n_patterns(
     # Управление кешем (только для админов)
     path('admin-tools/cache-stats/', cache_stats, name='cache_stats'),
     path('admin-tools/clear-cache/', clear_cache, name='clear_cache'),
+    path('admin-tools/clear-cache-ajax/', clear_cache_ajax, name='clear_cache_ajax'),
     path('admin-tools/cache-test/', cache_test, name='cache_test'),
 
     # Джанго-форма создания кроссовок

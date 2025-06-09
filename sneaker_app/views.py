@@ -1379,3 +1379,22 @@ def category_list(request):
     return render(request, 'sneaker_app/category_list.html', {
         'categories': categories
     })
+
+
+@staff_member_required
+@require_http_methods(["POST"])
+def clear_cache_ajax(request):
+    """
+    AJAX очистка кеша без редиректа
+    """
+    try:
+        cache.clear()
+        return JsonResponse({
+            'success': True,
+            'message': '✅ Кэш успешно очищен!'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'❌ Ошибка при очистке кэша: {str(e)}'
+        }, status=500)

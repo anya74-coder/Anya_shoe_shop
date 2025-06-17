@@ -467,21 +467,97 @@ document.addEventListener('DOMContentLoaded', function() {
         </ol>
     </nav>
 
-        <!-- === ПЕРЕКЛЮЧАТЕЛЬ ФОРМ === -->
+    <!-- ✅ ДОБАВЛЯЕМ ДЕМОНСТРАЦИЮ DJANGO FIELD МЕТОДОВ -->
+    {% if form_type == 'django_fields' %}
+    <div class="form-switcher">
+        <div class="switcher-title">🔍 Django Field методы в действии</div>
+        <div class="switcher-description">
+            Эта форма демонстрирует использование field.label_tag, field, field.errors
+        </div>
+    </div>
+
+    <div class="form-container">
+        <h3 style="margin-bottom: 1.5rem;">📋 Демонстрация методов:</h3>
+        <div style="background: var(--bg-light); padding: 1rem; border-radius: 4px; margin-bottom: 2rem; font-size: 0.9rem;">
+            {% for method in demo_info.methods %}
+                <div style="margin-bottom: 0.5rem;">• {{ method }}</div>
+            {% endfor %}
+        </div>
+
+        <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+            
+            <!-- Демонстрация Django field методов -->
+            {% for field in form %}
+                <div class="form-group">
+                    <!-- Показываем код и результат -->
+                    <div style="background: #f8f9fa; padding: 0.5rem; border-radius: 4px; margin-bottom: 0.5rem; font-family: monospace; font-size: 0.8rem;">
+                        {% verbatim %}{{ field.label_tag }}{% endverbatim %}
+                    </div>
+                    {{ field.label_tag }}
+                    
+                    <div style="background: #f8f9fa; padding: 0.5rem; border-radius: 4px; margin-bottom: 0.5rem; font-family: monospace; font-size: 0.8rem;">
+                        {% verbatim %}{{ field }}{% endverbatim %}
+                    </div>
+                    {{ field }}
+                    
+                    {% if field.help_text %}
+                        <div class="form-help">{{ field.help_text }}</div>
+                    {% endif %}
+                    
+                    {% if field.errors %}
+                        <div style="background: #f8f9fa; padding: 0.5rem; border-radius: 4px; margin-bottom: 0.5rem; font-family: monospace; font-size: 0.8rem;">
+                            {% verbatim %}{{ field.errors }}{% endverbatim %}
+                        </div>
+                        <div class="invalid-feedback" style="display: block;">
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <!-- Общие ошибки формы -->
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Кнопки действий -->
+            <div class="form-actions">
+                <a href="{% url 'product_list' %}" class="btn btn-secondary">
+                    ← {% trans "Отмена" %}
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    💾 {% trans "Создать через Django Fields" %}
+                </button>
+            </div>
+        </form>
+    </div>
+    {% endif %}
+    
+    <!-- ✅ ОБНОВЛЯЕМ ПЕРЕКЛЮЧАТЕЛЬ ФОРМ -->
+    {% if form_type != 'django_fields' %}
     <div class="form-switcher">
         <div class="switcher-title">🔄 {% trans "Выберите тип формы" %}</div>
         <div class="switcher-buttons">
-            <a href="{% url 'product_create' %}" class="switcher-btn active">
+            <a href="{% url 'product_create' %}" class="switcher-btn {% if form_type != 'django' %}active{% endif %}">
                 🎨 {% trans "Кастомная форма" %}
             </a>
-            <a href="{% url 'product_create_django_form' %}" class="switcher-btn">
+            <a href="{% url 'product_create_django_form' %}" class="switcher-btn {% if form_type == 'django' %}active{% endif %}">
                 🏗️ {% trans "Django форма" %}
+            </a>
+            <a href="{% url 'product_create_django_fields' %}" class="switcher-btn">
+                🔍 Django Field методы
             </a>
         </div>
         <div class="switcher-description">
-            {% trans "Кастомная форма - красивый дизайн с валидацией | Django форма - стандартная форма Django" %}
+            {% trans "Кастомная | Django форма | Django Field методы" %}
         </div>
     </div>
+    {% endif %}
 
 
     <h1 class="page-title">

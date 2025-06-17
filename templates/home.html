@@ -608,35 +608,158 @@
 
     <hr class="section-divider">
 
-    <!-- === ДЕМОНСТРАЦИЯ ТЕГОВ === -->
+    <!-- ✅ НОВЫЙ РАЗДЕЛ: Демонстрация ORM методов -->
     {% if user.is_staff %}
+    <hr class="section-divider">
+    
     <section class="section-container">
-        <h2 class="section-title">{% trans "Системная информация" %}</h2>
+        <h2 class="section-title">🔍 Демонстрация новых ORM методов</h2>
         
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
-            <div class="stat-item">
-                <div class="stat-label">{% trans "Всего товаров" %}</div>
-                <div class="stat-number" style="font-size: 1.5rem;">{% total_products %}</div>
-            </div>
-            
-            <div class="stat-item">
-                <div class="stat-label">{% trans "Товаров до 50000₽" %}</div>
-                <div class="stat-number" style="font-size: 1.5rem;">{% price_range 0 50000 %}</div>
-            </div>
-            
-            <div class="stat-item">
-                <div class="stat-label">{% trans "Средний рейтинг" %}</div>
-                <div class="stat-number" style="font-size: 1.5rem;">{% avg_product_rating %}</div>
+        <!-- values_list() демонстрация -->
+        <div style="margin-bottom: 2rem;">
+            <h3 class="subsection-title">📋 values_list() - Списки и кортежи</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+                <div class="stat-item">
+                    <div class="stat-label">Бренды (flat=True)</div>
+                    <div style="font-size: 0.9rem; color: var(--text-secondary);">
+                        {{ demo_values_list.brand_names_flat|slice:":5"|join:", " }}...
+                    </div>
+                    <small>Плоский список: values_list('brand', flat=True)</small>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-label">Кортежи (бренд, цена)</div>
+                    <div style="font-size: 0.9rem; color: var(--text-secondary);">
+                        {% for tuple in demo_values_list.brand_price_tuples|slice:":3" %}
+                            {{ tuple.0 }}: {{ tuple.1 }}₽<br>
+                        {% endfor %}
+                    </div>
+                    <small>Кортежи: values_list('brand', 'price')</small>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-label">Сравнение с values()</div>
+                    <div style="font-size: 0.9rem; color: var(--text-secondary);">
+                        values() → словари<br>
+                        values_list() → кортежи<br>
+                        flat=True → список
+                    </div>
+                    <small>Разные форматы данных</small>
+                </div>
             </div>
         </div>
         
-        <!-- Топ брендов -->
-        <div style="margin-top: 2rem;">
-            <h3 class="subsection-title">{% trans "Топ брендов" %}</h3>
-            {% show_top_brands 5 %}
+        <!-- exists() демонстрация -->
+        <div style="margin-bottom: 2rem;">
+            <h3 class="subsection-title">✅ exists() - Проверка существования</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                <div class="stat-item">
+                    <div class="stat-label">Nike товары</div>
+                    <div class="stat-number" style="font-size: 1.5rem;">
+                        {% if demo_exists.nike_exists %}✅{% else %}❌{% endif %}
+                    </div>
+                    <small>filter(brand__icontains='Nike').exists()</small>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-label">Дорогие товары</div>
+                    <div class="stat-number" style="font-size: 1.5rem;">
+                        {% if demo_exists.expensive_exists %}✅{% else %}❌{% endif %}
+                    </div>
+                    <small>filter(price__gte=50000).exists()</small>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-label">Новые товары</div>
+                    <div class="stat-number" style="font-size: 1.5rem;">
+                        {% if demo_exists.recent_exists %}✅{% else %}❌{% endif %}
+                    </div>
+                    <small>filter(created_at__gte=30_days_ago).exists()</small>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-label">Есть отзывы</div>
+                    <div class="stat-number" style="font-size: 1.5rem;">
+                        {% if demo_exists.reviews_exist %}✅{% else %}❌{% endif %}
+                    </div>
+                    <small>Reviews.objects.exists()</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- update() демонстрация -->
+        <div style="margin-bottom: 2rem;">
+            <h3 class="subsection-title">🔧 update() - Массовые операции</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                <div class="stat-item">
+                    <div class="stat-label">Дешевые неактивные</div>
+                    <div class="stat-number">{{ demo_update_stats.cheap_inactive }}</div>
+                    <small>price < 5000 & is_active=False</small>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-label">Неодобренные отзывы</div>
+                    <div class="stat-number">{{ demo_update_stats.unapproved_reviews }}</div>
+                    <small>is_approved=False</small>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-label">Старые товары</div>
+                    <div class="stat-number">{{ demo_update_stats.old_products }}</div>
+                    <small>created_at < 1 год назад</small>
+                </div>
+            </div>
+            
+            <!-- Кнопки для массовых операций -->
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <form method="post" action="{% url 'demo_mass_update' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="activate_cheap">
+                    <button type="submit" class="btn btn-primary btn-small" 
+                            onclick="return confirm('Активировать все дешевые товары?')">
+                        ✅ Активировать дешевые (update)
+                    </button>
+                </form>
+                
+                <form method="post" action="{% url 'demo_mass_update' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="approve_reviews">
+                    <button type="submit" class="btn btn-primary btn-small"
+                            onclick="return confirm('Одобрить все отзывы?')">
+                        👍 Одобрить отзывы (update)
+                    </button>
+                </form>
+                
+                <form method="post" action="{% url 'demo_mass_update' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete_old">
+                    <button type="submit" class="btn btn-primary btn-small"
+                            onclick="return confirm('Удалить старые товары?')">
+                        🗑️ Удалить старые (update)
+                    </button>
+                </form>
+                
+                <form method="post" action="{% url 'demo_mass_update' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="price_increase">
+                    <button type="submit" class="btn btn-primary btn-small"
+                            onclick="return confirm('Поднять цены дешевых товаров на 10%?')">
+                        💰 Поднять цены +10% (update + F)
+                    </button>
+                </form>
+            </div>
+            
+            <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-light); border-radius: 8px; font-size: 0.9rem; color: var(--text-secondary);">
+                <strong>💡 Примеры кода:</strong><br>
+                • <code>filter().update(is_active=True)</code> - массовая активация<br>
+                • <code>update(price=F('price') * 1.1)</code> - увеличение цены на 10%<br>
+                • <code>filter().update(is_approved=True)</code> - одобрение отзывов
+            </div>
         </div>
     </section>
     {% endif %}
+    
+    <!-- Конец демонстрации ORM методов -->
 
     <!-- === ПОДВАЛ === -->
     <footer style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border-color); text-align: center;">

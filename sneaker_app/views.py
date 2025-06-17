@@ -13,9 +13,9 @@ from django.views.decorators.cache import cache_page  # ✅ Добавляем �
 from django.core.cache import cache  # ✅ Добавляем для работы с кешем
 from django.views.decorators.vary import vary_on_headers  # ✅ Для варьирования кеша
 from .forms import ProductForm, SearchForm
+from django.contrib.admin.views.decorators import staff_member_required
 from datetime import timedelta
 from django.utils import timezone
-from django.contrib.admin.views.decorators import staff_member_required
 from .models import (
     Category, Catalog, Clients, ProductCards, Address, Order,
     Purchase, Wishlist, Reviews, Positions, Support, Tag, ProductTag
@@ -36,6 +36,8 @@ def home(request):
     1. Популярные кроссовки (по рейтингу и отзывам)
     2. Новые поступления (последние 30 дней)
     3. Статистика и топ-бренды
+    
+    ✅ ДОБАВЛЕНО: Демонстрация values_list(), exists(), update()
     """
     
     # ✅ ВИДЖЕТ 1: Популярные кроссовки (с агрегацией)
@@ -102,6 +104,39 @@ def home(request):
         
         cache.set(cache_key_stats, stats_data, 60 * 20)  # 20 минут
     
+    # ✅ НОВОЕ: Демонстрация values_list()
+    demo_values_list_data = {
+        'brand_names_flat': list(Catalog.objects.values_list('brand', flat=True).distinct()[:8]),
+        'brand_price_tuples': list(Catalog.objects.values_list('brand', 'price')[:5]),
+        'price_list': list(Catalog.objects.values_list('price', flat=True)[:10]),
+        'comparison': {
+            'values_dict': list(Catalog.objects.values('brand', 'price')[:3]),
+            'values_list_tuple': list(Catalog.objects.values_list('brand', 'price')[:3]),
+        }
+    }
+    
+    # ✅ НОВОЕ: Демонстрация exists()
+    demo_exists_data = {
+        'nike_exists': Catalog.objects.filter(brand__icontains='Nike').exists(),
+        'expensive_exists': Catalog.objects.filter(price__gte=50000).exists(),
+        'recent_exists': Catalog.objects.filter(
+            created_at__gte=timezone.now() - timedelta(days=30)
+        ).exists(),
+        'reviews_exist': Reviews.objects.filter(is_approved=True).exists(),
+        'wishlist_exists': Wishlist.objects.exists(),
+        'categories_exist': Category.objects.exists(),
+    }
+    
+    # ✅ НОВОЕ: Статистика для демонстрации update()
+    demo_update_stats = {
+        'cheap_inactive': Catalog.objects.filter(price__lt=5000, is_active=False).count(),
+        'expensive_active': Catalog.objects.filter(price__gt=100000, is_active=True).count(),
+        'unapproved_reviews': Reviews.objects.filter(is_approved=False).count(),
+        'old_products': Catalog.objects.filter(
+            created_at__lt=timezone.now() - timedelta(days=365)
+        ).count(),
+    }
+    
     # Форма поиска
     search_form = SearchForm()
     
@@ -111,10 +146,48 @@ def home(request):
         'stats': stats_data['stats'],
         'top_brands': stats_data['top_brands'],
         'search_form': search_form,
-        'user': request.user
+        'user': request.user,
+        
+        # ✅ НОВЫЕ ДАННЫЕ для демонстрации ORM методов
+        'demo_values_list': demo_values_list_data,
+        'demo_exists': demo_exists_data,
+        'demo_update_stats': demo_update_stats,
     }
     
     return render(request, 'home.html', context)
+
+
+# функция для массовых операций update()
+@staff_member_required
+@require_POST
+def demo_mass_update(request):
+    """
+    Демонстрация массовых операций update() - вызывается с главной страницы
+    """
+    action = request.POST.get('action')
+    
+    if action == 'activate_cheap':
+        updated_count = Catalog.objects.filter(
+            price__lt=5000, 
+            is_active=False
+        ).update(is_active=True)
+        messages.success(request, f'✅ Активировано {updated_count} дешевых товаров (update())')
+        
+    elif action == 'approve_reviews':
+        updated_count = Reviews.objects.filter(
+            is_approved=False
+        ).update(is_approved=True)
+        messages.success(request, f'👍 Одобрено {updated_count} отзывов (update())')
+        
+    elif action == 'price_increase':
+        from django.db.models import F
+        updated_count = Catalog.objects.filter(
+            price__lt=1000,
+            is_active=True
+        ).update(price=F('price') * 1.1)
+        messages.success(request, f'💰 Поднята цена у {updated_count} товаров на 10% (update() + F())')
+    
+    return HttpResponseRedirect(reverse('home'))
 
 @cache_page(60 * 10)  # ✅ Кешируем каталог на 10 минут
 def product_list(request):
@@ -1398,3 +1471,51 @@ def clear_cache_ajax(request):
             'success': False,
             'message': f'❌ Ошибка при очистке кэша: {str(e)}'
         }, status=500)
+
+# ✅ ДОБАВЛЯЕМ В КОНЕЦ ФАЙЛА - импорт новой формы
+from .forms import DemoFieldForm
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def product_create_django_fields(request):
+    """
+    Создание товара с демонстрацией Django field методов:
+    {{ field.label_tag }}, {{ field }}, {{ field.errors }}
+    """
+    if not request.user.is_staff:
+        messages.error(request, 'У вас нет прав для создания товаров.')
+        return HttpResponseRedirect(reverse('product_list'))
+    
+    if request.method == 'POST':
+        form = DemoFieldForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                product = form.save(commit=False)
+                special_notes = form.cleaned_data.get('special_notes')
+                # Можно сохранить заметки или использовать как-то еще
+                product.save()
+                messages.success(request, f'✅ Товар "{product.brand}" создан через Django field методы!')
+                return HttpResponseRedirect(reverse('product_detail', args=[product.sneakers_id]))
+            except Exception as e:
+                messages.error(request, f'❌ Ошибка при создании товара: {str(e)}')
+        else:
+            messages.error(request, '❌ Исправьте ошибки в форме (проверьте {{ field.errors }})')
+    else:
+        form = DemoFieldForm()
+    
+    context = {
+        'form': form,
+        'title': 'Создание товара (Django Field методы)',
+        'form_type': 'django_fields',
+        'demo_info': {
+            'methods': [
+                '{{ field.label_tag }} - генерирует HTML тег <label>',
+                '{{ field }} - генерирует HTML поле ввода',
+                '{{ field.errors }} - показывает ошибки поля',
+                '{{ field.help_text }} - текст подсказки',
+                '{{ field.id_for_label }} - ID для связи с label'
+            ]
+        }
+    }
+    
+    return render(request, 'products/product_create.html', context)

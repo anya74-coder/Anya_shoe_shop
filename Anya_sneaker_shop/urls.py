@@ -127,6 +127,9 @@ urlpatterns += i18n_patterns(
     path('popular-alias/', popular_products, name='popular'),
     path('new-alias/', new_products, name='new'),
 
+    path('demo/mass-update/', demo_mass_update, name='demo_mass_update'),
+    path('products/create-django-fields/', product_create_django_fields, name='product_create_django_fields'),
+
     prefix_default_language=False,  # ✅ Не добавлять префикс для русского языка
 )
 

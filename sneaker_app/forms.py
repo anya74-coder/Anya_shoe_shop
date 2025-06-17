@@ -579,3 +579,78 @@ class ProductWithCardForm(forms.Form):
         )
         
         return catalog, product_card
+
+# ✅ ДОБАВЛЯЕМ В КОНЕЦ ФАЙЛА - форма для демонстрации Django field методов
+
+class DemoFieldForm(forms.ModelForm):
+    """
+    Форма для демонстрации {{ field.label_tag }}, {{ field }}, {{ field.errors }}
+    """
+    
+    # Дополнительное поле с Textarea
+    special_notes = forms.CharField(
+        max_length=500,
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 3,
+            'placeholder': 'Особые заметки о товаре...'
+        }),
+        label='Специальные заметки',
+        help_text='Дополнительная информация о товаре'
+    )
+    
+    class Meta:
+        model = Catalog
+        fields = ['brand', 'price', 'image', 'is_active']
+        exclude = []  # ✅ Добавляем exclude для демонстрации
+        
+        widgets = {
+            'brand': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Введите название бренда'
+            }),
+            'price': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'step': '0.01',
+                'min': '0'
+            }),
+            'image': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': 'image/*'
+            }),
+            'is_active': forms.CheckboxInput(attrs={
+                'class': 'form-check-input'
+            })
+        }
+        
+        labels = {
+            'brand': 'Бренд товара (Django field)',
+            'price': 'Цена товара (Django field)',
+            'image': 'Изображение (Django field)',
+            'is_active': 'Активный товар (Django field)'
+        }
+        
+        help_texts = {
+            'brand': 'Используется {{ field.label_tag }}',
+            'price': 'Используется {{ field }}',
+            'image': 'Используется {{ field.errors }}',
+            'is_active': 'Django field методы'
+        }
+        
+        error_messages = {
+            'brand': {
+                'required': 'Поле обязательно (через Django field)',
+                'max_length': 'Слишком длинное название'
+            },
+            'price': {
+                'required': 'Цена обязательна (Django field)',
+                'invalid': 'Некорректная цена'
+            }
+        }
+    
+    def clean_brand(self):
+        brand = self.cleaned_data['brand']
+        if len(brand) < 2:
+            raise ValidationError('Название бренда слишком короткое (Django validation)')
+        return brand.title()

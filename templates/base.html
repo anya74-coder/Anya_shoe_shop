@@ -327,6 +327,9 @@
                                 <!-- ✅ АДМИН-ПАНЕЛЬ (для staff) -->
                                 {% if user.is_staff %}
                                     <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{% url 'statistics' %}">
+                                        <i class="fas fa-chart-line"></i> {% trans "Статистика" %}
+                                    </a></li>
                                     <li><a class="dropdown-item" href="/admin/" target="_blank">
                                         <i class="fas fa-cogs"></i> {% trans "Админ-панель" %}
                                     </a></li>

@@ -7824,3 +7824,19 @@ Traceback (most recent call last):
     )
 django.template.exceptions.TemplateSyntaxError: Could not parse the remainder: '"{{ field.label_tag' from '"{{ field.label_tag'
 "GET /product/create/ HTTP/1.1" 500 334090
+Internal Server Error: /reviews/
+Traceback (most recent call last):
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/sneaker_app/views.py", line 576, in reviews_list
+    return render(request, 'reviews/reviews_list.html', context)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "/Users/agregnikita/Desktop/Anya_sneaker_shop/myenv/lib/python3.13/site-packages/django/template/loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: reviews/reviews_list.html
+"GET /reviews/ HTTP/1.1" 500 79695

@@ -129,6 +129,7 @@ urlpatterns += i18n_patterns(
 
     path('demo/mass-update/', demo_mass_update, name='demo_mass_update'),
     path('products/create-django-fields/', product_create_django_fields, name='product_create_django_fields'),
+    path('product/<int:pk>/delete-quick/', product_delete_quick, name='product_delete_quick'),
 
     prefix_default_language=False,  # ✅ Не добавлять префикс для русского языка
 )

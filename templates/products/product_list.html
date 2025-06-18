@@ -283,6 +283,28 @@
         font-size: 0.75rem;
     }
 
+    .btn-danger {
+        background: var(--danger-color);
+        color: var(--bg-white);
+        border-color: var(--danger-color);
+    }
+
+    .btn-danger:hover {
+        background: #c82333;
+        border-color: #c82333;
+        color: var(--bg-white);
+        transform: translateY(-1px);
+    }
+
+    .btn-small {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.75rem;
+        min-width: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
     /* === СЕТКА ТОВАРОВ === */
     .products-grid {
         display: grid;
@@ -728,6 +750,14 @@
                                 <a href="{% url 'toggle_wishlist' product.pk %}" class="btn btn-secondary btn-small">
                                     ❤️
                                 </a>
+                                {% if user.is_staff %}
+                                    <a href="{% url 'product_delete_quick' product.pk %}" 
+                                       class="btn btn-danger btn-small delete-product-btn"
+                                       data-product-name="{{ product.brand }}"
+                                       title="{% trans 'Удалить товар' %}">
+                                        🗑️
+                                    </a>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -855,6 +885,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     behavior: 'smooth',
                     block: 'start'
                 });
+            }
+        });
+    });
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Обработчик для кнопок удаления товаров
+    const deleteButtons = document.querySelectorAll('.delete-product-btn');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            const productName = this.getAttribute('data-product-name');
+            const confirmMessage = '{% trans "Удалить товар" %} ' + productName + '?';
+            
+            if (!confirm(confirmMessage)) {
+                e.preventDefault();
+                return false;
             }
         });
     });

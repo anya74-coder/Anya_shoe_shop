@@ -1519,3 +1519,29 @@ def product_create_django_fields(request):
     }
     
     return render(request, 'products/product_create.html', context)
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def product_delete_quick(request, pk):
+    """
+    Быстрое удаление товара без подтверждения (только для staff)
+    """
+    if not request.user.is_staff:
+        messages.error(request, '❌ У вас нет прав для удаления товаров.')
+        return HttpResponseRedirect(reverse('product_list'))
+    
+    try:
+        product = get_object_or_404(Catalog, pk=pk)
+        brand_name = product.brand
+        product_id = product.sneakers_id
+        
+        # Удаляем товар
+        product.delete()
+        
+        messages.success(request, f'✅ Товар "{brand_name}" (ID: {product_id}) успешно удален!')
+        
+    except Exception as e:
+        messages.error(request, f'❌ Ошибка при удалении товара: {str(e)}')
+    
+    # Возвращаемся на страницу каталога
+    return HttpResponseRedirect(reverse('product_list'))

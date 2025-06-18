@@ -1,272 +1,288 @@
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget, DateTimeWidget, BooleanWidget
-from django.db.models import Avg, Count
-from .models import Catalog, Order, Reviews, Clients, ProductCards
+from .models import Catalog, Order, Reviews, Clients, Category, ProductCards
+from django.utils import timezone
 
 class CatalogResource(resources.ModelResource):
     """
-    ✅ РЕСУРС ДЛЯ ЭКСПОРТА КАТАЛОГА ТОВАРОВ
+    Ресурс для экспорта каталога товаров с кастомизацией
+    ✅ Демонстрация кастомных методов экспорта
     """
-    # ✅ КАСТОМНЫЕ ПОЛЯ
-    average_rating = fields.Field(attribute='average_rating', readonly=True)
-    reviews_count = fields.Field(attribute='reviews_count', readonly=True)
-    status_display = fields.Field(attribute='status_display', readonly=True)
-    formatted_price = fields.Field(attribute='formatted_price', readonly=True)
+    
+    # Кастомные поля для экспорта
+    brand_upper = fields.Field(column_name='Бренд (заглавными)')
+    price_with_currency = fields.Field(column_name='Цена с валютой')
+    status_text = fields.Field(column_name='Статус товара')
+    category_name = fields.Field(column_name='Категория')
+    days_since_created = fields.Field(column_name='Дней с создания')
     
     class Meta:
         model = Catalog
-        fields = (
-            'sneakers_id', 'brand', 'price', 'formatted_price', 
-            'is_active', 'status_display', 'created_at', 
-            'average_rating', 'reviews_count'
-        )
-        export_order = (
-            'sneakers_id', 'brand', 'formatted_price', 'status_display', 
-            'created_at', 'average_rating', 'reviews_count'
-        )
-
-    def get_export_queryset(self, request):
+        fields = ('sneakers_id', 'brand', 'brand_upper', 'price', 'price_with_currency', 
+                 'status_text', 'category_name', 'days_since_created', 'created_at')
+        export_order = ('sneakers_id', 'brand', 'brand_upper', 'price', 'price_with_currency',
+                       'status_text', 'category_name', 'days_since_created', 'created_at')
+    
+    def get_export_queryset(self, request=None):
         """
-        ✅ КАСТОМИЗАЦИЯ 1: get_export_queryset
-        Фильтруем только активные товары и добавляем аннотации
+        ✅ КАСТОМНЫЙ МЕТОД 1: get_export_queryset
+        Кастомизируем queryset для экспорта - только активные товары с изображениями
         """
         queryset = super().get_export_queryset(request)
-        return queryset.filter(is_active=True).annotate(
-            average_rating=Avg('reviews__rating'),
-            reviews_count=Count('reviews')
-        ).order_by('-created_at')
-
-    def dehydrate_formatted_price(self, obj):
+        # Экспортируем только активные товары с изображениями и ценой > 1000
+        return queryset.filter(
+            is_active=True,
+            image__isnull=False,
+            price__gte=1000
+        ).select_related('product_card__category').order_by('-created_at')
+    
+    def dehydrate_brand_upper(self, catalog):
         """
-        ✅ КАСТОМИЗАЦИЯ 2: dehydrate_{field_name}
-        Форматируем цену с валютой
+        ✅ КАСТОМНЫЙ МЕТОД 2: dehydrate_brand_upper
+        Преобразуем бренд в заглавные буквы для экспорта
         """
-        return f"{obj.price:,.0f} ₽".replace(',', ' ')
-
-    def dehydrate_status_display(self, obj):
+        return catalog.brand.upper() if catalog.brand else ''
+    
+    def dehydrate_price_with_currency(self, catalog):
         """
-        ✅ КАСТОМИЗАЦИЯ 3: dehydrate_{field_name}
-        Человекочитаемый статус
+        ✅ КАСТОМНЫЙ МЕТОД 3: dehydrate_price_with_currency  
+        Добавляем валюту к цене
         """
-        return "✅ Активен" if obj.is_active else "❌ Неактивен"
-
-    def dehydrate_average_rating(self, obj):
+        return f"{catalog.price} ₽" if catalog.price else '0 ₽'
+    
+    def dehydrate_status_text(self, catalog):
         """
-        ✅ КАСТОМИЗАЦИЯ 4: dehydrate_{field_name}
-        Форматируем рейтинг
+        ✅ КАСТОМНЫЙ МЕТОД 4: dehydrate_status_text
+        Преобразуем булево значение в читаемый текст
         """
-        if hasattr(obj, 'average_rating') and obj.average_rating:
-            return f"{obj.average_rating:.1f} ⭐"
-        return "Нет оценок"
-
-    def dehydrate_reviews_count(self, obj):
+        return "✅ В наличии" if catalog.is_active else "❌ Нет в наличии"
+    
+    def dehydrate_category_name(self, catalog):
         """
-        ✅ КАСТОМИЗАЦИЯ 5: dehydrate_{field_name}
-        Форматируем количество отзывов
+        ✅ КАСТОМНЫЙ МЕТОД 5: dehydrate_category_name
+        Получаем название категории из связанной модели
         """
-        if hasattr(obj, 'reviews_count'):
-            return f"{obj.reviews_count} отзывов"
-        return "0 отзывов"
+        try:
+            if hasattr(catalog, 'product_card') and catalog.product_card:
+                return catalog.product_card.category.get_name_display()
+            return 'Без категории'
+        except:
+            return 'Не указана'
+    
+    def dehydrate_days_since_created(self, catalog):
+        """
+        ✅ КАСТОМНЫЙ МЕТОД 6: dehydrate_days_since_created
+        Вычисляем количество дней с момента создания
+        """
+        if catalog.created_at:
+            delta = timezone.now() - catalog.created_at
+            return delta.days
+        return 0
 
 
 class OrderResource(resources.ModelResource):
     """
-    ✅ РЕСУРС ДЛЯ ЭКСПОРТА ЗАКАЗОВ
+    Ресурс для экспорта заказов с кастомизацией
     """
-    client_name = fields.Field(attribute='client_name', readonly=True)
-    status_display = fields.Field(attribute='status_display', readonly=True)
-    formatted_amount = fields.Field(attribute='formatted_amount', readonly=True)
-    order_age_days = fields.Field(attribute='order_age_days', readonly=True)
+    
+    # Кастомные поля
+    client_full_name = fields.Field(column_name='ФИО клиента')
+    status_emoji = fields.Field(column_name='Статус с эмодзи')
+    total_amount_formatted = fields.Field(column_name='Сумма с форматированием')
+    order_age_days = fields.Field(column_name='Возраст заказа (дни)')
     
     class Meta:
         model = Order
-        fields = (
-            'order_id', 'client_name', 'order_date', 'order_age_days',
-            'total_amount', 'formatted_amount', 'status', 'status_display',
-            'tracking_number'
-        )
-        export_order = (
-            'order_id', 'client_name', 'order_date', 'formatted_amount', 
-            'status_display', 'tracking_number'
-        )
-
-    def get_export_queryset(self, request):
+        fields = ('order_id', 'client_full_name', 'order_date', 'total_amount', 
+                 'total_amount_formatted', 'status', 'status_emoji', 'order_age_days')
+        export_order = ('order_id', 'client_full_name', 'order_date', 'total_amount',
+                       'total_amount_formatted', 'status', 'status_emoji', 'order_age_days')
+    
+    def get_export_queryset(self, request=None):
         """
-        ✅ КАСТОМИЗАЦИЯ 1: get_export_queryset
-        Сортируем заказы по дате (новые первыми)
+        ✅ КАСТОМНЫЙ МЕТОД 7: get_export_queryset для заказов
+        Экспортируем только заказы за последние 6 месяцев
         """
+        from datetime import timedelta
+        six_months_ago = timezone.now() - timedelta(days=180)
+        
         queryset = super().get_export_queryset(request)
-        return queryset.select_related('client').order_by('-order_date')
-
-    def dehydrate_client_name(self, obj):
+        return queryset.filter(
+            order_date__gte=six_months_ago
+        ).select_related('client').order_by('-order_date')
+    
+    def dehydrate_client_full_name(self, order):
         """
-        ✅ КАСТОМИЗАЦИЯ 2: dehydrate_{field_name}
-        Полное имя клиента
+        ✅ КАСТОМНЫЙ МЕТОД 8: dehydrate_client_full_name
+        Формируем полное имя клиента
         """
-        return f"{obj.client.last_name} {obj.client.first_name}"
-
-    def dehydrate_status_display(self, obj):
+        if order.client:
+            return f"{order.client.last_name} {order.client.first_name}"
+        return 'Неизвестный клиент'
+    
+    def dehydrate_status_emoji(self, order):
         """
-        ✅ КАСТОМИЗАЦИЯ 3: dehydrate_{field_name}
-        Человекочитаемый статус заказа
+        ✅ КАСТОМНЫЙ МЕТОД 9: dehydrate_status_emoji
+        Добавляем эмодзи к статусу заказа
         """
-        status_map = {
-            'pending': '⏳ Ожидает',
-            'processing': '🔄 Обрабатывается',
+        status_emojis = {
+            'pending': '⏳ Ожидает обработки',
+            'processing': '🔄 В обработке', 
             'shipped': '🚚 Отправлен',
             'delivered': '✅ Доставлен',
             'cancelled': '❌ Отменен'
         }
-        return status_map.get(obj.status, obj.status)
-
-    def dehydrate_formatted_amount(self, obj):
+        return status_emojis.get(order.status, f'❓ {order.get_status_display()}')
+    
+    def dehydrate_total_amount_formatted(self, order):
         """
-        ✅ КАСТОМИЗАЦИЯ 4: dehydrate_{field_name}
-        Форматированная сумма
+        ✅ КАСТОМНЫЙ МЕТОД 10: dehydrate_total_amount_formatted
+        Форматируем сумму с разделителями тысяч
         """
-        return f"{obj.total_amount:,.0f} ₽".replace(',', ' ')
-
-    def dehydrate_order_age_days(self, obj):
+        if order.total_amount:
+            return f"{order.total_amount:,.2f} ₽".replace(',', ' ')
+        return '0.00 ₽'
+    
+    def dehydrate_order_age_days(self, order):
         """
-        ✅ КАСТОМИЗАЦИЯ 5: dehydrate_{field_name}
-        Возраст заказа в днях
+        ✅ КАСТОМНЫЙ МЕТОД 11: dehydrate_order_age_days
+        Вычисляем возраст заказа в днях
         """
-        from django.utils import timezone
-        age = (timezone.now().date() - obj.order_date.date()).days
-        return f"{age} дней назад"
+        if order.order_date:
+            delta = timezone.now() - order.order_date
+            return delta.days
+        return 0
 
 
 class ReviewResource(resources.ModelResource):
     """
-    ✅ РЕСУРС ДЛЯ ЭКСПОРТА ОТЗЫВОВ
+    Ресурс для экспорта отзывов с кастомизацией
     """
-    client_name = fields.Field(attribute='client_name', readonly=True)
-    product_brand = fields.Field(attribute='product_brand', readonly=True)
-    rating_stars = fields.Field(attribute='rating_stars', readonly=True)
-    comment_preview = fields.Field(attribute='comment_preview', readonly=True)
-    approval_status = fields.Field(attribute='approval_status', readonly=True)
+    
+    # Кастомные поля
+    client_name = fields.Field(column_name='Имя клиента')
+    product_brand = fields.Field(column_name='Бренд товара')
+    rating_stars = fields.Field(column_name='Рейтинг звездами')
+    comment_length = fields.Field(column_name='Длина комментария')
+    approval_status = fields.Field(column_name='Статус модерации')
     
     class Meta:
         model = Reviews
-        fields = (
-            'review_id', 'client_name', 'product_brand', 'rating', 
-            'rating_stars', 'comment_preview', 'is_approved', 
-            'approval_status', 'created_date'
-        )
-        export_order = (
-            'review_id', 'client_name', 'product_brand', 'rating_stars', 
-            'comment_preview', 'approval_status', 'created_date'
-        )
-
-    def get_export_queryset(self, request):
+        fields = ('review_id', 'client_name', 'product_brand', 'rating', 'rating_stars',
+                 'comment', 'comment_length', 'approval_status', 'created_date')
+        export_order = ('review_id', 'client_name', 'product_brand', 'rating', 'rating_stars',
+                       'comment_length', 'approval_status', 'created_date')
+    
+    def get_export_queryset(self, request=None):
         """
-        ✅ КАСТОМИЗАЦИЯ 1: get_export_queryset
-        Только одобренные отзывы, отсортированные по дате
+        ✅ КАСТОМНЫЙ МЕТОД 12: get_export_queryset для отзывов
+        Экспортируем только одобренные отзывы с комментариями
         """
         queryset = super().get_export_queryset(request)
-        return queryset.filter(is_approved=True).select_related(
-            'client', 'sneakers'
-        ).order_by('-created_date')
-
-    def dehydrate_client_name(self, obj):
+        return queryset.filter(
+            is_approved=True,
+            comment__isnull=False
+        ).exclude(
+            comment__exact=''
+        ).select_related('client', 'sneakers').order_by('-created_date')
+    
+    def dehydrate_client_name(self, review):
         """
-        ✅ КАСТОМИЗАЦИЯ 2: dehydrate_{field_name}
-        Полное имя клиента
+        ✅ КАСТОМНЫЙ МЕТОД 13: dehydrate_client_name
+        Получаем имя клиента
         """
-        return f"{obj.client.last_name} {obj.client.first_name}"
-
-    def dehydrate_product_brand(self, obj):
+        if review.client:
+            return f"{review.client.first_name} {review.client.last_name}"
+        return 'Анонимный пользователь'
+    
+    def dehydrate_product_brand(self, review):
         """
-        ✅ КАСТОМИЗАЦИЯ 3: dehydrate_{field_name}
-        Бренд товара
+        ✅ КАСТОМНЫЙ МЕТОД 14: dehydrate_product_brand
+        Получаем бренд товара из отзыва
         """
-        return obj.sneakers.brand
-
-    def dehydrate_rating_stars(self, obj):
+        if review.sneakers:
+            return review.sneakers.brand
+        return 'Неизвестный товар'
+    
+    def dehydrate_rating_stars(self, review):
         """
-        ✅ КАСТОМИЗАЦИЯ 4: dehydrate_{field_name}
-        Рейтинг звездочками
+        ✅ КАСТОМНЫЙ МЕТОД 15: dehydrate_rating_stars
+        Преобразуем рейтинг в звездочки
         """
-        return "⭐" * obj.rating + "☆" * (5 - obj.rating)
-
-    def dehydrate_comment_preview(self, obj):
+        if review.rating:
+            return "★" * review.rating + "☆" * (5 - review.rating)
+        return "☆☆☆☆☆"
+    
+    def dehydrate_comment_length(self, review):
         """
-        ✅ КАСТОМИЗАЦИЯ 5: dehydrate_{field_name}
-        Превью комментария (первые 100 символов)
+        ✅ КАСТОМНЫЙ МЕТОД 16: dehydrate_comment_length
+        Подсчитываем длину комментария
         """
-        if len(obj.comment) > 100:
-            return obj.comment[:100] + "..."
-        return obj.comment
-
-    def dehydrate_approval_status(self, obj):
+        return len(review.comment) if review.comment else 0
+    
+    def dehydrate_approval_status(self, review):
         """
-        ✅ КАСТОМИЗАЦИЯ 6: dehydrate_{field_name}
-        Статус одобрения
+        ✅ КАСТОМНЫЙ МЕТОД 17: dehydrate_approval_status
+        Статус модерации отзыва
         """
-        return "✅ Одобрен" if obj.is_approved else "⏳ На модерации"
+        return "✅ Одобрен" if review.is_approved else "⏳ На модерации"
 
 
 class ClientResource(resources.ModelResource):
     """
-    ✅ РЕСУРС ДЛЯ ЭКСПОРТА КЛИЕНТОВ
+    Ресурс для экспорта клиентов с кастомизацией
     """
-    full_name = fields.Field(attribute='full_name', readonly=True)
-    orders_count = fields.Field(attribute='orders_count', readonly=True)
-    total_spent = fields.Field(attribute='total_spent', readonly=True)
-    status_display = fields.Field(attribute='status_display', readonly=True)
+    
+    # Кастомные поля
+    full_name = fields.Field(column_name='Полное имя')
+    registration_days = fields.Field(column_name='Дней с регистрации')
+    orders_count = fields.Field(column_name='Количество заказов')
+    account_status = fields.Field(column_name='Статус аккаунта')
     
     class Meta:
         model = Clients
-        fields = (
-            'client_id', 'full_name', 'email', 'phone_number',
-            'orders_count', 'total_spent', 'is_active', 'status_display',
-            'date_joined'
-        )
-        export_order = (
-            'client_id', 'full_name', 'email', 'phone_number',
-            'orders_count', 'total_spent', 'status_display', 'date_joined'
-        )
-
-    def get_export_queryset(self, request):
+        fields = ('client_id', 'full_name', 'email', 'phone_number', 
+                 'registration_days', 'orders_count', 'account_status', 'date_joined')
+        export_order = ('client_id', 'full_name', 'email', 'phone_number',
+                       'orders_count', 'account_status', 'registration_days', 'date_joined')
+    
+    def get_export_queryset(self, request=None):
         """
-        ✅ КАСТОМИЗАЦИЯ 1: get_export_queryset
-        Только активные клиенты с подсчетом заказов
+        ✅ КАСТОМНЫЙ МЕТОД 18: get_export_queryset для клиентов
+        Экспортируем только активных клиентов с заказами
         """
-        from django.db.models import Sum
         queryset = super().get_export_queryset(request)
-        return queryset.filter(is_active=True).annotate(
-            orders_count=Count('client_orders'),
-            total_spent=Sum('client_purchases__total_cost')
-        ).order_by('-date_joined')
-
-    def dehydrate_full_name(self, obj):
+        return queryset.filter(
+            is_active=True
+        ).prefetch_related('client_orders').order_by('-date_joined')
+    
+    def dehydrate_full_name(self, client):
         """
-        ✅ КАСТОМИЗАЦИЯ 2: dehydrate_{field_name}
-        Полное имя клиента
+        ✅ КАСТОМНЫЙ МЕТОД 19: dehydrate_full_name
+        Формируем полное имя клиента
         """
-        return f"{obj.last_name} {obj.first_name}"
-
-    def dehydrate_orders_count(self, obj):
+        return f"{client.last_name} {client.first_name}"
+    
+    def dehydrate_registration_days(self, client):
         """
-        ✅ КАСТОМИЗАЦИЯ 3: dehydrate_{field_name}
-        Количество заказов
+        ✅ КАСТОМНЫЙ МЕТОД 20: dehydrate_registration_days
+        Количество дней с регистрации
         """
-        if hasattr(obj, 'orders_count'):
-            return f"{obj.orders_count} заказов"
-        return "0 заказов"
-
-    def dehydrate_total_spent(self, obj):
+        if client.date_joined:
+            delta = timezone.now() - client.date_joined
+            return delta.days
+        return 0
+    
+    def dehydrate_orders_count(self, client):
         """
-        ✅ КАСТОМИЗАЦИЯ 4: dehydrate_{field_name}
-        Общая потраченная сумма
+        ✅ КАСТОМНЫЙ МЕТОД 21: dehydrate_orders_count
+        Подсчитываем количество заказов клиента
         """
-        if hasattr(obj, 'total_spent') and obj.total_spent:
-            return f"{obj.total_spent:,.0f} ₽".replace(',', ' ')
-        return "0 ₽"
-
-    def dehydrate_status_display(self, obj):
+        return client.client_orders.count()
+    
+    def dehydrate_account_status(self, client):
         """
-        ✅ КАСТОМИЗАЦИЯ 5: dehydrate_{field_name}
-        Статус клиента
+        ✅ КАСТОМНЫЙ МЕТОД 22: dehydrate_account_status
+        Статус аккаунта клиента
         """
-        return "✅ Активен" if obj.is_active else "❌ Неактивен"
+        return "🟢 Активный" if client.is_active else "🔴 Заблокированный"

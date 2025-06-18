@@ -6,6 +6,8 @@ from django.utils import timezone  # ✅ Добавляем timezone
 from django.urls import reverse
 from django.db.models import Avg, Count
 from simple_history.models import HistoricalRecords
+from django.core.exceptions import ValidationError
+import re
 
 
 
@@ -160,6 +162,28 @@ class Catalog(models.Model):
             return format_html('<img src="{}" width="50" height="50" />', self.image.url)
         return "Нет изображения"
     image_preview.short_description = "Превью"
+
+    def clean(self):
+        """
+        ✅ ВАЛИДАЦИЯ 1: Бизнес-логика товаров
+        Премиум бренды должны быть дорогими, дорогие товары должны иметь изображение
+        """
+        super().clean()
+        errors = {}
+        
+        # Премиум бренды не могут быть дешевыми
+        premium_brands = ['NIKE', 'ADIDAS', 'JORDAN', 'BALENCIAGA']
+        if self.brand and self.brand.upper() in premium_brands:
+            if not self.price or self.price < 5000:
+                errors['price'] = f'Товары бренда {self.brand} не могут стоить меньше 5 000 ₽'
+        
+        # Дорогие товары должны иметь изображение
+        if self.price and self.price > 10000:
+            if not self.image:
+                errors['image'] = 'Товары дороже 10 000 ₽ должны иметь изображение'
+        
+        if errors:
+            raise ValidationError(errors)
 
 
 class ProductTag(models.Model):
@@ -445,6 +469,31 @@ class Order(models.Model):
     def get_absolute_url(self):  # ✅ get_absolute_url
         return reverse('order_detail', kwargs={'pk': self.pk})
     
+    def clean(self):
+        """
+        ✅ ВАЛИДАЦИЯ 3: Бизнес-логика заказов
+        Минимальная сумма заказа, ограничения для новых клиентов
+        """
+        super().clean()
+        errors = {}
+        
+        # Минимальная сумма заказа
+        if self.total_amount is not None and self.total_amount < 500:
+            errors['total_amount'] = 'Минимальная сумма заказа: 500 ₽'
+        
+        # Ограничение для новых клиентов (зарегистрированы менее 30 дней)
+        if self.client and self.total_amount:
+            from datetime import timedelta
+            from django.utils import timezone
+            
+            thirty_days_ago = timezone.now() - timedelta(days=30)
+            if self.client.date_joined and self.client.date_joined > thirty_days_ago:
+                if self.total_amount > 50000:
+                    errors['total_amount'] = 'Для новых клиентов максимальная сумма заказа: 50 000 ₽'
+        
+        if errors:
+            raise ValidationError(errors)
+    
     def save(self, *args, **kwargs):
         """
         Переопределенный save() для автоматической генерации трек-номера
@@ -622,6 +671,32 @@ class Reviews(models.Model):
             return "Нет оценки"
         return "★" * self.rating + "☆" * (5 - self.rating)
     rating_stars.short_description = "Рейтинг"
+
+    def clean(self):
+        """
+        ✅ ВАЛИДАЦИЯ 2: Бизнес-логика отзывов
+        Низкие оценки должны иметь комментарий, один клиент - один отзыв
+        """
+        super().clean()
+        errors = {}
+        
+        # Низкие оценки должны иметь развернутый комментарий
+        if self.rating and self.rating <= 2:
+            if not self.comment or len(self.comment.strip()) < 10:
+                errors['comment'] = 'Для оценки 1-2 звезды обязателен комментарий минимум 10 символов'
+        
+        # Один клиент может оставить только один отзыв на товар
+        if self.client and self.sneakers:
+            existing_review = Reviews.objects.filter(
+                client=self.client,
+                sneakers=self.sneakers
+            ).exclude(pk=self.pk).first()
+            
+            if existing_review:
+                errors['__all__'] = 'Вы уже оставляли отзыв на этот товар'
+        
+        if errors:
+            raise ValidationError(errors)  
 
 
 class Positions(models.Model):

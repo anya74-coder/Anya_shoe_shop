@@ -40,19 +40,27 @@ def home(request):
     ✅ ДОБАВЛЕНО: Демонстрация values_list(), exists(), update()
     """
     
-    # ✅ ВИДЖЕТ 1: Популярные кроссовки (с агрегацией)
+# ✅ ВИДЖЕТ 1: Популярные кроссовки с комбинированным Q-запросом
     cache_key_popular = 'popular_products_widget'
     popular_products = cache.get(cache_key_popular)
     
     if popular_products is None:
+        # ✅ Комбинированный Q-запрос для популярных товаров
+        # Товары которые: (есть отзывы И рейтинг >= 4) И активны И НЕ дешевые И НЕ без изображения
         popular_products = Catalog.objects.filter(
-            is_active=True
+            (
+                Q(reviews__isnull=False) &  # есть отзывы
+                Q(reviews__rating__gte=4)  # хороший рейтинг
+            ) &
+            Q(is_active=True) &  # AND активны
+            ~Q(price__lt=5000) &  # NOT дешевые
+            ~Q(image__isnull=True)  # NOT без изображения
         ).annotate(
             avg_rating=Avg('reviews__rating'),
             review_count=Count('reviews', distinct=True)
         ).filter(
-            review_count__gte=1  # Только товары с отзывами
-        ).order_by('-avg_rating', '-review_count')[:5]  # Топ-5
+            review_count__gte=1
+        ).order_by('-avg_rating', '-review_count')[:5]
         
         cache.set(cache_key_popular, popular_products, 60 * 15)  # 15 минут
     
@@ -189,10 +197,11 @@ def demo_mass_update(request):
     
     return HttpResponseRedirect(reverse('home'))
 
-@cache_page(60 * 10)  # ✅ Кешируем каталог на 10 минут
+@cache_page(60 * 10)
 def product_list(request):
     """
     Список товаров с фильтрацией и пагинацией
+    ✅ СЛОЖНЫЙ Q-ЗАПРОС 2: OR + AND + NOT
     """
     # Базовый queryset активных товаров
     queryset = Catalog.objects.filter(is_active=True)
@@ -202,33 +211,49 @@ def product_list(request):
     
     # Фильтрация по категории
     category_filter = request.GET.get('category')
-    if category_filter:
-        try:
-            category_id = int(category_filter)
-            # Фильтруем через связанную таблицу ProductCards
-            queryset = queryset.filter(product_card__category_id=category_id)
-        except (ValueError, TypeError):
-            pass
-    
-    # Фильтрация по бренду
     brand_filter = request.GET.get('brand')
-    if brand_filter:
-        queryset = queryset.filter(brand__icontains=brand_filter)
-    
-    # Фильтрация по цене
     price_min = request.GET.get('price_min')
-    if price_min:
-        try:
-            queryset = queryset.filter(price__gte=float(price_min))
-        except (ValueError, TypeError):
-            pass
-    
     price_max = request.GET.get('price_max')
-    if price_max:
-        try:
-            queryset = queryset.filter(price__lte=float(price_max))
-        except (ValueError, TypeError):
-            pass
+    
+    # ✅ Комбинированный Q-запрос для сложной фильтрации
+    if any([category_filter, brand_filter, price_min, price_max]):
+        # Строим сложный Q-запрос
+        q_filter = Q()
+        
+        # Фильтр по категории (если указан)
+        if category_filter:
+            try:
+                category_id = int(category_filter)
+                q_filter &= Q(product_card__category_id=category_id)
+            except (ValueError, TypeError):
+                pass
+        
+        # Фильтр по бренду (если указан)
+        if brand_filter:
+            q_filter &= Q(brand__icontains=brand_filter)
+        
+        # Фильтр по цене
+        if price_min:
+            try:
+                q_filter &= Q(price__gte=float(price_min))
+            except (ValueError, TypeError):
+                pass
+        
+        if price_max:
+            try:
+                q_filter &= Q(price__lte=float(price_max))
+            except (ValueError, TypeError):
+                pass
+        
+        # ✅ Применяем комбинированный фильтр с OR, AND и NOT
+        # Показываем товары которые:
+        # Соответствуют фильтрам И активны И НЕ без изображения И НЕ слишком дешевые
+        queryset = Catalog.objects.filter(
+            q_filter &  # Пользовательские фильтры
+            Q(is_active=True) &  # AND активные
+            ~Q(image__isnull=True) &  # NOT без изображения
+            ~Q(price__lt=500)  # NOT слишком дешевые
+        )
     
     # Сортировка
     sort_by = request.GET.get('sort', '-created_at')
@@ -247,7 +272,7 @@ def product_list(request):
     )
     
     # Пагинация
-    paginator = Paginator(queryset, 12)  # 12 товаров на страницу
+    paginator = Paginator(queryset, 12)
     page = request.GET.get('page')
     
     try:
@@ -487,19 +512,30 @@ def client_detail(request, pk):
 
 def search_products(request):
     """
-    Поиск товаров с демонстрацией сложных запросов
+    Поиск товаров с демонстрацией сложных Q-запросов
+    ✅ СЛОЖНЫЙ Q-ЗАПРОС 1: OR + AND + NOT
     """
     query = request.GET.get('q')
     results = []
     
     if query:
-        # Сложный поиск с использованием Q объектов и __
+        # ✅ Комбинированный Q-запрос с OR, AND и NOT
+        # Ищем товары где:
+        # (бренд содержит запрос ИЛИ название содержит запрос ИЛИ описание содержит запрос)
+        # И товар активен
+        # И НЕ товары без изображения
+        # И НЕ товары дешевле 1000 рублей (исключаем возможный мусор)
         results = Catalog.objects.filter(
-            Q(brand__icontains=query) |
-            Q(product_card__name__icontains=query) |
-            Q(product_card__description__icontains=query) |
-            Q(product_card__color__icontains=query)
-        ).filter(is_active=True).distinct()
+            (
+                Q(brand__icontains=query) |
+                Q(product_card__name__icontains=query) |
+                Q(product_card__description__icontains=query) |
+                Q(product_card__color__icontains=query)
+            ) &
+            Q(is_active=True) &
+            ~Q(image__isnull=True) &  # NOT (НЕ без изображения)
+            ~Q(price__lt=1000)  # NOT (НЕ дешевле 1000)
+        ).distinct()
         
         # Сортировка результатов
         results = results.order_by('-created_at', 'price')
@@ -527,22 +563,40 @@ def search_products(request):
 def reviews_list(request):
     """
     Список отзывов с фильтрацией и агрегацией
+    ✅ СЛОЖНЫЙ Q-ЗАПРОС 3: OR + AND + NOT
     """
-    # Фильтрация одобренных отзывов
-    reviews = Reviews.objects.filter(is_approved=True).select_related('client', 'sneakers')
-    
-    # Фильтр по рейтингу
+    # Получаем параметры фильтрации
     rating_filter = request.GET.get('rating')
-    if rating_filter:
-        reviews = reviews.filter(rating=rating_filter)
-    
-    # Фильтр по бренду через связанную таблицу
     brand_filter = request.GET.get('brand')
-    if brand_filter:
-        reviews = reviews.filter(sneakers__brand__icontains=brand_filter)
     
-    # Исключаем отзывы без комментариев
-    reviews = reviews.exclude(comment__isnull=True).exclude(comment__exact='')
+    # ✅ Комбинированный Q-запрос для отзывов
+    # Показываем отзывы которые:
+    # (одобрены И есть комментарий) И (фильтры пользователя) И НЕ от неактивных клиентов И НЕ спам
+    base_filter = (
+        Q(is_approved=True) &  # одобрены
+        Q(comment__isnull=False) &  # есть комментарий
+        ~Q(comment__exact='') &  # НЕ пустой комментарий
+        ~Q(client__is_active=False) &  # НЕ от неактивных клиентов
+        ~Q(comment__icontains='спам') &  # НЕ спам
+        ~Q(comment__icontains='реклама')  # НЕ реклама
+    )
+    
+    # Добавляем пользовательские фильтры
+    user_filters = Q()
+    
+    if rating_filter:
+        try:
+            user_filters &= Q(rating=int(rating_filter))
+        except (ValueError, TypeError):
+            pass
+    
+    if brand_filter:
+        user_filters &= Q(sneakers__brand__icontains=brand_filter)
+    
+    # Объединяем все фильтры
+    reviews = Reviews.objects.filter(
+        base_filter & user_filters
+    ).select_related('client', 'sneakers')
     
     # Сортировка
     sort_by = request.GET.get('sort', '-created_date')

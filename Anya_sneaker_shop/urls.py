@@ -43,6 +43,11 @@ from sneaker_app.views import *
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('i18n/', include('django.conf.urls.i18n')),  # ✅ Для переключения языков
+    path('__debug__/', include('debug_toolbar.urls')),
+    # ✅ API ЭНДПОИНТЫ (без интернационализации)
+    path('api/', include('sneaker_app.api_urls')),
+    path('api-auth/', include('rest_framework.urls')),  # DRF авторизация
+
 ]
 
 # ✅ URLs с языковыми префиксами (/en/, /ru/)

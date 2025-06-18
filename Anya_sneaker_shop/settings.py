@@ -48,6 +48,20 @@ INSTALLED_APPS = [
     'rest_framework',  # ✅ ДОБАВЛЯЕМ DRF
     'django_filters',  # ✅ ДОБАВЛЯЕМ фильтры
     'simple_history',
+    'import_export'
+]
+
+# ✅ НАСТРОЙКИ IMPORT-EXPORT
+IMPORT_EXPORT_USE_TRANSACTIONS = True
+IMPORT_EXPORT_SKIP_ADMIN_LOG = False
+IMPORT_EXPORT_TMP_STORAGE_CLASS = 'import_export.tmp_storages.TempFolderStorage'
+
+# ✅ ФОРМАТЫ ЭКСПОРТА
+IMPORT_EXPORT_FORMATS = [
+    'import_export.formats.base_formats.CSV',
+    'import_export.formats.base_formats.XLS',
+    'import_export.formats.base_formats.XLSX',
+    'import_export.formats.base_formats.JSON',
 ]
 
 # ✅ ДОБАВЛЯЕМ НАСТРОЙКИ DRF

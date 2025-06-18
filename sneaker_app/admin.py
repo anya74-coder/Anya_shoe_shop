@@ -15,6 +15,70 @@ from .models import (
     Purchase, Wishlist, Reviews, Positions, Support
 )
 
+# ✅ Импорт для Excel экспорта
+from .resources import CatalogResource, OrderResource, ReviewResource, ClientResource
+from tablib import Dataset
+
+# ✅ ФУНКЦИИ ДЛЯ EXCEL ЭКСПОРТА
+def export_catalog_to_excel(modeladmin, request, queryset):
+    """Экспорт каталога в Excel"""
+    resource = CatalogResource()
+    dataset = resource.export(queryset)
+    
+    response = HttpResponse(
+        dataset.xlsx, 
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = f'attachment; filename="catalog_export_{timezone.now().strftime("%Y%m%d_%H%M%S")}.xlsx"'
+    return response
+
+export_catalog_to_excel.short_description = "📊 Экспорт в Excel"
+
+
+def export_orders_to_excel(modeladmin, request, queryset):
+    """Экспорт заказов в Excel"""
+    resource = OrderResource()
+    dataset = resource.export(queryset)
+    
+    response = HttpResponse(
+        dataset.xlsx, 
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = f'attachment; filename="orders_export_{timezone.now().strftime("%Y%m%d_%H%M%S")}.xlsx"'
+    return response
+
+export_orders_to_excel.short_description = "📊 Экспорт в Excel"
+
+
+def export_reviews_to_excel(modeladmin, request, queryset):
+    """Экспорт отзывов в Excel"""
+    resource = ReviewResource()
+    dataset = resource.export(queryset)
+    
+    response = HttpResponse(
+        dataset.xlsx, 
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = f'attachment; filename="reviews_export_{timezone.now().strftime("%Y%m%d_%H%M%S")}.xlsx"'
+    return response
+
+export_reviews_to_excel.short_description = "📊 Экспорт в Excel"
+
+
+def export_clients_to_excel(modeladmin, request, queryset):
+    """Экспорт клиентов в Excel"""
+    resource = ClientResource()
+    dataset = resource.export(queryset)
+    
+    response = HttpResponse(
+        dataset.xlsx, 
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = f'attachment; filename="clients_export_{timezone.now().strftime("%Y%m%d_%H%M%S")}.xlsx"'
+    return response
+
+export_clients_to_excel.short_description = "📊 Экспорт в Excel"
+
 # ✅ Простая и надежная настройка шрифтов
 def get_fonts():
     """Получение доступных шрифтов с поддержкой кириллицы"""
@@ -242,7 +306,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_editable = ['status']
     raw_id_fields = ['client', 'shipping_address']
     
-    actions = [generate_orders_pdf]
+    actions = [export_orders_to_excel, generate_orders_pdf]
     
     fieldsets = (
         ('Информация о заказе', {
@@ -316,7 +380,7 @@ class CatalogAdmin(admin.ModelAdmin):
     list_editable = ['is_active']
     inlines = [ProductCardsInline, ReviewsInline, ProductTagInline]
     
-    actions = [generate_products_pdf]
+    actions = [export_catalog_to_excel, generate_orders_pdf]
     
     fieldsets = (
         ('Основная информация', {
@@ -365,6 +429,8 @@ class ClientsAdmin(admin.ModelAdmin):
     readonly_fields = ['date_joined', 'orders_count']
     date_hierarchy = 'date_joined'
     list_editable = ['is_active']
+
+    actions = [export_clients_to_excel]
     
     fieldsets = (
         ('Личная информация', {
@@ -500,6 +566,8 @@ class ReviewsAdmin(admin.ModelAdmin):
     list_editable = ['is_approved']
     raw_id_fields = ['client', 'sneakers']
     
+    actions = [export_reviews_to_excel]
+
     fieldsets = (
         ('Основная информация', {
             'fields': ('client', 'sneakers', 'rating', 'rating_stars')

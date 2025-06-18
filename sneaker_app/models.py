@@ -5,6 +5,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils import timezone  # ✅ Добавляем timezone
 from django.urls import reverse
 from django.db.models import Avg, Count
+from simple_history.models import HistoricalRecords
 
 
 
@@ -139,7 +140,8 @@ class Catalog(models.Model):
         blank=True,
         verbose_name="Теги"
     )
-    
+    history = HistoricalRecords()
+
     objects = CatalogManager()  # ✅ Собственный менеджер
     
     class Meta:
@@ -600,6 +602,8 @@ class Reviews(models.Model):
         verbose_name="Одобрен"
     )
     
+    history = HistoricalRecords()
+
     class Meta:
         verbose_name = "Отзыв"
         verbose_name_plural = "Отзывы"

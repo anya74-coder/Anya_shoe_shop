@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'rest_framework',  # ✅ ДОБАВЛЯЕМ DRF
     'django_filters',  # ✅ ДОБАВЛЯЕМ фильтры
+    'simple_history',
 ]
 
 # ✅ ДОБАВЛЯЕМ НАСТРОЙКИ DRF
@@ -89,6 +90,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
 ]
 
 ROOT_URLCONF = "Anya_sneaker_shop.urls"

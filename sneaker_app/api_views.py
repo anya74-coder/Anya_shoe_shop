@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Avg, Count
-from .models import Catalog, Reviews, Category, Clients
+from .models import Catalog, Order, Reviews, Category, Clients
+from .filters import CatalogFilter, ReviewFilter
 from .serializers import (
     CatalogSerializer, ReviewSerializer, 
     CategorySerializer, ClientSerializer
@@ -34,14 +35,14 @@ class CatalogViewSet(viewsets.ModelViewSet):
     PUT /api/products/1/ - обновить товар
     DELETE /api/products/1/ - удалить товар
     """
-    queryset = Catalog.objects.filter(is_active=True).select_related('product_card')
+    queryset = Catalog.objects.select_related('product_card').filter(is_active=True)
     serializer_class = CatalogSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     
     # ✅ ФИЛЬТРАЦИЯ И ПОИСК
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['brand', 'is_active']
-    search_fields = ['brand', 'product_card__name', 'product_card__color']
+    filterset_class = CatalogFilter  # ✅ ИСПОЛЬЗУЕМ КАСТОМНЫЙ ФИЛЬТР
+    search_fields = ['brand', 'product_card__name', 'product_card__color', 'product_card__description']
     ordering_fields = ['price', 'created_at', 'brand']
     ordering = ['-created_at']
     
@@ -86,6 +87,33 @@ class CatalogViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(expensive_products, many=True)
         return Response(serializer.data)
 
+    @action(detail=True, methods=['get'])
+    def history(self, request, pk=None):
+        """
+        ✅ НОВЫЙ ЭНДПОИНТ: /api/products/1/history/
+        История изменений конкретного товара
+        """
+        product = self.get_object()
+        history = product.history.all()
+        
+        history_data = []
+        for record in history:
+            history_data.append({
+                'history_id': record.history_id,
+                'history_date': record.history_date,
+                'history_type': record.get_history_type_display(),
+                'brand': record.brand,
+                'price': str(record.price),
+                'is_active': record.is_active,
+                'history_user': record.history_user.username if record.history_user else 'Система'
+            })
+        
+        return Response({
+            'product_id': product.sneakers_id,
+            'current_brand': product.brand,
+            'history_count': len(history_data),
+            'history': history_data
+        })
 
 class ReviewViewSet(viewsets.ModelViewSet):
     """
@@ -131,6 +159,34 @@ class ReviewViewSet(viewsets.ModelViewSet):
         top_reviews = self.get_queryset().filter(rating__gte=4).order_by('-rating', '-created_date')
         serializer = self.get_serializer(top_reviews, many=True)
         return Response(serializer.data)
+    
+    @action(detail=True, methods=['get'])
+    def history(self, request, pk=None):
+        """
+        ✅ НОВЫЙ ЭНДПОИНТ: /api/reviews/1/history/
+        История изменений конкретного отзыва
+        """
+        review = self.get_object()
+        history = review.history.all()
+        
+        history_data = []
+        for record in history:
+            history_data.append({
+                'history_id': record.history_id,
+                'history_date': record.history_date,
+                'history_type': record.get_history_type_display(),
+                'rating': record.rating,
+                'comment': record.comment[:100] + '...' if len(record.comment) > 100 else record.comment,
+                'is_approved': record.is_approved,
+                'history_user': record.history_user.username if record.history_user else 'Система'
+            })
+        
+        return Response({
+            'review_id': review.review_id,
+            'current_rating': review.rating,
+            'history_count': len(history_data),
+            'history': history_data
+        })
 
 
 class ClientViewSet(viewsets.ModelViewSet):
@@ -142,42 +198,138 @@ class ClientViewSet(viewsets.ModelViewSet):
     PUT /api/clients/1/ - обновить клиента
     DELETE /api/clients/1/ - удалить клиента
     """
-    queryset = Clients.objects.filter(is_active=True)
     serializer_class = ClientSerializer
-    permission_classes = [IsAuthenticated]  # Только для авторизованных
+    permission_classes = [IsAuthenticated]  # ✅ ТОЛЬКО АВТОРИЗОВАННЫЕ
     
-    # ✅ ФИЛЬТРАЦИЯ И ПОИСК
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['is_active']
     search_fields = ['first_name', 'last_name', 'email']
-    ordering_fields = ['date_joined', 'last_name']
-    ordering = ['-date_joined']
+    ordering_fields = ['registration_date', 'first_name']
+    ordering = ['-registration_date']
     
-    @action(detail=True, methods=['get'])
-    def reviews(self, request, pk=None):
+    def get_queryset(self):
         """
-        ✅ КАСТОМНЫЙ ЭНДПОИНТ: /api/clients/1/reviews/
-        Все отзывы конкретного клиента
+        ✅ ФИЛЬТРАЦИЯ ПО ТЕКУЩЕМУ ПОЛЬЗОВАТЕЛЮ
+        Каждый пользователь видит только свои данные
         """
-        client = self.get_object()
-        reviews = Reviews.objects.filter(client=client, is_approved=True)
-        serializer = ReviewSerializer(reviews, many=True, context={'request': request})
-        return Response(serializer.data)
-    
-    @action(detail=True, methods=['get'])
-    def orders(self, request, pk=None):
-        """
-        ✅ КАСТОМНЫЙ ЭНДПОИНТ: /api/clients/1/orders/
-        Все заказы конкретного клиента
-        """
-        client = self.get_object()
-        orders_count = client.client_orders.count()
-        purchases_count = client.client_purchases.count()
+        user = self.request.user
         
+        # Если суперпользователь - видит всех
+        if user.is_superuser:
+            return Clients.objects.all()
+        
+        # Обычный пользователь видит только себя
+        return Clients.objects.filter(email=user.email)
+
+    @action(detail=False, methods=['get'])
+    def my_reviews(self, request):
+        """
+        ✅ ОТЗЫВЫ ТЕКУЩЕГО ПОЛЬЗОВАТЕЛЯ
+        /api/clients/my_reviews/
+        """
+        user = request.user
+        try:
+            client = Clients.objects.get(email=user.email)
+            reviews = Reviews.objects.filter(client=client)
+            serializer = ReviewSerializer(reviews, many=True, context={'request': request})
+            
+            return Response({
+                'client': f"{client.first_name} {client.last_name}",
+                'reviews_count': reviews.count(),
+                'reviews': serializer.data
+            })
+        except Clients.DoesNotExist:
+            return Response({'error': 'Профиль клиента не найден'}, status=404)
+
+    @action(detail=False, methods=['get'])
+    def my_orders(self, request):
+        """
+        ✅ ЗАКАЗЫ ТЕКУЩЕГО ПОЛЬЗОВАТЕЛЯ
+        /api/clients/my_orders/
+        """
+        user = request.user
+        try:
+            client = Clients.objects.get(email=user.email)
+            orders = Order.objects.filter(client=client).order_by('-order_date')
+            
+            orders_data = []
+            for order in orders:
+                orders_data.append({
+                    'order_id': order.order_id,
+                    'order_date': order.order_date,
+                    'status': order.status,
+                    'total_amount': str(order.total_amount)
+                })
+            
+            return Response({
+                'client': f"{client.first_name} {client.last_name}",
+                'orders_count': orders.count(),
+                'orders': orders_data
+            })
+        except Clients.DoesNotExist:
+            return Response({'error': 'Профиль клиента не найден'}, status=404)
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+
+class ProductsByBrandView(APIView):
+    """
+    ✅ ФИЛЬТРАЦИЯ ПО БРЕНДУ ЧЕРЕЗ URL
+    /api/products/brand/Nike/
+    """
+    def get(self, request, brand_name):
+        products = Catalog.objects.filter(
+            brand__icontains=brand_name,
+            is_active=True
+        ).order_by('-created_at')
+        
+        serializer = CatalogSerializer(products, many=True, context={'request': request})
         return Response({
-            'client_id': client.client_id,
-            'orders_count': orders_count,
-            'purchases_count': purchases_count,
-            'total_activity': orders_count + purchases_count
+            'brand': brand_name,
+            'count': products.count(),
+            'results': serializer.data
         })
 
+class ProductsByPriceRangeView(APIView):
+    """
+    ✅ ФИЛЬТРАЦИЯ ПО ДИАПАЗОНУ ЦЕН ЧЕРЕЗ URL
+    /api/products/price-range/10000/50000/
+    """
+    def get(self, request, min_price, max_price):
+        products = Catalog.objects.filter(
+            price__gte=min_price,
+            price__lte=max_price,
+            is_active=True
+        ).order_by('price')
+        
+        serializer = CatalogSerializer(products, many=True, context={'request': request})
+        return Response({
+            'price_range': f'{min_price} - {max_price} руб',
+            'count': products.count(),
+            'results': serializer.data
+        })
+
+class ReviewsByRatingView(APIView):
+    """
+    ✅ ФИЛЬТРАЦИЯ ПО РЕЙТИНГУ ЧЕРЕЗ URL
+    /api/reviews/rating/5/
+    """
+    def get(self, request, rating):
+        if rating < 1 or rating > 5:
+            return Response(
+                {'error': 'Рейтинг должен быть от 1 до 5'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        reviews = Reviews.objects.filter(
+            rating=rating,
+            is_approved=True
+        ).order_by('-created_date')
+        
+        serializer = ReviewSerializer(reviews, many=True, context={'request': request})
+        return Response({
+            'rating': rating,
+            'count': reviews.count(),
+            'results': serializer.data
+        })

@@ -1,6 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .api_views import CatalogViewSet, ReviewViewSet, CategoryViewSet, ClientViewSet
+from . import api_views
 
 # ✅ СОЗДАЕМ РОУТЕР ДЛЯ API
 router = DefaultRouter()
@@ -10,11 +11,24 @@ router.register(r'categories', CategoryViewSet, basename='category')
 router.register(r'clients', ClientViewSet, basename='client')
 
 urlpatterns = [
-    # ✅ API ЭНДПОИНТЫ
-    path('', include(router.urls)),
+   # ✅ API ЭНДПОИНТЫ
+   path('', include(router.urls)),
     
-    # ✅ ДОПОЛНИТЕЛЬНЫЕ API ЭНДПОИНТЫ
-    path('auth/', include('rest_framework.urls')),  # Авторизация через DRF
+   # ✅ ДОПОЛНИТЕЛЬНЫЕ API ЭНДПОИНТЫ
+   path('auth/', include('rest_framework.urls')),  # Авторизация через DRF
+    
+   # ✅ ФИЛЬТРАЦИЯ ПО ИМЕНОВАННЫМ АРГУМЕНТАМ URL
+   path('products/brand/<str:brand_name>/', 
+        api_views.ProductsByBrandView.as_view(), 
+        name='products-by-brand'),
+    
+   path('products/price-range/<int:min_price>/<int:max_price>/', 
+        api_views.ProductsByPriceRangeView.as_view(), 
+        name='products-by-price-range'),
+    
+   path('reviews/rating/<int:rating>/', 
+        api_views.ReviewsByRatingView.as_view(), 
+        name='reviews-by-rating'),
 ]
 
 # ✅ ДОСТУПНЫЕ API ЭНДПОИНТЫ:

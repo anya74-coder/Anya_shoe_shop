@@ -203,8 +203,8 @@ class ClientViewSet(viewsets.ModelViewSet):
     
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['first_name', 'last_name', 'email']
-    ordering_fields = ['registration_date', 'first_name']
-    ordering = ['-registration_date']
+    ordering_fields = ['-date_joined', 'first_name']
+    ordering = ['-date_joined']
     
     def get_queryset(self):
         """

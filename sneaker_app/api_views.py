@@ -6,6 +6,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Avg, Count
 from .models import Catalog, Order, Reviews, Category, Clients
 from .filters import CatalogFilter, ReviewFilter
+from .pagination import CustomPageNumberPagination, LargeResultsSetPagination
 from .serializers import (
     CatalogSerializer, ReviewSerializer, 
     CategorySerializer, ClientSerializer
@@ -39,13 +40,15 @@ class CatalogViewSet(viewsets.ModelViewSet):
     serializer_class = CatalogSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
     
+    # ✅ ПРИМЕНЯЕМ КАСТОМНУЮ ПАГИНАЦИЮ
+    pagination_class = CustomPageNumberPagination
+    
     # ✅ ФИЛЬТРАЦИЯ И ПОИСК
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_class = CatalogFilter  # ✅ ИСПОЛЬЗУЕМ КАСТОМНЫЙ ФИЛЬТР
     search_fields = ['brand', 'product_card__name', 'product_card__color', 'product_card__description']
     ordering_fields = ['price', 'created_at', 'brand']
     ordering = ['-created_at']
-    
     def get_queryset(self):
         """Кастомная фильтрация"""
         queryset = super().get_queryset()
@@ -136,34 +139,196 @@ class ReviewViewSet(viewsets.ModelViewSet):
     ordering = ['-created_date']
     
     def perform_create(self, serializer):
-        """Автоматически привязываем текущего пользователя"""
-        # Находим клиента по email пользователя
+        """Создание отзыва с выбором клиента или автоматической привязкой"""
+        from django.db import IntegrityError
+        from rest_framework.exceptions import ValidationError
+        
+        # Проверяем, передан ли клиент в данных запроса
+        client_data = serializer.validated_data.get('client')
+        sneakers_data = serializer.validated_data.get('sneakers')
+        
+        if client_data:
+            # Если клиент указан явно, используем его
+            selected_client = client_data
+        else:
+            # Если клиент не указан, используем текущего пользователя
+            try:
+                selected_client = Clients.objects.get(email=self.request.user.email)
+            except Clients.DoesNotExist:
+                # Создаем клиента для текущего пользователя
+                selected_client = Clients.objects.create(
+                    email=self.request.user.email,
+                    first_name=self.request.user.first_name or 'Пользователь',
+                    last_name=self.request.user.last_name or 'API'
+                )
+        
+        # Проверяем, есть ли уже отзыв от этого клиента на этот товар
+        existing_review = Reviews.objects.filter(
+            client=selected_client,
+            sneakers=sneakers_data
+        ).first()
+        
+        if existing_review:
+            raise ValidationError({
+                'detail': f'Клиент {selected_client.first_name} {selected_client.last_name} уже оставил отзыв на этот товар.',
+                'existing_review_id': existing_review.review_id,
+                'client': f'{selected_client.first_name} {selected_client.last_name}',
+                'product': existing_review.sneakers.brand
+            })
+        
         try:
-            client = Clients.objects.get(email=self.request.user.email)
-            serializer.save(client=client)
-        except Clients.DoesNotExist:
-            # Если клиента нет, создаем его
-            client = Clients.objects.create(
-                email=self.request.user.email,
-                first_name=self.request.user.first_name or 'Пользователь',
-                last_name=self.request.user.last_name or 'API'
-            )
-            serializer.save(client=client)
+            serializer.save(client=selected_client)
+        except IntegrityError:
+            raise ValidationError({
+                'detail': 'Ошибка создания отзыва. Возможно, отзыв уже существует.'
+            })
+    
+    def get_queryset(self):
+        """Кастомная фильтрация queryset"""
+        queryset = super().get_queryset()
+        
+        # Если пользователь не суперпользователь, показываем только одобренные отзывы
+        if not self.request.user.is_superuser:
+            queryset = queryset.filter(is_approved=True)
+        
+        return queryset
     
     @action(detail=False, methods=['get'])
-    def top_rated(self, request):
+    def available_clients(self, request):
         """
-        ✅ КАСТОМНЫЙ ЭНДПОИНТ: /api/reviews/top_rated/
-        Отзывы с высоким рейтингом (4-5 звезд)
+        ✅ НОВЫЙ ЭНДПОИНТ: /api/reviews/available_clients/
+        Список доступных клиентов для создания отзывов
         """
-        top_reviews = self.get_queryset().filter(rating__gte=4).order_by('-rating', '-created_date')
-        serializer = self.get_serializer(top_reviews, many=True)
-        return Response(serializer.data)
+        clients = Clients.objects.filter(is_active=True).order_by('first_name', 'last_name')
+        
+        clients_data = []
+        for client in clients:
+            # Подсчитываем количество отзывов клиента
+            reviews_count = Reviews.objects.filter(client=client).count()
+            
+            clients_data.append({
+                'client_id': client.client_id,
+                'name': f'{client.first_name} {client.last_name}',
+                'email': client.email,
+                'reviews_count': reviews_count,
+                'date_joined': client.date_joined.strftime('%d.%m.%Y') if client.date_joined else None
+            })
+        
+        return Response({
+            'count': len(clients_data),
+            'clients': clients_data
+        })
+    
+    @action(detail=False, methods=['post'])
+    def create_for_client(self, request):
+        """
+        ✅ НОВЫЙ ЭНДПОИНТ: /api/reviews/create_for_client/
+        Создание отзыва для конкретного клиента
+        
+        Ожидаемые данные:
+        {
+            "client_id": 1,
+            "sneakers_id": 2,
+            "rating": 5,
+            "comment": "Отличные кроссовки!"
+        }
+        """
+        from rest_framework.exceptions import ValidationError
+        
+        client_id = request.data.get('client_id')
+        sneakers_id = request.data.get('sneakers_id')
+        rating = request.data.get('rating')
+        comment = request.data.get('comment', '')
+        
+        # Валидация обязательных полей
+        if not all([client_id, sneakers_id, rating]):
+            return Response({
+                'error': 'Обязательные поля: client_id, sneakers_id, rating'
+            }, status=400)
+        
+        try:
+            # Получаем клиента и товар
+            client = Clients.objects.get(client_id=client_id, is_active=True)
+            sneakers = Catalog.objects.get(sneakers_id=sneakers_id, is_active=True)
+            
+            # Проверяем существующий отзыв
+            existing_review = Reviews.objects.filter(
+                client=client,
+                sneakers=sneakers
+            ).first()
+            
+            if existing_review:
+                return Response({
+                    'error': f'Клиент {client.first_name} {client.last_name} уже оставил отзыв на товар {sneakers.brand}',
+                    'existing_review_id': existing_review.review_id
+                }, status=400)
+            
+            # Создаем отзыв
+            review = Reviews.objects.create(
+                client=client,
+                sneakers=sneakers,
+                rating=rating,
+                comment=comment,
+                is_approved=True  # Автоматически одобряем отзывы, созданные через API
+            )
+            
+            # Сериализуем созданный отзыв
+            serializer = self.get_serializer(review)
+            
+            return Response({
+                'success': True,
+                'message': f'Отзыв успешно создан для клиента {client.first_name} {client.last_name}',
+                'review': serializer.data
+            }, status=201)
+            
+        except Clients.DoesNotExist:
+            return Response({
+                'error': f'Клиент с ID {client_id} не найден или неактивен'
+            }, status=404)
+        except Catalog.DoesNotExist:
+            return Response({
+                'error': f'Товар с ID {sneakers_id} не найден или неактивен'
+            }, status=404)
+        except Exception as e:
+            return Response({
+                'error': f'Ошибка создания отзыва: {str(e)}'
+            }, status=500)
+    
+    @action(detail=False, methods=['get'])
+    def client_reviews(self, request):
+        """
+        ✅ НОВЫЙ ЭНДПОИНТ: /api/reviews/client_reviews/?client_id=1
+        Получить все отзывы конкретного клиента
+        """
+        client_id = request.query_params.get('client_id')
+        
+        if not client_id:
+            return Response({
+                'error': 'Требуется параметр client_id'
+            }, status=400)
+        
+        try:
+            client = Clients.objects.get(client_id=client_id)
+            reviews = Reviews.objects.filter(client=client).order_by('-created_date')
+            
+            serializer = self.get_serializer(reviews, many=True)
+            
+            return Response({
+                'client': f'{client.first_name} {client.last_name}',
+                'client_email': client.email,
+                'reviews_count': reviews.count(),
+                'reviews': serializer.data
+            })
+            
+        except Clients.DoesNotExist:
+            return Response({
+                'error': f'Клиент с ID {client_id} не найден'
+            }, status=404)
     
     @action(detail=True, methods=['get'])
     def history(self, request, pk=None):
         """
-        ✅ НОВЫЙ ЭНДПОИНТ: /api/reviews/1/history/
+        ✅ ЭНДПОИНТ: /api/reviews/1/history/
         История изменений конкретного отзыва
         """
         review = self.get_object()
@@ -187,6 +352,16 @@ class ReviewViewSet(viewsets.ModelViewSet):
             'history_count': len(history_data),
             'history': history_data
         })
+
+    @action(detail=False, methods=['get'])
+    def top_rated(self, request):
+        """
+        ✅ КАСТОМНЫЙ ЭНДПОИНТ: /api/reviews/top_rated/
+        Отзывы с высоким рейтингом (4-5 звезд)
+        """
+        top_reviews = self.get_queryset().filter(rating__gte=4).order_by('-rating', '-created_date')
+        serializer = self.get_serializer(top_reviews, many=True)
+        return Response(serializer.data)
 
 
 class ClientViewSet(viewsets.ModelViewSet):
